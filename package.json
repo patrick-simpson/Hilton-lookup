@@ -1,0 +1,19 @@
+{
+  "name": "hilton-lookup",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Daily Hilton award-point watcher for specific stays. Sends ntfy.sh alerts on price drops.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.48.0",
+    "playwright-extra": "^4.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}
