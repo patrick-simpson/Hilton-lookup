@@ -1,0 +1,307 @@
+/* Sparks Verse Arcade — kid-friendly UI for K–2. Big targets, bright colors. */
+
+:root {
+  --red: #e63946;
+  --red-soft: #ffd6d9;
+  --green: #2a9d3f;
+  --green-soft: #d3f2d9;
+  --blue: #2274d0;
+  --blue-soft: #d5e8ff;
+  --yellow: #ffb703;
+  --purple: #9d4edd;
+  --ink: #26324b;
+  --paper: #ffffff;
+  --sky-top: #aee3ff;
+  --sky-bottom: #fdf3d8;
+  --radius: 22px;
+  --shadow: 0 6px 0 rgba(38, 50, 75, 0.15);
+  --font: "Comic Sans MS", "Comic Neue", "Baloo 2", "Segoe UI Rounded", "Arial Rounded MT Bold", sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom) 70%);
+  background-attachment: fixed;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 12px 14px 40px;
+}
+
+/* ---------- top bar ---------- */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+
+.top-bar h1 {
+  font-size: 1.35rem;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.back-btn {
+  background: var(--paper);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  box-shadow: var(--shadow);
+}
+.back-btn:active { transform: translateY(3px); box-shadow: none; }
+
+/* ---------- cards & buttons ---------- */
+
+.card {
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  transition: transform 0.08s ease;
+}
+.btn:active { transform: translateY(3px); box-shadow: none; }
+
+.btn-primary { background: var(--yellow); }
+.btn-red { background: var(--red); color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-big { font-size: 1.35rem; min-height: 64px; padding: 14px 30px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0; }
+
+/* ---------- home ---------- */
+
+.hero {
+  text-align: center;
+  padding: 18px 8px 6px;
+}
+.hero .mascot { font-size: 4rem; animation: floaty 3s ease-in-out infinite; display: inline-block; }
+.hero h1 { font-size: 2rem; margin: 6px 0; }
+.hero p { margin: 4px 0 0; }
+
+.book-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  border-left: 12px solid var(--yellow);
+}
+.book-card .book-emoji { font-size: 3rem; }
+.book-card h2 { margin: 0; font-size: 1.4rem; }
+.book-card p { margin: 4px 0 0; font-size: 0.95rem; }
+.book-card.book-red { border-color: var(--red); }
+.book-card.book-green { border-color: var(--green); }
+.book-card.book-blue { border-color: var(--blue); }
+
+.progress-pill {
+  margin-left: auto;
+  background: var(--sky-top);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* ---------- sections & entries ---------- */
+
+.section-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+.section-row .jewel { font-size: 2.2rem; }
+.section-row h3 { margin: 0; font-size: 1.15rem; }
+.section-row .game-name { font-size: 0.95rem; opacity: 0.85; }
+
+.entry-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 2px dashed #e3e8f2;
+}
+.entry-row:last-child { border-bottom: none; }
+.entry-row .entry-num {
+  background: var(--blue-soft);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--paper);
+  border: 3px solid var(--blue-soft);
+  border-radius: 999px;
+  padding: 8px 16px;
+  margin: 4px 6px 4px 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+.chip.active { border-color: var(--yellow); background: #fff7df; }
+.chip .chip-stars { font-size: 0.85rem; }
+
+/* ---------- game stage ---------- */
+
+.stage {
+  position: relative;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-height: 420px;
+  padding: 16px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+.game-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.game-banner .game-icon { font-size: 2.6rem; }
+.game-banner h2 { margin: 0; font-size: 1.3rem; }
+.game-banner p { margin: 2px 0 0; font-size: 0.95rem; }
+
+.word-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 10px 16px;
+  margin: 5px;
+  border-radius: 16px;
+  background: var(--blue-soft);
+  border: 3px solid transparent;
+  font-size: 1.15rem;
+  font-weight: bold;
+  box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12);
+  transition: transform 0.08s ease;
+  user-select: none;
+}
+.word-tile:active { transform: translateY(3px); box-shadow: none; }
+.word-tile.correct { background: var(--green-soft); border-color: var(--green); animation: pop-in 0.25s ease; }
+.word-tile.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); }
+.word-tile.ghost { opacity: 0.35; }
+
+.verse-display {
+  font-size: 1.25rem;
+  text-align: center;
+  padding: 10px;
+}
+.verse-display .verse-ref { display: block; margin-top: 8px; font-size: 1rem; opacity: 0.75; font-weight: bold; }
+
+.stars-big { font-size: 3rem; text-align: center; letter-spacing: 6px; }
+
+/* ---------- overlay (win screen) ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(38, 50, 75, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+}
+.overlay .card { text-align: center; max-width: 420px; width: 100%; animation: pop-in 0.3s ease; }
+.overlay h2 { font-size: 1.8rem; margin: 6px 0; }
+
+/* ---------- confetti ---------- */
+
+.confetti-host {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 40;
+}
+.confetti-bit {
+  position: absolute;
+  top: -14px;
+  width: 12px;
+  height: 12px;
+  animation: confetti-fall linear forwards;
+}
+@keyframes confetti-fall {
+  to { transform: translateY(110vh) rotate(720deg); }
+}
+
+/* ---------- helper animations for games ---------- */
+
+@keyframes pop-in {
+  0% { transform: scale(0.4); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  75% { transform: translateX(7px); }
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.footer-note {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-align: center;
+  margin-top: 28px;
+}
+
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  .hero h1 { font-size: 1.6rem; }
+  .stage { min-height: 380px; padding: 12px; }
+}
