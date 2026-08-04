@@ -13,6 +13,9 @@ scope and sequence — all three handbooks, every section, every verse.
   official Awana Curriculum Scope and Sequence.
 - **Every section is a different game.** All 20 games appear at least once; seven
   SkyStormer sections replay earlier games in harder "encore" mode.
+- **Four translations:** NIV (1984), ESV, KJV, and NKJV — pick on the home screen (📖).
+  Non-NIV texts follow the same verse portioning as the NIV84 handbook entries; stars and
+  stickers carry across translations.
 - **Made for K–2:** every verse can be read aloud (tap 🔊), buttons are big, wrong answers
   just wiggle — no failing, only retrying.
 - **Progress that motivates:** stars per verse, a 📒 Sticker Book, and a 🌻 Verse Garden
@@ -61,9 +64,13 @@ with WebAudio — no assets, works offline.
 
 - `js/data/curriculum.js` — the three books' scope & sequence and section→game mapping
 - `js/data/verses.js` — verse texts (NIV 1984, as used in the Sparks handbooks)
+- `js/data/translations-data.js` + `translations.js` — ESV/KJV/NKJV texts (same keys as NIV84) and the translation registry
 - `js/lib/engine.js` — shared game engine (audio, speech, confetti, ctx API)
 - `js/games/*.js` — the 20 game modules; the contract is documented in `docs/GAME_SPEC.md`
 - `test/` — Playwright smoke test that mounts every game in a real browser
 
 Scripture taken from the Holy Bible, NEW INTERNATIONAL VERSION®, NIV®
 Copyright © 1973, 1978, 1984 by Biblica, Inc.® Used by permission. All rights reserved worldwide.
+Scripture quotations marked ESV are from the ESV® Bible (The Holy Bible, English Standard Version®),
+© 2001 by Crossway. Used by permission. Scripture taken from the New King James Version®.
+© 1982 by Thomas Nelson. Used by permission. KJV quotations are public domain.
