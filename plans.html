@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sparks Verse Arcade — Pedagogical Redesign Plan</title>
+<style>
+  :root {
+    --ink: #1f2937; --muted: #6b7280; --line: #e5e7eb; --bg: #ffffff;
+    --keep: #16a34a; --fix: #d97706; --replace: #dc2626; --new: #7c3aed;
+    --card: #f9fafb; --accent: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); margin: 0; padding: 1.5rem; max-width: 960px; margin-inline: auto; }
+  h1 { font-size: 1.8rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.4rem; border-bottom: 2px solid var(--line); padding-bottom: .3rem; margin-top: 2.5rem; }
+  h3 { font-size: 1.15rem; margin-top: 1.8rem; }
+  h4 { font-size: 1rem; margin-bottom: .3rem; }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .875em; }
+  code { background: #f3f4f6; padding: .1em .35em; border-radius: 4px; }
+  pre { background: #f3f4f6; padding: .8rem 1rem; border-radius: 8px; overflow-x: auto; line-height: 1.45; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .92rem; }
+  th, td { border: 1px solid var(--line); padding: .45rem .6rem; text-align: left; vertical-align: top; }
+  th { background: var(--card); }
+  .toc { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.4rem; }
+  .toc ol { margin: .4rem 0; padding-left: 1.4rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 1.2rem; }
+  .badge { display: inline-block; font-size: .72rem; font-weight: 700; letter-spacing: .04em; padding: .15em .55em; border-radius: 999px; color: #fff; vertical-align: middle; }
+  .b-keep { background: var(--keep); } .b-fix { background: var(--fix); } .b-replace { background: var(--replace); } .b-new { background: var(--new); }
+  .b-size { background: #475569; }
+  .b-stage { background: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.2rem; margin: 1rem 0; }
+  .card h4 { margin-top: 0; }
+  dl.spec { margin: .5rem 0 0; }
+  dl.spec dt { font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); margin-top: .6rem; }
+  dl.spec dd { margin: .15rem 0 0 0; }
+  .callout { border-left: 4px solid var(--accent); background: #eff6ff; padding: .7rem 1rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+  .warn { border-left-color: var(--fix); background: #fffbeb; }
+  ul { padding-left: 1.3rem; }
+  .wire { white-space: pre; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem; background: #f3f4f6; border-radius: 8px; padding: .8rem 1rem; overflow-x: auto; }
+  footer { margin-top: 3rem; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<h1>Sparks Verse Arcade — Pedagogical Redesign Plan</h1>
+<p class="meta">
+  Design spec for making every game genuinely help K–2 kids memorize Scripture word-perfect.<br>
+  Written 2026-08-04 · Branch <code>claude/scripture-games-redesign-whsnbi</code> · Audience: the owner + future Claude Code sessions.<br>
+  This document is the single source of truth for the redesign. Each work item is written to be executable as one focused session; sizes are <span class="badge b-size">S</span> (&lt; 1 hr of focused work), <span class="badge b-size">M</span> (1–3 hrs), <span class="badge b-size">L</span> (3+ hrs, consider splitting).
+</p>
+
+<nav class="toc">
+<strong>Contents</strong>
+<ol>
+  <li><a href="#goals">Goals &amp; non-goals</a></li>
+  <li><a href="#pedagogy">Pedagogy foundation — the principles behind every verdict</a></li>
+  <li><a href="#ladder">The Mastery Ladder — stages, stars, and the per-verse menu</a></li>
+  <li><a href="#audio">Audio engine — songs, generated voice, and fixing the creepy TTS</a></li>
+  <li><a href="#verdicts">Per-game verdicts — all 20 existing games</a></li>
+  <li><a href="#newgames">New game specs — Sing-Along Stage, Echo Chamber, Draw &amp; Tell, First-Letter Trail</a></li>
+  <li><a href="#engine">Shared engine work</a></li>
+  <li><a href="#recite">Recitation module — the ⭐⭐⭐ gate</a></li>
+  <li><a href="#extras">Review, rewards, and hard-mode repurposing</a></li>
+  <li><a href="#phases">Implementation phases P1–P4</a></li>
+  <li><a href="#verify">Verification &amp; testing</a></li>
+</ol>
+</nav>
+
+<!-- ================================================================ -->
+<h2 id="goals">1. Goals &amp; non-goals</h2>
+
+<h3>Success bar</h3>
+<ul>
+  <li><strong>Word-perfect recitation, including the reference</strong> (AWANA standard: the kid can say "John 3:16 — For God so loved the world… — John 3:16" unprompted). Games that only produce recognition ("I know that word goes next when I see it") do not meet the bar by themselves.</li>
+  <li><strong>Cadence:</strong> one verse per week per the Sparks handbook sections. The app should make that week's verse stick and keep old ones warm.</li>
+  <li><strong>Audiences:</strong> HangGlider = Kindergarten (pre/early reader — <em>audio-first</em>, text shown but never required), WingRunner = 1st grade (emerging reader), SkyStormer = 2nd grade (reader — can handle text-heavy mechanics like first-letter cues).</li>
+  <li><strong>Settings:</strong> home solo, home with a parent, classroom/Sunday school (group games), and car/on-the-go. Session length varies — every game must deliver value in one 2–4 minute round with natural stopping points.</li>
+</ul>
+
+<h3>Constraints (unchanged from today)</h3>
+<ul>
+  <li>Static site, no build step, vanilla ES modules, GitHub Pages. The only new asset class is audio files (see <a href="#audio">§4</a>).</li>
+  <li><strong>No failure states.</strong> Wrong answers wiggle and invite another try (<code>docs/GAME_SPEC.md</code> rule 1). This is pedagogically correct for K–2: anxiety suppresses memory consolidation, and low-stakes retrieval is what makes the testing effect work.</li>
+  <li>Offline: <strong>degrade gracefully</strong>. Online gets the best audio; offline falls back down the audio chain (song file → generated voice file → device speech), with committed files cacheable by a future service worker.</li>
+  <li>All four translations (NIV84, ESV, KJV, NKJV) stay. The owner will supply <strong>verse songs for all four translations</strong>.</li>
+</ul>
+
+<h3>Non-goals</h3>
+<ul>
+  <li>No accounts, no server, no analytics. Progress stays in <code>localStorage</code>.</li>
+  <li>No spaced-repetition <em>scheduler</em> (decided: a simple per-book review playlist instead — see <a href="#extras">§9</a>).</li>
+  <li>No locked progression. The Mastery Ladder is <strong>suggested, never enforced</strong> — kids can play anything anytime.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="pedagogy">2. Pedagogy foundation</h2>
+
+<p>Every verdict in <a href="#verdicts">§5</a> traces back to one or more of these principles (plain language, deliberately no academic citations). When designing or modifying a game, check it against this list.</p>
+
+<table>
+<tr><th>#</th><th>Principle</th><th>What it means</th><th>Where it shows up in this plan</th></tr>
+<tr><td>P1</td><td><strong>Retrieval practice (the testing effect)</strong></td><td>Pulling a memory <em>out</em> strengthens it far more than putting it in again. Re-reading/re-hearing feels productive but is weak; being made to recall is what builds durable memory.</td><td>The whole Ladder; recall-gating the arcade games; fading support on builders; Echo Chamber; Disappearing Verse is already this.</td></tr>
+<tr><td>P2</td><td><strong>Recall &gt; recognition</strong></td><td>Picking the right word out of a lineup (recognition) is a much shallower act than producing it from nothing (recall). A kid can win every recognition game and still be unable to say the verse.</td><td>Why the 7 tap-the-next-word builders and Memory Match are only Stage-1/2 tools; why ⭐⭐ and ⭐⭐⭐ require production, not selection.</td></tr>
+<tr><td>P3</td><td><strong>Expanding cloze (progressive deletion)</strong></td><td>Hiding a little more of the text each round — while the learner fills the gaps — is the classic, extremely effective verbatim-memorization drill ("whiteboard method").</td><td>Disappearing Verse (already gold standard); fading-support system; First-Letter Trail; Sticker Quest's see→peek→brave ladder.</td></tr>
+<tr><td>P4</td><td><strong>Spaced / distributed practice</strong></td><td>Two short practices on different days beat one long one. Old verses decay without occasional touches.</td><td>Per-book Review chips; gentle practice-day streaks; the win screen suggesting "review an old verse".</td></tr>
+<tr><td>P5</td><td><strong>Dual coding (words + pictures)</strong></td><td>Pairing verbal content with a visual anchor gives memory two routes back to the same content.</td><td>Draw &amp; Tell (phrase→emoji/drawing); Puzzle Pieces' reveal picture; garden/trophy imagery tied to specific verses.</td></tr>
+<tr><td>P6</td><td><strong>Melody &amp; rhythm carry verbatim text</strong></td><td>Kids remember songs word-perfect for years with no effort. Melody constrains word order and prosody, which is exactly what verbatim memorization needs.</td><td>Sing-Along Stage built on the owner's per-verse song recordings (all four translations); Karaoke hooks the same audio.</td></tr>
+<tr><td>P7</td><td><strong>Chunking</strong></td><td>Working memory holds 3–5 items; phrases are the natural unit. Learn phrase-by-phrase, then chain phrases (cumulative rehearsal: 1, 1+2, 1+2+3…).</td><td>Existing <code>ctx.chunk</code> use everywhere; Echo Chamber's cumulative chain; Hot Potato's phrase turns.</td></tr>
+<tr><td>P8</td><td><strong>Enactment &amp; production</strong></td><td>Saying it out loud (and doing an action with it) encodes more strongly than silent reading or tapping. The mouth is part of the memory.</td><td>Every "say it, then tap ‘I said it!’" step (Disappear, Stickers, Karaoke, Echo Chamber); group choral games; the Recitation module.</td></tr>
+<tr><td>P9</td><td><strong>Desirable difficulty, zero punishment</strong></td><td>Memory grows when retrieval takes real effort — but for K–2 the effort must never read as failure. Struggle → hint → success, never struggle → game over.</td><td>Peek buttons that cost stars but never block; mercy mechanics; hard modes redefined as <em>more memory demand</em>, not more speed (§9).</td></tr>
+<tr><td>P10</td><td><strong>Overlearning &amp; varied practice</strong></td><td>Keep practicing past the first success, in varied forms and moods — variety re-engages attention and generalizes the memory beyond one context.</td><td>Verse Spinner's silly recitation styles; the Ladder offering several games per verse; encore sections.</td></tr>
+</table>
+
+<div class="callout">
+<strong>The core diagnosis of the current app:</strong> 13 of the 20 games are <em>recognition</em> games (P2) — the verse is always visible or the answer is always in a lineup. They're great <em>exposure</em> and fun, but a kid can 3-star an entire book without ever once producing the verse from memory. The redesign keeps their themes and fun, and rewires the star economy + game loops so that production (P1, P8) is what earns mastery.
+</div>
+
+<!-- ================================================================ -->
+<h2 id="ladder">3. The Mastery Ladder</h2>
+
+<h3>3.1 The four stages</h3>
+<table>
+<tr><th>Stage</th><th>Name</th><th>What the kid does</th><th>Principle</th><th>Games at this stage</th></tr>
+<tr><td>1</td><td><strong>Listen &amp; Sing</strong> 🎵</td><td>Hear the verse, sing along, absorb it. Text fully visible/optional. Zero demand.</td><td>P6, P5, P7</td><td>Sing-Along Stage, Karaoke (listen phase), Puzzle Pieces, Feed Sparky (easy)</td></tr>
+<tr><td>2</td><td><strong>Build</strong> 🧱</td><td>Reconstruct the verse with support: tap words in order, fill blanks from a word bank. Support fades with each pass (see fading-support, §7.1).</td><td>P1 (light), P3, P7</td><td>Scramble, Train, Rocket, Hopscotch, Stones, Falling Words, Sword Slash, Balloon, Firefly, Garden, Team Relay</td></tr>
+<tr><td>3</td><td><strong>Recall</strong> 🧠</td><td>Produce the verse from memory with minimal cues: expanding cloze, first letters, echo from audio only, picture cues.</td><td>P1, P2, P3, P8</td><td>Disappearing Verse, Echo Chamber, First-Letter Trail, Draw &amp; Tell, any Stage-2 game at full fade, Hot Potato</td></tr>
+<tr><td>4</td><td><strong>Recite</strong> 🏆</td><td>Say the whole verse + reference out loud, word-perfect, and have it verified (grown-up check-off / recording / speech recognition / club card).</td><td>P8, P1</td><td>Recitation module (§8), Sticker Quest, Karaoke (star show), Verse Spinner, Reference Race (reference half of word-perfect)</td></tr>
+</table>
+
+<h3>3.2 Stars = mastery stages (progress schema v2)</h3>
+<p>Stars stop meaning "played a game well" and start meaning "how well do I know this verse":</p>
+<ul>
+  <li>⭐ <strong>Built it</strong> — completed any Stage-1 or Stage-2 game for this verse.</li>
+  <li>⭐⭐ <strong>Recalled it</strong> — completed a Stage-3 game with real memory demand met (e.g., Disappearing Verse with ≤1 peek, Echo Chamber chain complete, a builder at full fade with ≤1 mistake).</li>
+  <li>⭐⭐⭐ <strong>Recited it</strong> — verified word-perfect recitation <em>including the reference</em> via the Recitation module (§8). This is the only way to earn the third star.</li>
+</ul>
+<p><strong>Migration:</strong> existing <code>sparksArcade.v1</code> stars are honest about the old economy: any verse with stars &gt; 0 migrates to stage 1 (⭐). Kids keep visible progress; nobody keeps an unearned ⭐⭐⭐. Stars remain monotonic (never go down). Per-game performance (mistakes/peeks) still drives in-game celebration messages, but not the star count.</p>
+
+<h3>3.3 The per-verse ladder menu (suggested, never locked)</h3>
+<p>Today the play screen (<code>#/b/&lt;book&gt;/&lt;section&gt;/play/&lt;verse&gt;</code>) mounts the section's single game. New: a <strong>verse screen</strong> shows the ladder as four friendly rows; every row is always tappable (no locks); the kid's current stage row is highlighted with a "play next" pulse. The section's signature game keeps top billing inside its stage row.</p>
+
+<div class="wire">┌─────────────────────────────────────────┐
+│  John 3:16                     ⭐⭐☆    │
+│  "For God so loved the world…"  🔊 🎵   │
+├─────────────────────────────────────────┤
+│ 1 🎵 LISTEN &amp; SING                      │
+│    [ 🎤 Sing-Along Stage ]              │
+│ 2 🧱 BUILD                       done ✓ │
+│    [ 🎈 Pop the Balloon ★featured ]     │
+│ 3 🧠 RECALL                   ← play me │
+│    [ 🫥 Disappearing Verse ] [ 🔊 Echo ]│
+│ 4 🏆 RECITE                             │
+│    [ 🏅 Say it to a grown-up! ]         │
+└─────────────────────────────────────────┘</div>
+
+<p><strong>Stage→game defaults per book</strong> (the signature game slots into its natural stage; these are the other rows):</p>
+<table>
+<tr><th>Stage</th><th>HangGlider (K)</th><th>WingRunner (1st)</th><th>SkyStormer (2nd)</th></tr>
+<tr><td>1 Listen &amp; Sing</td><td>Sing-Along Stage</td><td>Sing-Along Stage or Karaoke</td><td>Sing-Along Stage</td></tr>
+<tr><td>2 Build</td><td>section's signature game</td><td>section's signature game</td><td>section's signature game (encore variant)</td></tr>
+<tr><td>3 Recall</td><td>Echo Chamber (audio-first, no reading)</td><td>Disappearing Verse or Draw &amp; Tell</td><td>First-Letter Trail or Disappearing Verse</td></tr>
+<tr><td>4 Recite</td><td>Recitation module (grown-up check emphasized)</td><td>Recitation module</td><td>Recitation module (self-record emphasized)</td></tr>
+</table>
+<p>Group-game sections (Spinner, Relay, Hot Potato) keep their signature game as the featured row for club use, and the solo ladder rows appear alongside so a kid at home isn't locked out.</p>
+
+<!-- ================================================================ -->
+<h2 id="audio">4. Audio engine — fixing the creepy TTS</h2>
+
+<h3>4.1 Why it's creepy today</h3>
+<p>All speech is <code>speechSynthesis</code> configured in <code>js/lib/engine.js:90-116</code>: rate 0.85, pitch 1.1, voice = first English voice whose <em>name</em> matches <code>female|child|kid|samantha|zira</code>. On devices without a good voice this lands on a robotic default, made worse by the artificially raised pitch and slowed rate — the uncanny "robot pretending to be a kid" effect. It also never sets <code>utter.lang</code>, doesn't handle <code>onerror</code>, and auto-speaks on mount without a user gesture (silently dropped on iOS Safari).</p>
+
+<h3>4.2 Options compared (decision: keep all four, chained)</h3>
+<table>
+<tr><th>Option</th><th>Warmth</th><th>Cost</th><th>Offline</th><th>Effort</th><th>Role in this plan</th></tr>
+<tr><td><strong>A. Owner-provided verse songs</strong> (mp3/m4a, all 4 translations)</td><td>Best — real music, real voice</td><td>Free (owner supplies)</td><td>Yes, once committed</td><td>Ingestion only</td><td><strong>Primary.</strong> Powers Sing-Along Stage + the 🎵 button everywhere. Also the strongest memorization tool in the whole plan (P6).</td></tr>
+<tr><td><strong>B. Pre-generated cloud TTS files</strong> (warm adult female voice)</td><td>Very good — natural, consistent</td><td>One-time ≈ $1–5 for ~72 verses × 4 translations</td><td>Yes, once committed</td><td>One generation script</td><td><strong>Primary spoken-word source.</strong> Replaces live device TTS for verse reading (🔊) wherever a file exists.</td></tr>
+<tr><td><strong>C. Tuned Web Speech API</strong></td><td>Varies by device (good on iOS/Mac, poor on cheap Android)</td><td>Free</td><td>Yes</td><td>Small code change</td><td><strong>Fallback only</strong> — for dynamic text files can't cover (game prompts, single words on tap) and when files are missing/unfetched.</td></tr>
+<tr><td><strong>D. Home/human recordings per verse</strong></td><td>Warmest possible (a parent's voice)</td><td>Free</td><td>Yes</td><td>High (record 72+ verses)</td><td><strong>Optional future.</strong> The manifest supports it: drop files in <code>audio/read/</code> and they outrank generated TTS. Not scheduled in any phase.</td></tr>
+</table>
+
+<div class="callout"><strong>Playback chain</strong> for any verse audio request: <em>song file (A/🎵) or read file (D then B/🔊), depending on which button — else tuned device speech (C)</em>. Games ask for audio by intent (<code>'sing'</code> / <code>'read'</code>), never by mechanism.</div>
+
+<h3>4.3 File layout, naming, compression <span class="badge b-size">S</span></h3>
+<pre><code>audio/
+  songs/&lt;translation&gt;/&lt;ref-slug&gt;.m4a     e.g. audio/songs/niv84/john-3-16.m4a
+  read/&lt;translation&gt;/&lt;ref-slug&gt;.m4a      generated TTS (B) and/or human (D) — same slot
+</code></pre>
+<ul>
+  <li><code>ref-slug</code>: lowercase, non-alphanumerics → dash, collapse repeats: <code>John 3:16</code> → <code>john-3-16</code>, <code>1 Corinthians 15:3-4</code> → <code>1-corinthians-15-3-4</code>, <code>John 3:14a</code> → <code>john-3-14a</code>. Implement once as <code>refSlug(ref)</code> in <code>js/lib/audio.js</code>; book-list pseudo-verses use their key (<code>nt-1</code>, <code>ot-all</code>, <code>facts</code>).</li>
+  <li><strong>Compression spec:</strong> mono, AAC in .m4a (universally playable incl. iOS; do not use Opus/webm — Safari support is inconsistent), 64 kbps for spoken word, 96 kbps for songs, loudness-normalized to ≈ −16 LUFS, silence-trimmed. Budget: <strong>≤ 40 MB total committed audio</strong>; at these rates ~72 songs (~60–90 s each) + ~288 read files (~15 s each) fits with room to spare. Reference command:
+  <pre><code>ffmpeg -i in.mp3 -ac 1 -b:a 96k -af loudnorm=I=-16:TP=-1.5 out.m4a</code></pre></li>
+  <li><strong>Lazy loading:</strong> nothing preloads at app start. The verse screen preloads (with <code>preload="auto"</code>) only the current verse's song + read file. One shared <code>&lt;audio&gt;</code> element; navigation stops it (extend <code>teardownGame()</code> in <code>js/app.js:22-28</code>).</li>
+</ul>
+
+<h3>4.4 Audio manifest <span class="badge b-size">S</span></h3>
+<p>No network directory listing on a static site, so a committed manifest says which files exist. Generated, never hand-edited:</p>
+<pre><code>// js/data/audio-manifest.js  (GENERATED by tools/build-audio-manifest.mjs — do not edit)
+export const AUDIO = {
+  songs: { niv84: { 'John 3:16': { file: 'audio/songs/niv84/john-3-16.m4a', duration: 62.4,
+                                    timings: null /* or [ [word, startSec], … ] */ } }, esv: {…}, kjv: {…}, nkjv: {…} },
+  read:  { niv84: { 'John 3:16': { file: 'audio/read/niv84/john-3-16.m4a', duration: 14.1 } }, … },
+};</code></pre>
+<p><code>tools/build-audio-manifest.mjs</code> (node, dev-only like the tests): scans <code>audio/</code>, maps slugs back to refs via <code>VERSE_TEXT</code>/<code>BOOK_LISTS</code> keys, probes duration, merges optional per-song <code>timings</code> from <code>audio/songs/&lt;t&gt;/&lt;slug&gt;.timings.json</code> if present, writes the module. Run manually after adding audio; document in README.</p>
+
+<h3>4.5 Player module <code>js/lib/audio.js</code> <span class="badge b-size">M</span></h3>
+<pre><code>playVerse(verse, { kind: 'sing' | 'read' | 'auto' })  // resolves via manifest + active translation,
+                                                      // falls back to speak() when no file; returns
+                                                      // { source: 'song'|'file'|'tts', el|utterance }
+stopAudio()                                           // stops file audio AND speechSynthesis
+onWordTick(cb)                                        // fires per word when timings exist (Sing-Along);
+                                                      // falls back to even-split between 2% and 95% of duration
+</code></pre>
+<ul>
+  <li>Exposed to games as <code>ctx.audio</code>; <code>ctx.speak()</code> is re-pointed internally so <em>existing games get better audio with zero changes</em>: a no-arg <code>ctx.speak()</code> becomes <code>playVerse(verse, {kind:'read'})</code>; <code>ctx.speak(someText)</code> for dynamic fragments (chunks, single words) still uses Web Speech.</li>
+  <li>iOS unlock: first user gesture anywhere (there's always a tap — Play button) primes the shared audio element and speech synthesis. Auto-speak-on-mount stays, but routes through the primed element so it actually plays.</li>
+</ul>
+
+<h3>4.6 Web Speech tuning (the fallback, de-creepified) <span class="badge b-size">S</span></h3>
+<p>Changes to <code>speak()</code> in <code>js/lib/engine.js</code>:</p>
+<ul>
+  <li><strong>Voice ranking</strong> (replace the name-regex): prefer, in order: names containing <code>natural|neural|premium|enhanced</code> with lang <code>en</code>; then well-known quality voices by exact name (<code>Samantha</code>, <code>Google US English</code>, <code>Microsoft Aria</code>, <code>Microsoft Jenny</code>); then any <code>en-*</code>; else default. Stop filtering for "female/child/kid" by name — quality beats gender-guessing.</li>
+  <li><strong>Prosody:</strong> <code>rate 0.9</code>, <code>pitch 1.0</code> (drop the artificial 1.1 — a major creepiness source), always set <code>utter.lang = 'en-US'</code>.</li>
+  <li><strong>Phrasing:</strong> split input at sentence punctuation into a queued series of utterances — natural pauses without SSML (which Web Speech doesn't support).</li>
+  <li><strong>Robustness:</strong> <code>utter.onerror</code> → fail silent + leave the 🔊 button available; retry <code>pickVoice()</code> once after <code>voiceschanged</code>; keep the <code>LORD→Lord</code> normalization and the cancel-before-speak barge-in.</li>
+</ul>
+
+<h3>4.7 Cloud TTS generation workflow <span class="badge b-size">S</span></h3>
+<ul>
+  <li><code>tools/generate-tts.mjs</code> (node, dev-only, needs an API key env var — never committed): iterates all refs × 4 translations, synthesizes <code>spokenText</code>-style content (verse text, then "<em>Book chapter verse N</em>"), writes m4a per the naming spec, then re-runs the manifest builder.</li>
+  <li><strong>Voice spec: warm adult female, storyteller/teacher tone</strong>, ~0.95 speed. Candidates (pick by ear at build time): OpenAI <code>gpt-4o-mini-tts</code> voice <code>nova</code> or <code>shimmer</code>; Google Cloud <code>en-US-Neural2-F</code>; ElevenLabs only if the free/starter tier suffices. One-time cost estimate at ~72 refs × 4 translations × ~200 chars ≈ 60k chars: within the free tier on Google, ≈ $1–2 on OpenAI.</li>
+  <li>Same voice for all four translations, regenerate only missing files on re-run (idempotent).</li>
+</ul>
+
+<h3>4.8 Song ingestion checklist (for the owner's mp3s)</h3>
+<ol>
+  <li>Name files by ref slug and drop into <code>audio/songs/&lt;translation&gt;/</code> (see 4.3). A song that covers a combined ref (e.g. <code>John 3:14-16</code>) uses that combined slug.</li>
+  <li>Run the ffmpeg normalize/compress one-liner (4.3) — or commit as-is and let a session batch-convert.</li>
+  <li>Run <code>node tools/build-audio-manifest.mjs</code>; commit audio + regenerated manifest together.</li>
+  <li>Optional, later, per song: add <code>&lt;slug&gt;.timings.json</code> (<code>[["For",8.2],["God",8.6],…]</code>) for word-accurate bouncing-ball highlighting in Sing-Along Stage. Without it the game uses even-split timing, which is acceptable.</li>
+  <li>Partial coverage is fine at every step — any verse without a song simply hides its 🎵 affordances and Stage 1 falls back to Karaoke/read-along.</li>
+</ol>
+
+<!-- ================================================================ -->
+<h2 id="verdicts">5. Per-game verdicts — all 20 games</h2>
+
+<p>Legend: <span class="badge b-keep">KEEP</span> pedagogically sound, light polish at most · <span class="badge b-fix">FIX</span> keep the theme, rewire the loop · <span class="badge b-replace">REPLACE</span> retire the mechanic. Stage badges refer to §3.1. Sizes cover the change described, not the existing game.</p>
+
+<h3>5.1 Strong as-built — retrieval &amp; recitation games</h3>
+
+<div class="card" id="game-disappear">
+<h4>🫥 Disappearing Verse <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 3</span> <span class="badge b-size">S</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/disappear.js</code> — expanding cloze: say the verse aloud each round while more words become blanks; peek costs count against stars. HangGlider Rank + SkyStormer GJ3 (hard locks peeking on the last round).</dd>
+<dt>Verdict</dt><dd>The best game in the app — it <em>is</em> the classic whiteboard drill (P1, P3, P8). Keep the mechanic untouched.</dd>
+<dt>Changes</dt><dd>(a) Completing with ≤1 peek marks the verse ⭐⭐ (stage 3). (b) Add a final round that also blanks the on-screen <em>reference</em> so the reference is recalled too. (c) Route the mount read-aloud through <code>ctx.audio</code>.</dd>
+<dt>Acceptance</dt><dd>≤1-peek run sets stage ≥ 2 in progress v2; reference blank appears in final round; no regression in autoplay test.</dd>
+</dl>
+</div>
+
+<div class="card" id="game-stickers">
+<h4>📒 Sticker Quest <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 4</span> <span class="badge b-size">S</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/stickers.js</code> — see it → peek → brave recite ladder ending in a "Grown-up check!" thumbs-up. HangGlider GJ4.</dd>
+<dt>Verdict</dt><dd>Excellent: it's a miniature of the whole Mastery Ladder with a built-in human verification step (P3, P8, P9).</dd>
+<dt>Changes</dt><dd>(a) The grown-up check gains a "said the reference too" chip; passing with it awards ⭐⭐⭐ (it's a legitimate light recitation check). (b) Its sticker feeds the trophy shelf (§9.3).</dd>
+<dt>Acceptance</dt><dd>Grown-up pass with reference chip sets stage 3; sticker recorded as today.</dd>
+</dl>
+</div>
+
+<div class="card" id="game-karaoke">
+<h4>🎤 Verse Karaoke <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 1→4</span> <span class="badge b-size">S</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/karaoke.js</code> — listen (bouncing star) → your turn (every 3rd word hidden) → star show (all hidden), always 3 stars. WingRunner GJ1.</dd>
+<dt>Verdict</dt><dd>Guided oral rehearsal with progressive hiding — solid (P3, P6, P8). Its always-3-stars is fine under v2 since stars now come from stages, not games.</dd>
+<dt>Changes</dt><dd>(a) When the active translation has a song file, phase 1 plays the real song via <code>ctx.audio.onWordTick</code> instead of TTS-timer hops. (b) Completing the star show counts as a stage-2 pass (⭐), not ⭐⭐⭐ — there's no verification.</dd>
+<dt>Acceptance</dt><dd>With a song present, phase 1 uses file audio; without one, behavior is unchanged.</dd>
+</dl>
+</div>
+
+<div class="card" id="game-refrace">
+<h4>🏁 Reference Race <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 4 (reference)</span> <span class="badge b-size">S</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/refrace.js</code> — see verse text, pick its reference from 3 before a sparkle timer ends; timeouts just retry. WingRunner GJ2 + SkyStormer GJ2.</dd>
+<dt>Verdict</dt><dd>The only game training verse↔reference links — essential since the success bar includes the reference. Keep; strengthen both directions.</dd>
+<dt>Changes</dt><dd>Alternate round types: (a) text→pick reference (today's), (b) reference→pick first phrase. Both directions strengthen the association (P1). Keep the no-fail timer.</dd>
+<dt>Acceptance</dt><dd>Rounds alternate a/b; autoplay strategy updated for the new round type.</dd>
+</dl>
+</div>
+
+<h3>5.2 Real cloze games — keep, tighten</h3>
+
+<div class="card" id="game-balloon">
+<h4>🎈 Pop the Balloon <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/balloon.js</code> — one blank in the visible verse line; pop the balloon carrying the right word. HangGlider GJ1 + SkyStormer RJ2.</dd>
+<dt>Verdict</dt><dd>Genuine cloze recognition — good Stage 2 (P3). The answer being in a 3-balloon lineup keeps it recognition, which is fine at this stage.</dd>
+<dt>Changes</dt><dd>Add a 2-second <strong>"think first" beat</strong>: the blank pulses alone before balloons drift in, inviting silent recall before recognition (cheap P1 upgrade, shared helper §7.2).</dd>
+<dt>Acceptance</dt><dd>Balloons appear after the beat; existing win path intact.</dd>
+</dl>
+</div>
+
+<div class="card" id="game-firefly">
+<h4>🏮 Firefly Catch <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/firefly.js</code> — same cloze idea with wandering fireflies and a jar. HangGlider RJ4.</dd>
+<dt>Verdict</dt><dd>Same as Balloon: honest Stage-2 cloze with charming physics. The scatter-on-wrong is a good gentle cost.</dd>
+<dt>Changes</dt><dd>Same "think first" beat before fireflies carry words (they wander wordless for the beat, then words fade in).</dd>
+<dt>Acceptance</dt><dd>Words appear after the beat; autoplay still passes.</dd>
+</dl>
+</div>
+
+<div class="card" id="game-garden">
+<h4>🌻 Verse Garden <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 2–3</span> <span class="badge b-size">S</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/garden.js</code> — three cloze rounds with growing blank counts; plant grows seed→bloom. WingRunner GJ4.</dd>
+<dt>Verdict</dt><dd>Already does expanding deletion across rounds (P3) — the closest Stage-2 game to Stage 3.</dd>
+<dt>Changes</dt><dd>(a) "Think first" beat. (b) Final round option "no word bank" (type nothing — say the word aloud, tap the blank to reveal-confirm, peek-style): completing it flags a stage-3-worthy pass. (c) Its plant art stays, but the <em>home</em> Verse Garden growth remaps to mastery stages (§9.2).</dd>
+<dt>Acceptance</dt><dd>Final no-bank round completes via reveal-confirm; stage recorded.</dd>
+</dl>
+</div>
+
+<h3>5.3 Group games — keep as-is</h3>
+
+<div class="card" id="game-spinner">
+<h4>🎡 Verse Spinner <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 4 (group)</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/spinner.js</code> — wheel of 8 silly recitation styles; group recites 5 spins; hard covers the verse. HangGlider GJ2.</dd>
+<dt>Verdict</dt><dd>Varied, repeated choral recitation is exactly P10 + P8. Leader-verified. No changes.</dd>
+</dl>
+</div>
+
+<div class="card" id="game-relay">
+<h4>🏆 Team Relay <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 2 (group)</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/relay.js</code> — two teams tap the same words in order, race legs, everybody finishes. SkyStormer RJ1.</dd>
+<dt>Verdict</dt><dd>Recognition-level but the social energy and repetition earn its place for club nights. No changes.</dd>
+</dl>
+</div>
+
+<div class="card" id="game-hotpotato">
+<h4>🥔 Hot Potato Verse <span class="badge b-keep">KEEP</span> <span class="badge b-stage">Stage 3 (group)</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/hotpotato.js</code> — potato lands on a kid; they say the next phrase; leader confirms. WingRunner RJ2.</dd>
+<dt>Verdict</dt><dd>Turn-taking phrase production under mild social spotlight — genuine retrieval practice (P1, P7, P8). No changes.</dd>
+</dl>
+</div>
+
+<h3>5.4 The seven builders — FIX via shared fading support</h3>
+<p>All seven share one flaw: the verse (or a guide strip) is <em>always visible</em>, so the loop is "match next visible word", pure recognition (P2). One engine-level fix upgrades all of them identically — the <strong>fading-support system</strong> (full spec §7.1): pass 1 shows the full guide, pass 2 shows first letters only, pass 3 shows blank slots. The kid's tap targets and the fun theme are untouched; only the guide fades. Completing a pass at first-letter or blank level with ≤1 mistake records a stage-3-worthy pass (⭐⭐ path without leaving their favorite game). Per-game work after the engine helper exists is <span class="badge b-size">S</span> each and mostly mechanical — replace the game's own guide/preview element with <code>ctx.guide(...)</code>.</p>
+
+<div class="card" id="game-scramble"><h4>🧩 Verse Scramble <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec"><dt>Current</dt><dd><code>js/games/scramble.js</code> — tap shuffled word tiles in order; preview strip always visible (even in hard, by design at <code>:70</code>). HG RJ1 + SS GJ1.</dd>
+<dt>Fix</dt><dd>Fading support on the preview strip. Hard/encore starts at first-letter level. Note: the tile pool itself is already a partial cue (the words are all visible somewhere); that's acceptable at Stage 2 — ordering from a pool without a guide is markedly harder than copying a visible strip.</dd>
+<dt>Acceptance</dt><dd>Pass 2+ shows first-letter guide; faded pass with ≤1 mistake records stage 3 credit.</dd></dl></div>
+
+<div class="card" id="game-train"><h4>🚂 Train Builder <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec"><dt>Current</dt><dd><code>js/games/train.js</code> — couple word-cars in order; 12 cars + decoys in hard. HG RJ3 + SS RJ3.</dd>
+<dt>Fix</dt><dd>Fading support on its "next up" hint line; encore = first letters on the <em>cars themselves</em> (car shows "F…" until coupled, then reveals the full word) — a delightful reveal that is real recall.</dd>
+<dt>Acceptance</dt><dd>Encore cars show first letters; reveal on couple; stage credit on faded pass.</dd></dl></div>
+
+<div class="card" id="game-puzzle"><h4>🧵 Puzzle Pieces <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 1–2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec"><dt>Current</dt><dd><code>js/games/puzzle.js</code> — tap word covers in order to reveal a picture; hard hides the built-so-far hint. WR RJ3.</dd>
+<dt>Fix</dt><dd>Keep as the gentlest builder (the picture reward makes it great early exposure, P5). Fading support applies to its hint line only; covers always show their words (finding the next word among covers is the game).</dd>
+<dt>Acceptance</dt><dd>Hint line fades across passes; picture reveal unchanged.</dd></dl></div>
+
+<div class="card" id="game-rocket"><h4>🚀 Rocket Launch <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec"><dt>Current</dt><dd><code>js/games/rocket.js</code> — tap fuel-cell words in order; gauge fills; liftoff. WR RJ4 + SS RJ4.</dd>
+<dt>Fix</dt><dd>Fading support on its stage-text display. Encore keeps its decoy cells and adds first-letter fuel cells.</dd>
+<dt>Acceptance</dt><dd>Faded pass credits stage 3; liftoff sequence untouched.</dd></dl></div>
+
+<div class="card" id="game-feed"><h4>🍎 Feed Sparky <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 1–2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec"><dt>Current</dt><dd><code>js/games/feed.js</code> — feed verse words (vs decoys) to the caterpillar; ghost tiles show the verse; easy = any order, hard = verse order. WR RJ1.</dd>
+<dt>Fix</dt><dd>Fading support on the ghost tiles (full → first letters → blank ghosts that light on correct feed). Any-order easy mode stays for pass 1 only; later passes require order.</dd>
+<dt>Acceptance</dt><dd>Ghost tiles fade across passes; order required from pass 2.</dd></dl></div>
+
+<div class="card" id="game-hopscotch"><h4>🦘 Verse Hopscotch <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec"><dt>Current</dt><dd><code>js/games/hopscotch.js</code> — pick the next word from 2–3 choices; kangaroo hops the chalk court. WR GJ3.</dd>
+<dt>Fix</dt><dd>It has no separate guide strip — the <em>choices</em> are the support. Fade differently: pass 2+ shows choice buttons as first letters; tapping speaks the full word (audio confirm). This makes the choice itself a recall probe.</dd>
+<dt>Acceptance</dt><dd>Pass 2 choices are first-letter; tap speaks word; court/hop unchanged.</dd></dl></div>
+
+<div class="card" id="game-stones"><h4>🪨 Stepping Stones <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 2</span> <span class="badge b-size">S</span></h4>
+<dl class="spec"><dt>Current</dt><dd><code>js/games/stones.js</code> — frog hops onto the stone carrying the next word; progress chips show caught words. HG GJ3.</dd>
+<dt>Fix</dt><dd>Same treatment as Hopscotch (choices fade to first letters on later passes; K keeps full words one pass longer). Progress chips below fade with the same schedule.</dd>
+<dt>Acceptance</dt><dd>Faded stones on pass 2+; K default stays gentler (see §7.1 grade defaults).</dd></dl></div>
+
+<h3>5.5 The arcade pair — FIX via recall-gating</h3>
+
+<div class="card" id="game-falling"><h4>🌧️ Falling Words <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 2–3</span> <span class="badge b-size">M</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/falling.js</code> — tap the next word among 3–4 falling tiles; caught words fill ghost slots. WR Rank.</dd>
+<dt>Problem</dt><dd>Attention goes to the physics; the filled ghost strip + small tile count means reflex + elimination wins without processing the verse (P2 violation).</dd>
+<dt>Fix — recall-gate (shared helper §7.2)</dt><dd>Each catch cycle becomes: (1) rain pauses at a cloud line, the ghost strip shows filled words then a pulsing blank — a 1.5–2 s "what comes next?" beat with optional audio prompt of the phrase so far; (2) tiles then fall <em>wordless</em> as raindrops for a moment; (3) words fade onto the drops and the kid catches the one they recalled. Peek button on the blank costs like Disappear's peeks. Later passes fade the filled ghost words to first letters (fading support composes).</dd>
+<dt>Acceptance</dt><dd>Prompt beat precedes every drop cycle; peeks tracked; physics/respawn invariants (<code>replacementWord</code>, decoy uniqueness) intact; autoplay updated.</dd>
+</dl></div>
+
+<div class="card" id="game-slash"><h4>⚔️ Sword Drill Slash <span class="badge b-fix">FIX</span> <span class="badge b-stage">Stage 2–3</span> <span class="badge b-size">M</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/slash.js</code> — fruit-ninja swipes on ballistic word tiles; waves of 6 words; hard hides the next-word preview. SS Rank.</dd>
+<dt>Problem</dt><dd>Same as Falling Words, plus swiping rewards speed over thought.</dd>
+<dt>Fix — recall-gate</dt><dd>Between waves, a "sword drill" moment: HUD shows the verse so far + pulsing blank, kid has a think-beat (2nd graders: first-letter hint appears after 3 s instead of the full-word glow at 6.5 s). Then tiles launch and the swipe frenzy is the <em>reward</em> for recall, not the task itself. Keep all anti-frustration systems (force-relaunch, anti-spam). Encore keeps hidden preview + adds first-letter HUD.</dd>
+<dt>Acceptance</dt><dd>Think-beat gates each launch volley; hint ladder (3 s first letter → 6.5 s glow); swipe mechanics untouched.</dd>
+</dl></div>
+
+<h3>5.6 The one replacement</h3>
+
+<div class="card" id="game-match"><h4>🃏 Memory Match <span class="badge b-replace">REPLACE</span> <span class="badge b-size">S (removal)</span></h4>
+<dl class="spec">
+<dt>Current</dt><dd><code>js/games/match.js</code> — flip-card pairs of phrase halves / twin words / ref↔opening, with emoji stickers so pre-readers can match without reading. HG RJ2 + SS GJ4.</dd>
+<dt>Problem</dt><dd>The core loop trains <em>card-location memory</em>, not verse memory — the emoji stickers (added so pre-readers can play) mean a kid can win without reading a single word. Phrase-half pairing has mild value but the dominant skill exercised is Concentration-style spatial recall. Not fixable without ceasing to be Memory Match.</dd>
+<dt>Decision</dt><dd>Retire the module; its two sections get <strong>Echo Chamber</strong> (§6.2): HG RJ2 = standard mode (audio-first — perfect for the K slot), SS GJ4 = encore cumulative-chain mode. Remove from <code>js/games/index.js</code> + <code>curriculum.js</code>; delete <code>match.js</code>; update README table + autoplay strategy map.</dd>
+<dt>Acceptance</dt><dd>Both sections mount Echo Chamber; no references to <code>match</code> remain; tests green.</dd>
+</dl></div>
+
+<!-- ================================================================ -->
+<h2 id="newgames">6. New game specs</h2>
+<p>All four follow the <code>docs/GAME_SPEC.md</code> module contract (<code>{id, title, icon, tagline, howTo, mount(stage, ctx)}</code>, cleanup function, <code>.g-&lt;id&gt;</code> style prefix, handle <code>isList</code> verses, call <code>ctx.win</code> once, no failure states).</p>
+
+<div class="card" id="new-singalong">
+<h4>🎶 Sing-Along Stage <span class="badge b-new">NEW</span> <span class="badge b-stage">Stage 1</span> <span class="badge b-size">M</span> — <code>js/games/singalong.js</code></h4>
+<dl class="spec">
+<dt>Pedagogy</dt><dd>P6 (melody carries verbatim text), P3 (gap rounds), P8 (singing = production).</dd>
+<dt>Placement</dt><dd>Not a section signature game — it's the universal Stage-1 row on every verse's ladder menu (when the active translation has a song file; otherwise the row falls back to Karaoke/read-along).</dd>
+<dt>Loop</dt><dd>
+<strong>Round 1 — Sing along:</strong> song plays; word tiles highlight via <code>ctx.audio.onWordTick</code> (timings file if present, even-split fallback); a bouncing note leads the line. Kid just sings.<br>
+<strong>Round 2 — Fill the gaps:</strong> song plays but pauses automatically at 2–3 phrase boundaries; the next phrase's tiles flip face-down; kid sings the gap out loud, taps ▶ to hear it confirmed and continue.<br>
+<strong>Round 3 — Star performance:</strong> all tiles face-down; song plays; kid sings the whole thing over the track (K: word 1 of each phrase stays visible).</dd>
+<dt>Grade tuning</dt><dd>K: 2 gaps in round 2, first words visible in round 3. 1st: 3 gaps. 2nd: gaps chosen at clause starts (hardest positions) and round 3 fully hidden.</dd>
+<dt>Stars/stages</dt><dd>Completing round 1 = stage-1 credit (⭐). Rounds 2–3 are performance (self-reported by design, like Karaoke) — celebrate but don't award ⭐⭐.</dd>
+<dt>Edge cases</dt><dd>No song file → game not offered (ladder shows fallback). <code>isList</code> verses: only if a list song exists (books-of-the-Bible songs are classic — supported, not required). Pause points come from <code>timings</code> when present, else even thirds.</dd>
+<dt>Acceptance</dt><dd>Word highlight tracks audio within ±1 word (timed songs); gap pauses land between words; cleanup stops audio; autoplay strategy: tap-through.</dd>
+</dl>
+</div>
+
+<div class="card" id="new-echo">
+<h4>🔊 Echo Chamber <span class="badge b-new">NEW</span> <span class="badge b-stage">Stage 3</span> <span class="badge b-size">M</span> — <code>js/games/echo.js</code> (replaces Memory Match: HG RJ2 + SS GJ4 encore)</h4>
+<dl class="spec">
+<dt>Pedagogy</dt><dd>P1/P2 (pure production), P7 (phrase chunks + cumulative chaining), P8 (aloud), audio-first so K pre-readers do real recall with zero reading.</dd>
+<dt>Loop (standard, HG RJ2 and ladder rows)</dt><dd>
+A friendly parrot/cave theme. Per phrase (chunk of 3–4 words for K, 5–6 otherwise):<br>
+<strong>1. Hear:</strong> phrase speaks (read-file audio preferred); its word tiles glow in sequence as spoken.<br>
+<strong>2. Vanish:</strong> tiles flip face-down after a beat.<br>
+<strong>3. Echo:</strong> kid says the phrase out loud, then taps the big "I said it! 🦜" button; tiles flip back one-by-one while the audio replays as confirmation (kid self-checks — same trust model as Disappearing Verse).<br>
+<strong>4. Chain:</strong> after each new phrase, echo <em>from the top</em>: phrase 1, then 1+2, then 1+2+3 (cumulative rehearsal). Chain steps show only first-word cue tiles.<br>
+Peek = tap a face-down tile to flash it (1.5 s), counted like Disappear's peeks. Finale: echo the whole verse + say the reference (reference tile included in the final chain).</dd>
+<dt>Encore mode (SS GJ4, <code>ctx.hard</code>)</dt><dd>Longer chunks (6–8), no glow-along on first hearing (listen only), peeks locked during the final full chain, reference required mid-chain not just at the end.</dd>
+<dt>Stars/stages</dt><dd>Full chain with ≤1 peek → stage-3 credit (⭐⭐). Message references the echo: "The cave heard every word!"</dd>
+<dt>Edge cases</dt><dd><code>isList</code>: chunks of 3 book names, chain as normal (great for list order). 60+ word verses: cap the chain at the last 3 phrases + "from the top" only at the finale. No-audio environments: tiles glow with silent timing; game remains playable.</dd>
+<dt>Acceptance</dt><dd>Chain grows cumulatively; peek counting matches Disappear's semantics; win once; autoplay strategy: tap "I said it!" through (order strategy).</dd>
+</dl>
+</div>
+
+<div class="card" id="new-drawtell">
+<h4>🎨 Draw &amp; Tell <span class="badge b-new">NEW</span> <span class="badge b-stage">Stage 3</span> <span class="badge b-size">M</span> — <code>js/games/drawtell.js</code></h4>
+<dl class="spec">
+<dt>Pedagogy</dt><dd>P5 (dual coding), P1 (recall from picture cues), generation effect (choosing/creating the picture is itself encoding).</dd>
+<dt>Placement</dt><dd>Ladder Stage-3 alternative for WingRunner/SkyStormer (readers get the most from phrase↔picture links); available to K with parent.</dd>
+<dt>Loop — emoji mode (default)</dt><dd>
+Verse splits into 2–5 phrases.<br>
+<strong>1. Picture it:</strong> for each phrase (shown + spoken), kid picks 1 of 4 candidate emoji "that reminds you of it" (curated candidates per common word themes — love ❤️, world 🌍, believe 🙏, life 🌱, etc., from a keyword→emoji map in the module; fallback: generic scene emoji). Their choice matters, not correctness — no wrong answers here.<br>
+<strong>2. Tell it back:</strong> only the chosen emoji row remains, in order; kid says each phrase from its picture, tapping the emoji to confirm (tap reveals the phrase text + speaks it — a self-check, with reveals counted as peeks).<br>
+<strong>3. Shuffle:</strong> emoji shuffle; kid drags/taps them back into verse order, then tells the whole verse from pictures + says the reference.</dd>
+<dt>Draw mode (optional toggle)</dt><dd>Replaces step 1's emoji pick with a finger-canvas per phrase (thick crayon stroke, 6 colors, clear button). Drawings render as the cues in steps 2–3. Stored per verse in localStorage as downscaled dataURLs (≤ 20 KB each, cap 5 phrases); "my drawings" persist for replays. Canvas is a plain <code>&lt;canvas&gt;</code> with pointer events — no libraries.</dd>
+<dt>Stars/stages</dt><dd>Step 3 complete with ≤1 reveal → stage-3 credit (⭐⭐).</dd>
+<dt>Edge cases</dt><dd><code>isList</code>: pictures per book-name group of 3. Long verses: cap at 5 phrases (chunk larger). Storage full → draw mode falls back to emoji silently.</dd>
+<dt>Acceptance</dt><dd>Emoji mode fully playable without drawing; reveals counted; drawings persist across sessions; autoplay: tap-through (order strategy on emoji picks + confirms).</dd>
+</dl>
+</div>
+
+<div class="card" id="new-firstletter">
+<h4>🔤 First-Letter Trail <span class="badge b-new">NEW</span> <span class="badge b-stage">Stage 3</span> <span class="badge b-size">S–M</span> — <code>js/games/firstletter.js</code></h4>
+<dl class="spec">
+<dt>Pedagogy</dt><dd>P3 (the first-letter cue is the classic, proven bridge from supported to free recall for verbatim text), P1, P9. Reader-dependent → SkyStormer-focused.</dd>
+<dt>Placement</dt><dd>Ladder Stage-3 default for SkyStormer; offered to WingRunner late-year. Not shown for HangGlider.</dd>
+<dt>Loop</dt><dd>A mountain-trail theme; the verse is stepping-stones along a path.<br>
+<strong>Level 1:</strong> full text shown; kid reads it aloud, taps each word as they say it (sets the tap-as-you-say rhythm; a hiker emoji walks the trail).<br>
+<strong>Level 2:</strong> words collapse to first letters (<code>F G s l t w…</code> — keep capitalization + punctuation: <code>F</code> for "For", <code>G</code> for "God"); kid says each word, tapping its letter. Tap-and-hold peeks the full word (1.5 s, counted).<br>
+<strong>Level 3:</strong> letters vanish to bare stones; only the reference remains at the trailhead. Say the whole verse tapping stone-by-stone, then say the reference at the summit flag. 🎉</dd>
+<dt>Grade tuning / encore</dt><dd>Standard: levels 1→2→3, peeks allowed everywhere. Encore-style hard: start at level 2, peeks locked on level 3.</dd>
+<dt>Stars/stages</dt><dd>Level 3 complete with ≤1 peek → stage-3 credit (⭐⭐). Level 2 complete → celebrate, no stage change.</dd>
+<dt>Edge cases</dt><dd><code>isList</code>: first letters of book names are a famously good drill — fully supported ("G E L N D…"). Long verses: trail scrolls horizontally by phrase (reuse Train Builder's auto-scroll pattern, <code>train.js:186-199</code>). Words with leading numerals ("1 Corinthians" in lists) show "1C".</dd>
+<dt>Acceptance</dt><dd>First-letter rendering correct incl. punctuation + numerals; peek counting; summit reference step required; autoplay: order strategy (tap every stone).</dd>
+</dl>
+</div>
+
+<!-- ================================================================ -->
+<h2 id="engine">7. Shared engine work</h2>
+
+<h3 id="fading">7.1 Fading-support system <span class="badge b-size">M</span></h3>
+<ul>
+  <li><strong>API:</strong> <code>ctx.guide(words, opts)</code> in <code>js/lib/engine.js</code> — returns a guide-strip element games mount wherever their current preview/hint lives, rendering each word at the current <em>support level</em>: <code>0 full text · 1 first letters · 2 blank slots</code>. Handles lit/unlit ("done so far") styling, per-word update calls, and a shared peek interaction (tap a faded word to flash it, auto-counted).</li>
+  <li><strong>Level selection:</strong> stored per verse+game in progress v2 (<code>passes</code> counter): pass 1 → level 0, pass 2 → level 1, pass 3+ → level 2. Grade defaults shift it: HangGlider caps at level 1 unless the kid opts into "super brave" via a toggle chip; SkyStormer encores start at level 1. A small chip on the game screen shows the level (🌕 🌗 🌑) and lets the kid change it freely — autonomy, no locks.</li>
+  <li><strong>Stage credit:</strong> the engine (not each game) watches for "completed at level ≥1 with ≤1 mistake+peek" and records stage-3 credit via progress v2 — games just report mistakes/peeks as today via their existing counters passed to <code>ctx.win</code> (extend the payload: <code>ctx.win({stars, message, mistakes, peeks})</code>; engine maps to stage credit so per-game logic stays dumb).</li>
+  <li>Consumed by the 7 builders (§5.4) + Falling/Slash HUDs (§5.5). Update <code>docs/GAME_SPEC.md</code> ctx table.</li>
+</ul>
+
+<h3 id="recallgate">7.2 Recall-gate helper <span class="badge b-size">S</span></h3>
+<ul>
+  <li><code>ctx.thinkBeat({phraseSoFar, blankIndex, ms=1800, hintAfterMs})</code> — renders the standard "verse so far + pulsing blank" prompt overlay/strip, optionally speaks the phrase-so-far, resolves after the beat (or immediately on tap for impatient kids — the beat invites recall, never blocks). Provides the timed first-letter hint used by Slash. Used by Balloon, Firefly, Garden, Falling, Slash.</li>
+</ul>
+
+<h3 id="progressv2">7.3 Progress schema v2 <span class="badge b-size">M</span></h3>
+<pre><code>// localStorage 'sparksArcade.v2'
+{
+  verses: { "&lt;book.section.entry.ref&gt;": {
+      stage: 0|1|2|3,          // 0 untouched · 1 built · 2 recalled · 3 recited
+      passes: { "&lt;gameId&gt;": n },  // drives fading-support level
+      recited: { at: ISOdate, mode: 'checkoff'|'recording'|'sr'|'club' },
+      trophy: true?             // set with stage 3
+  }},
+  activities: {…},              // unchanged check-off entries
+  practiceDays: ["2026-08-04", …],   // date-stamped on any win; drives gentle streaks
+  drawings: { "&lt;verseKey&gt;": [dataURL, …] }   // Draw & Tell draw mode
+}</code></pre>
+<ul>
+  <li><code>js/lib/progress.js</code>: add v1→v2 migration on load (v1 stars &gt; 0 → stage 1), keep v1 key untouched as backup. <code>getStars(key)</code> becomes an alias for <code>stage</code> so existing UI (star chips, section pills) keeps working during the transition. <code>bookProgress</code>/<code>sectionProgress</code>/<code>growthStage</code> re-derive from stages.</li>
+</ul>
+
+<h3 id="curriculum">7.4 Curriculum &amp; routing changes <span class="badge b-size">M</span></h3>
+<ul>
+  <li><code>js/data/curriculum.js</code>: sections keep <code>game</code> (now "featured"). Add one module-level function (not per-section data): <code>ladderFor(book, section) → [{stage, games:[ids]}]</code> implementing the §3.3 table. Memory Match's two sections switch <code>game</code> to <code>echo</code>.</li>
+  <li><code>js/app.js</code>: the play route becomes the <strong>verse screen</strong> (ladder menu, §3.3 wireframe) with a new sub-route to mount a chosen game: <code>#/b/&lt;b&gt;/&lt;s&gt;/play/&lt;v&gt;/&lt;gameId&gt;</code>. Direct old links (no gameId) land on the verse screen. Win overlay's "Next" suggests the next ladder stage instead of just the next verse.</li>
+</ul>
+
+<!-- ================================================================ -->
+<h2 id="recite">8. Recitation module — the ⭐⭐⭐ gate <span class="badge b-size">L</span></h2>
+<p>One screen (shell-level view, not a game module: <code>#/b/&lt;b&gt;/&lt;s&gt;/recite/&lt;v&gt;</code>, built in <code>js/app.js</code> + <code>js/lib/recite.js</code>), offering all four modes as big cards. Any mode's pass records <code>stage 3</code>, the recitation trophy, and mode+date. The reference is always part of the check — every mode ends with "…and say the reference!"</p>
+
+<div class="card"><h4>Mode 1 — 🧑‍🤝‍🧑 Grown-Up Check (the AWANA mirror)</h4>
+<dl class="spec"><dt>Flow</dt><dd>Screen prompts "Hand me to a grown-up!" → adult sees the full verse + reference; kid recites; adult taps any word the kid missed (tapped words turn amber). Pass = 0 missed words (word-perfect bar) with a "so close!" celebratory retry otherwise — never a fail screen. A "reference ✓" chip must be tapped too.</dd>
+<dt>Notes</dt><dd>No mic, no network, works everywhere; the strictest and most trustworthy mode. Sticker Quest's check-off (§5.1) is the K-friendly light version of this.</dd></dl></div>
+
+<div class="card"><h4>Mode 2 — 🎙️ Record &amp; Hear Yourself</h4>
+<dl class="spec"><dt>Flow</dt><dd>MediaRecorder captures the kid reciting (max 90 s) → playback side-by-side with the verse text + a "play the real one" button (read-file audio) → kid/parent taps "Word perfect! ✓" or "One more try". Recording is discarded after the session (privacy: nothing persisted, stated on-screen).</dd>
+<dt>Notes</dt><dd>Self-monitoring via playback is genuinely effective (hearing your own gaps). Feature-detect <code>MediaRecorder</code> + mic permission; hide the card if unavailable.</dd></dl></div>
+
+<div class="card"><h4>Mode 3 — 🪄 Magic Ears (speech recognition — generous, never punishing)</h4>
+<dl class="spec"><dt>Flow</dt><dd>Web Speech <code>SpeechRecognition</code> (feature-detected; card hidden where unsupported, e.g. Firefox; needs network on most platforms — say so on the card). As the kid recites, recognized words light the verse tiles green in order.</dd>
+<dt>Generosity rules (hard requirements)</dt><dd>(a) Match on <code>cleanWord</code> + Levenshtein ≤ 1 (2 for words ≥ 6 letters); (b) skip-ahead window of 2 (a missed function word never stalls the lighting); (c) interim results count; (d) numbers in references match digits or words ("three sixteen"). (e) <strong>An unlit word is never marked wrong</strong> — after the attempt, unlit words simply stay unlit and the screen says "Say it again for the magic ears?" with a replay button. ≥ 90% lit + reference heard → offer "Word perfect! ✓" confirm (adult or kid taps).</dd>
+<dt>Notes</dt><dd>SR mishears young voices constantly — the design treats SR as a light show over recitation, with the human confirm as the actual gate. Auto-stop listening after 10 s of silence.</dd></dl></div>
+
+<div class="card"><h4>Mode 4 — 🏠 Said It at Club!</h4>
+<dl class="spec"><dt>Flow</dt><dd>Honest self-report for verses recited at Sparks club or elsewhere: "Did you say it to your leader?" → date-stamped log, trophy awarded. One tap, no verification — trust the family (same trust model the app already uses everywhere).</dd></dl></div>
+
+<!-- ================================================================ -->
+<h2 id="extras">9. Review, rewards, hard-mode repurposing</h2>
+
+<h3>9.1 Per-book review chips <span class="badge b-size">S</span></h3>
+<ul>
+  <li>Book screen (<code>app.js:95-110</code>) gets a "🔁 Review my verses" chip when ≥ 2 verses have stage ≥ 1. Tap → shuffled playlist of those verses, each opening its ladder's <em>Recall</em> row game (Stage 3 — review should be retrieval, P1+P4), ordered oldest-practiced-first (needs a <code>lastPlayed</code> date per verse in progress v2). "Next verse" chains through the playlist; done after 3–5 verses with a "your verses are sparkling!" celebration. No scheduler, no nagging.</li>
+</ul>
+
+<h3>9.2 Garden growth = mastery map <span class="badge b-size">S</span></h3>
+<ul>
+  <li><code>growthStage</code> in <code>progress.js</code> re-derives from stage: seed (0) → sprout (⭐ built) → stem (⭐⭐ recalled) → bloom (⭐⭐⭐ recited). The Verse Garden page becomes an honest at-a-glance mastery map. Copy on the page explains it to parents in one line.</li>
+</ul>
+
+<h3>9.3 Recitation trophy shelf <span class="badge b-size">S</span></h3>
+<ul>
+  <li>New home-screen destination <code>#/trophies</code> beside the Sticker Book: one trophy per ⭐⭐⭐ verse (🏅 with the reference engraved), grouped by book, with the recited date + mode icon. Mirrors AWANA jewels: the highest honor is <em>only</em> earnable by recitation. Empty state: "Say a verse word-perfect to a grown-up to win your first trophy!"</li>
+</ul>
+
+<h3>9.4 Gentle streaks (celebration-only) <span class="badge b-size">S</span></h3>
+<ul>
+  <li>From <code>practiceDays</code>: the home screen shows only positive framings — "You practiced 3 days this week! 🎉" (counts within the current week). <strong>Never</strong> shows a broken/lost streak, never counts consecutive days, no reminders. If 0 days: show nothing at all.</li>
+</ul>
+
+<h3>9.5 Hard modes repurposed — memory demand, not speed <span class="badge b-size">M</span></h3>
+<p>The 7 SkyStormer encore sections (<code>hard: true</code>) redefine <code>ctx.hard</code> as "deeper recall":</p>
+<table>
+<tr><th>Section</th><th>Game</th><th>Old hard</th><th>New encore</th></tr>
+<tr><td>SS GJ1</td><td>Scramble</td><td>bigger chunks</td><td>guide starts at first-letter level (fading L1), chunks unchanged</td></tr>
+<tr><td>SS RJ2</td><td>Balloon</td><td>9 blanks, 5 balloons</td><td>keep counts; think-beat is silent (no audio prompt) + balloons show first letters until near the blank</td></tr>
+<tr><td>SS GJ2</td><td>Reference Race</td><td>4 options, 6 s</td><td>mixed directions (§5.1) + 4 options; timer back to 8 s — speed pressure out, memory in</td></tr>
+<tr><td>SS RJ3</td><td>Train</td><td>12 cars + decoys</td><td>first-letter cars (§5.4) + decoys stay</td></tr>
+<tr><td>SS GJ3</td><td>Disappear</td><td>50%→100% rounds, locked peek</td><td>unchanged — it already is the deep-recall version</td></tr>
+<tr><td>SS RJ4</td><td>Rocket</td><td>decoy fuel cells</td><td>decoys + first-letter cells + hidden stage text (fading L2)</td></tr>
+<tr><td>SS GJ4</td><td>Echo Chamber (was Match)</td><td>—</td><td>cumulative-chain encore mode (§6.2)</td></tr>
+</table>
+
+<!-- ================================================================ -->
+<h2 id="phases">10. Implementation phases</h2>
+<p>Each row ≈ one Claude Code session. Dependencies flow downward; within a phase, rows are parallelizable unless noted.</p>
+
+<h3>P1 — Foundation (audio + ladder + stars)</h3>
+<table>
+<tr><th>Item</th><th>Size</th><th>Files</th><th>Depends on</th></tr>
+<tr><td>P1.1 Web Speech tuning (§4.6) — ships value even before any files exist</td><td><span class="badge b-size">S</span></td><td><code>js/lib/engine.js</code></td><td>—</td></tr>
+<tr><td>P1.2 Audio layout + manifest builder + player module (§4.3–4.5), wire <code>ctx.speak</code>/🔊/🎵 through it</td><td><span class="badge b-size">M</span></td><td><code>js/lib/audio.js</code>, <code>tools/build-audio-manifest.mjs</code>, <code>js/data/audio-manifest.js</code>, <code>js/lib/engine.js</code>, <code>js/app.js</code></td><td>—</td></tr>
+<tr><td>P1.3 Cloud TTS generation script + generate/commit read files (§4.7)</td><td><span class="badge b-size">S</span></td><td><code>tools/generate-tts.mjs</code>, <code>audio/read/**</code></td><td>P1.2, API key</td></tr>
+<tr><td>P1.4 Progress schema v2 + migration (§7.3)</td><td><span class="badge b-size">M</span></td><td><code>js/lib/progress.js</code></td><td>—</td></tr>
+<tr><td>P1.5 Verse screen with ladder menu + game sub-route + stage-based stars in all UI (§3.3, §7.4)</td><td><span class="badge b-size">M</span></td><td><code>js/app.js</code>, <code>js/data/curriculum.js</code>, <code>css/style.css</code></td><td>P1.4</td></tr>
+</table>
+
+<h3>P2 — Fix the weak games</h3>
+<table>
+<tr><th>Item</th><th>Size</th><th>Files</th><th>Depends on</th></tr>
+<tr><td>P2.1 Fading-support system + <code>ctx.win</code> payload extension + GAME_SPEC update (§7.1)</td><td><span class="badge b-size">M</span></td><td><code>js/lib/engine.js</code>, <code>docs/GAME_SPEC.md</code></td><td>P1.4</td></tr>
+<tr><td>P2.2 Apply fading to the 7 builders (batch: scramble, train, puzzle, rocket, feed, hopscotch, stones — §5.4)</td><td><span class="badge b-size">M</span> (7×S)</td><td><code>js/games/{scramble,train,puzzle,rocket,feed,hopscotch,stones}.js</code></td><td>P2.1</td></tr>
+<tr><td>P2.3 Recall-gate helper + Balloon/Firefly/Garden think-beats (§7.2, §5.2)</td><td><span class="badge b-size">S</span></td><td><code>js/lib/engine.js</code>, <code>js/games/{balloon,firefly,garden}.js</code></td><td>P2.1</td></tr>
+<tr><td>P2.4 Recall-gate Falling Words (§5.5)</td><td><span class="badge b-size">M</span></td><td><code>js/games/falling.js</code></td><td>P2.3</td></tr>
+<tr><td>P2.5 Recall-gate Sword Slash (§5.5)</td><td><span class="badge b-size">M</span></td><td><code>js/games/slash.js</code></td><td>P2.3</td></tr>
+<tr><td>P2.6 Reference Race both directions (§5.1) + Karaoke song hook + Disappear reference round (§5.1)</td><td><span class="badge b-size">S</span></td><td><code>js/games/{refrace,karaoke,disappear}.js</code></td><td>P1.2</td></tr>
+</table>
+
+<h3>P3 — New games</h3>
+<table>
+<tr><th>Item</th><th>Size</th><th>Files</th><th>Depends on</th></tr>
+<tr><td>P3.1 Echo Chamber + retire Memory Match (registry, curriculum, README, tests) (§6.2, §5.6)</td><td><span class="badge b-size">M</span></td><td><code>js/games/echo.js</code>, delete <code>match.js</code>, <code>js/games/index.js</code>, <code>js/data/curriculum.js</code>, <code>README.md</code>, <code>test/autoplay.mjs</code></td><td>P1.5</td></tr>
+<tr><td>P3.2 Sing-Along Stage (§6.1)</td><td><span class="badge b-size">M</span></td><td><code>js/games/singalong.js</code>, <code>js/games/index.js</code></td><td>P1.2, ≥1 song file</td></tr>
+<tr><td>P3.3 Draw &amp; Tell (§6.3)</td><td><span class="badge b-size">M</span></td><td><code>js/games/drawtell.js</code></td><td>P1.4 (drawings store)</td></tr>
+<tr><td>P3.4 First-Letter Trail (§6.4)</td><td><span class="badge b-size">S–M</span></td><td><code>js/games/firstletter.js</code></td><td>P1.5</td></tr>
+</table>
+
+<h3>P4 — Recitation, review, rewards</h3>
+<table>
+<tr><th>Item</th><th>Size</th><th>Files</th><th>Depends on</th></tr>
+<tr><td>P4.1 Recitation module: screen + Modes 1 &amp; 4 (check-off, club card) (§8)</td><td><span class="badge b-size">M</span></td><td><code>js/lib/recite.js</code>, <code>js/app.js</code></td><td>P1.4, P1.5</td></tr>
+<tr><td>P4.2 Mode 2 record &amp; playback (§8)</td><td><span class="badge b-size">M</span></td><td><code>js/lib/recite.js</code></td><td>P4.1</td></tr>
+<tr><td>P4.3 Mode 3 Magic Ears SR (§8)</td><td><span class="badge b-size">L</span></td><td><code>js/lib/recite.js</code></td><td>P4.1</td></tr>
+<tr><td>P4.4 Review chips + lastPlayed tracking (§9.1)</td><td><span class="badge b-size">S</span></td><td><code>js/app.js</code>, <code>js/lib/progress.js</code></td><td>P1.4, P1.5</td></tr>
+<tr><td>P4.5 Garden remap + trophy shelf + gentle streaks (§9.2–9.4)</td><td><span class="badge b-size">M</span> (3×S)</td><td><code>js/lib/progress.js</code>, <code>js/app.js</code></td><td>P4.1 (trophies)</td></tr>
+<tr><td>P4.6 Encore repurposing sweep (§9.5)</td><td><span class="badge b-size">M</span></td><td>the 6 encore game files</td><td>P2.*, P3.1</td></tr>
+</table>
+
+<!-- ================================================================ -->
+<h2 id="verify">11. Verification &amp; testing</h2>
+<ul>
+  <li><strong>Existing suites stay green after every phase:</strong> <code>test/smoke.mjs</code> (mounts all 27 sections) and <code>test/autoplay.mjs</code> (auto-wins every game at 390×844, asserts no horizontal overflow and no tap target under 44 px, supports <code>TRANSLATION=kjv</code>).</li>
+  <li><strong>Autoplay updates required by this plan:</strong> new strategies/entries for echo, singalong, drawtell, firstletter; updated flows for falling/slash (dismiss think-beat), the verse-screen route (autoplay must click through the ladder menu), and removal of the match entry.</li>
+  <li><strong>New unit-ish checks</strong> (extend smoke): progress v1→v2 migration (seed localStorage with v1, assert stages); <code>refSlug</code> round-trips every key in <code>VERSE_TEXT</code> + <code>BOOK_LISTS</code>; manifest builder output imports cleanly.</li>
+  <li><strong>Audio QA checklist:</strong> (a) iOS Safari: first tap unlocks audio, auto-read actually plays; (b) network off: chain degrades song→file→device speech without errors; (c) missing-file verse hides 🎵 and still reads; (d) navigation always stops audio (extend the teardown assertion in smoke).</li>
+  <li><strong>Manual per-grade QA:</strong> K path playable with zero reading (Echo Chamber + Sing-Along + audio buttons); 1st: guide fading feels encouraging, not punishing; 2nd: First-Letter Trail + encores demand real recall. Word-perfect definition holds: no ⭐⭐⭐ without a reference check.</li>
+  <li><strong>Doc consistency on ship:</strong> README game table, <code>docs/GAME_SPEC.md</code> ctx additions, and this plans.html stay in sync as phases land (each phase's session updates them).</li>
+</ul>
+
+<footer>
+Sparks Verse Arcade redesign plan · plans.html · lives at repo root, not linked from the app.<br>
+Decisions in this document were confirmed with the owner on 2026-08-04 (10 rounds of Q&amp;A); treat them as settled unless the owner says otherwise.
+</footer>
+
+</body>
+</html>
