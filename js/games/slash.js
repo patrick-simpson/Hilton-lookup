@@ -50,6 +50,13 @@ export default {
       .g-slash .start-sub { font-size: 1.05rem; opacity: 0.85; max-width: 420px; }
       .g-slash .wave-clear { font-size: 1.9rem; font-weight: bold; background: var(--paper); padding: 16px 28px; border-radius: 20px; box-shadow: var(--shadow); animation: pop-in 0.3s ease; }
       .g-slash .msg .verse-display { background: var(--paper); border-radius: 16px; box-shadow: var(--shadow); max-height: 65%; overflow: auto; animation: pop-in 0.3s ease; }
+      /* Narrow phones: keep the caught-words strip short so it doesn't cover
+         the play area; the ghost preview (the word to find) stays big. */
+      @media (max-width: 420px) {
+        .g-slash .built-strip { padding: 2px 4px; margin-top: 6px; }
+        .g-slash .built-strip .word-tile { min-height: 26px; padding: 2px 7px; margin: 2px; font-size: 0.8rem; }
+        .g-slash .built-strip .word-tile.ghost { min-height: 32px; padding: 3px 10px; font-size: 1rem; }
+      }
     `);
 
     // ---------- layout ----------
@@ -124,13 +131,19 @@ export default {
 
     function makeTile(word, decoy) {
       const outer = el('div', 'fly');
-      const inner = el('span', 'word-tile', word);
+      // A real <button> so switch/keyboard users (and synthetic clicks) can
+      // slash too. Finger touches still go through the root's forgiving
+      // swipe hit-test — the button keeps pointer-events: none.
+      const inner = el('button', 'word-tile', word);
+      inner.type = 'button';
       outer.appendChild(inner);
-      return {
+      const tile = {
         word, decoy, el: outer, inner,
         x: 0, y: 0, vx: 0, vy: 0, rot: 0, vr: 0,
         w: 110, h: 52, air: false, dead: false, lastWrong: 0,
       };
+      inner.onclick = () => slash(tile);
+      return tile;
     }
 
     function render(tile) {
@@ -144,7 +157,13 @@ export default {
       tile.h = tile.el.offsetHeight || 52;
       tile.x = 10 + Math.random() * Math.max(10, W - tile.w - 20);
       tile.y = H + 20;
-      const rise = H * (0.55 + Math.random() * 0.32); // arc peak height
+      // Arc peak: high, but never up behind the HUD strip (on small phones the
+      // strip covers a fair band of the top — tiles should stay visible).
+      const hudH = hud.offsetHeight || 0;
+      const rise = Math.max(
+        H * 0.35,
+        Math.min(H * (0.55 + Math.random() * 0.32), H + 12 - hudH)
+      );
       tile.vy = -Math.sqrt(2 * G * rise);
       const speed = ctx.hard ? 90 + Math.random() * 130 : 50 + Math.random() * 100;
       tile.vx = (Math.random() < 0.5 ? -1 : 1) * speed;
@@ -222,6 +241,7 @@ export default {
     }
 
     function slash(tile) {
+      if (tile.dead || !tile.air) return; // already slashed or not flying
       const now = performance.now();
       const needed = neededWord();
       if (!needed) return;

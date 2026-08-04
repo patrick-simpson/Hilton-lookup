@@ -36,8 +36,10 @@ export default {
       .g-feed .sparky.shake .face { animation: wiggle 0.4s ease; }
       .g-feed .sparky.happy .bug { animation: pop-in 0.4s ease; }
       .g-feed .round-label { font-weight: bold; opacity: 0.75; margin: 4px 0 2px; }
-      .g-feed .ghosts { background: #f4f8ff; border-radius: 16px; padding: 8px; margin: 8px 0 12px; min-height: 66px; }
-      .g-feed .ghosts .word-tile { cursor: default; }
+      .g-feed .ghosts { background: #f4f8ff; border-radius: 16px; padding: 6px; margin: 6px 0 10px; min-height: 48px; }
+      /* ghost tiles are read-only verse display, not tap targets — keep them
+         compact so the food belt (the action area) stays high on the screen */
+      .g-feed .ghosts .word-tile { cursor: default; min-height: 34px; padding: 4px 10px; margin: 3px; font-size: 1.05rem; border-radius: 10px; box-shadow: 0 2px 0 rgba(38, 50, 75, 0.1); }
       .g-feed .word-tile.ghost.next { opacity: 0.9; border-color: #ffb703; background: #fff7df; animation: g-feed-pulse 1.1s ease-in-out infinite; }
       .g-feed .belt { background: repeating-linear-gradient(45deg, #eef1f7 0 14px, #e3e8f2 14px 28px); border: 3px dashed #c6d0e2; border-radius: 16px; padding: 10px 6px; min-height: 80px; }
       .g-feed .food.gone { opacity: 0; transform: scale(0.3) rotate(25deg); transition: opacity 0.45s ease, transform 0.45s ease; pointer-events: none; }
@@ -45,6 +47,15 @@ export default {
       .g-feed .yum { font-size: 1.4rem; font-weight: bold; color: #2a9d3f; animation: pop-in 0.4s ease; margin: 4px 0; }
       @keyframes g-feed-munch { 0% { transform: scale(1); } 35% { transform: scale(1.22) rotate(-4deg); } 70% { transform: scale(0.92); } 100% { transform: scale(1); } }
       @keyframes g-feed-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+      /* short phones: slim Sparky + spacing so more of the belt is on screen */
+      @media (max-height: 700px) {
+        .g-feed .face { font-size: 1.5rem; }
+        .g-feed .bug { font-size: 2.7rem; }
+        .g-feed .mouth { width: 56px; height: 24px; }
+        .g-feed .round-label { margin: 2px 0 0; font-size: 0.95rem; }
+        .g-feed .belt { padding: 8px 4px; }
+        .g-feed .belt .word-tile { margin: 4px 3px; }
+      }
     `);
 
     const root = el('div', 'g-feed');
@@ -77,6 +88,8 @@ export default {
       sparky.classList.remove('munch');
       void sparky.offsetWidth;
       sparky.classList.add('munch');
+      // reopen the mouth after the chomp (the class would otherwise keep it shut)
+      later(() => sparky.classList.remove('munch'), 400);
     }
 
     function shakeHead() {

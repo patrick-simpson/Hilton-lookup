@@ -48,6 +48,14 @@ export default {
         45% { transform: scale(1.35); opacity: 1; }
         100% { transform: scale(0.1); opacity: 0; }
       }
+      /* short phones: tighten the layout so every balloon row stays on screen */
+      @media (max-height: 700px) {
+        .g-balloon .top-row { margin-bottom: 6px; }
+        .g-balloon .verse-line { font-size: 1.15rem; line-height: 1.7; padding: 10px 8px; margin-bottom: 10px; min-height: 52px; }
+        .g-balloon .sky { padding: 10px 4px 14px; min-height: 230px; }
+        .g-balloon .balloon { min-width: 70px; min-height: 96px; }
+        .g-balloon .balloon .bal { font-size: 2.9rem; }
+      }
     `);
 
     const root = el('div', 'g-balloon');
@@ -63,6 +71,9 @@ export default {
 
     const words = ctx.verse.words;
     const isList = ctx.verse.isList;
+    // Vertical scatter for balloons: keep it modest on short phones so the
+    // second row (hard mode, 5 balloons) never dips below the fold.
+    const jitterMax = window.innerHeight < 700 ? 16 : 46;
     const maxBlanks = ctx.hard ? 9 : 6;
     const decoyCount = ctx.hard ? 4 : 2; // 5 balloons in hard mode, 3 otherwise
 
@@ -181,7 +192,7 @@ export default {
         const spot = el('div', 'spot');
         spot.style.animationDuration = (2.6 + Math.random() * 1.6).toFixed(2) + 's';
         spot.style.animationDelay = (-Math.random() * 2.5).toFixed(2) + 's';
-        spot.style.marginTop = ctx.randInt(46) + 'px';
+        spot.style.marginTop = ctx.randInt(jitterMax) + 'px';
 
         const b = el('button', 'balloon');
         const bal = el('span', 'bal', '🎈');

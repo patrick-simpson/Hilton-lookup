@@ -86,9 +86,17 @@ export default {
     ctx.speak(); // read the whole verse once on mount
 
     // ----- word picking -----
-    function pickDecoy() {
+    // Decoys avoid the needed word AND anything already falling (or queued via
+    // `exclude`) so two identical tiles never rain down together.
+    function pickDecoy(exclude) {
       const needC = nextIdx < chunkWords.length ? cleanWord(chunkWords[nextIdx]) : '';
-      let pool = chunkWords.filter((w) => cleanWord(w) !== needC);
+      const taken = new Set(exclude || []);
+      taken.add(needC);
+      for (const f of fallers) taken.add(cleanWord(f.word));
+      let pool = chunkWords.filter((w) => !taken.has(cleanWord(w)));
+      if (!pool.length) pool = ctx.verse.words.filter((w) => !taken.has(cleanWord(w)));
+      if (!pool.length) pool = ctx.distractors(4).filter((w) => !taken.has(cleanWord(w)));
+      if (!pool.length) pool = chunkWords.filter((w) => cleanWord(w) !== needC);
       if (!pool.length) pool = ctx.verse.words.filter((w) => cleanWord(w) !== needC);
       if (!pool.length) pool = ctx.distractors(3);
       return ctx.pick(pool);
@@ -111,12 +119,15 @@ export default {
     // ----- falling tiles -----
     function randX(tileW, lane) {
       const W = sky.clientWidth;
+      // Hard right-edge cap: a tile must never spawn poking past the sky edge,
+      // even when a long word overflows its narrow lane on a small phone.
+      const hardMax = Math.max(2, W - tileW - 6);
       let min = 2;
-      let max = W - tileW - 6;
+      let max = hardMax;
       if (lane != null) {
         const laneW = W / fallerCount;
-        min = lane * laneW + 4;
-        max = Math.min(max, (lane + 1) * laneW - tileW);
+        min = Math.min(lane * laneW + 4, hardMax);
+        max = Math.min(hardMax, (lane + 1) * laneW - tileW);
       }
       if (max < min) max = min;
       return min + Math.random() * (max - min);
@@ -233,7 +244,10 @@ export default {
         const d = ctx.distractors(1);
         if (d.length) set.push({ word: d[0], isDistractor: true });
       }
-      while (set.length < fallerCount) set.push({ word: pickDecoy(), isDistractor: false });
+      while (set.length < fallerCount) {
+        const w = pickDecoy(set.map((s) => cleanWord(s.word)));
+        set.push({ word: w, isDistractor: false });
+      }
       shuffle(set).forEach((wd, i) => spawnFaller(wd.word, wd.isDistractor, i * 110, i % fallerCount));
 
       roundActive = true;

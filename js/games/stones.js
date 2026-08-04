@@ -31,7 +31,7 @@ export default {
         from { transform: translate(-50%, -50%) translateX(-8px); }
         to   { transform: translate(-50%, -50%) translateX(8px); }
       }
-      .g-stones .st-stone-pos { position: absolute; z-index: 3; max-width: 42%; transform: translate(-50%, -50%); transition: top 0.5s cubic-bezier(0.4, 0.9, 0.4, 1), transform 0.55s ease, opacity 0.55s ease; }
+      .g-stones .st-stone-pos { position: absolute; z-index: 3; max-width: 40%; transform: translate(-50%, -50%); transition: top 0.5s cubic-bezier(0.4, 0.9, 0.4, 1), transform 0.55s ease, opacity 0.55s ease; }
       .g-stones .st-scene.three .st-stone-pos { max-width: 31%; }
       .g-stones .st-stone-pos.sink { transform: translate(-50%, -10%); opacity: 0; }
       .g-stones .st-bob { animation: g-stones-bob 2.8s ease-in-out infinite; }
@@ -40,8 +40,9 @@ export default {
         0%, 100% { transform: translateY(0) rotate(-1deg); }
         50%      { transform: translateY(-7px) rotate(1deg); }
       }
-      .g-stones .st-stone { display: flex; align-items: center; justify-content: center; width: 100%; min-width: 76px; min-height: 56px; padding: 8px 14px; border-radius: 24px; background: linear-gradient(180deg, #eef1f5, #bcc6d0); border: 3px solid #93a1b1; color: var(--ink, #26324b); font-size: 1.1rem; font-weight: bold; overflow-wrap: anywhere; user-select: none; box-shadow: 0 5px 0 rgba(20, 60, 110, 0.25), 0 12px 10px -6px rgba(10, 40, 80, 0.35); transition: transform 0.08s ease; }
+      .g-stones .st-stone { display: flex; align-items: center; justify-content: center; width: 100%; min-width: 76px; min-height: 56px; padding: 8px 14px; border-radius: 24px; background: linear-gradient(180deg, #eef1f5, #bcc6d0); border: 3px solid #93a1b1; color: var(--ink, #26324b); font-size: 1.1rem; font-weight: bold; line-height: 1.15; text-align: center; overflow-wrap: normal; word-break: normal; user-select: none; box-shadow: 0 5px 0 rgba(20, 60, 110, 0.25), 0 12px 10px -6px rgba(10, 40, 80, 0.35); transition: transform 0.08s ease; }
       .g-stones .st-scene.three .st-stone { font-size: 0.98rem; padding: 8px 10px; min-width: 60px; }
+      .g-stones .st-stone:disabled { color: var(--ink, #26324b); opacity: 1; cursor: default; }
       .g-stones .st-stone:active { transform: translateY(3px); }
       .g-stones .st-stone.spawn { animation: pop-in 0.3s ease; }
       .g-stones .st-stone.wrong { animation: wiggle 0.35s ease; background: linear-gradient(180deg, #ffd6d9, #f3aab0); border-color: var(--red, #e63946); }
@@ -69,6 +70,17 @@ export default {
       .g-stones .st-strip { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-height: 40px; padding: 4px; }
       .g-stones .st-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; min-height: 34px; padding: 4px 10px; border-radius: 12px; background: #e6ebf3; color: #9aa7bd; font-weight: bold; font-size: 0.95rem; border: 2px solid transparent; }
       .g-stones .st-chip.filled { background: var(--green-soft, #d3f2d9); color: var(--ink, #26324b); border-color: var(--green, #2a9d3f); animation: pop-in 0.25s ease; }
+      /* Short phones: trim the river so the prompt + progress stay on screen. */
+      @media (max-height: 700px) {
+        .g-stones .st-scene { height: 256px; }
+        .g-stones .st-ask { margin: 6px 0 0; }
+        .g-stones .st-strip { gap: 4px; padding: 2px; min-height: 32px; }
+        .g-stones .st-chip { min-height: 28px; min-width: 28px; font-size: 0.85rem; padding: 2px 8px; }
+      }
+      /* Narrow phones: keep the prompt to one line-ish. */
+      @media (max-width: 380px) {
+        .g-stones .st-ask { font-size: 1rem; }
+      }
     `);
 
     const timers = new Set();
@@ -83,7 +95,7 @@ export default {
     // ---- difficulty & crossings (balanced chunks, ~10 hops per river) ----
     const target = ctx.hard ? 12 : 9;
     const choiceCount = ctx.hard ? 3 : 2;
-    const LEFTS = choiceCount === 3 ? [17, 50, 83] : [30, 70];
+    const LEFTS = choiceCount === 3 ? [17, 50, 83] : [28, 72];
     const AHEAD = 36, SEAT = 64, BANK_TOP = 9, BANK_BOT = 90; // % of scene height
 
     const allWords = ctx.verse.words;
@@ -168,6 +180,9 @@ export default {
 
     function sinkStone(wrap) {
       wrap.classList.add('sink');
+      // A sinking stone must stop being a button right away — a stale tap on
+      // it (or on the stone the frog sits on) must never count as an answer.
+      for (const b of wrap.querySelectorAll('button')) b.disabled = true;
       later(() => wrap.remove(), 650);
     }
 
@@ -200,6 +215,18 @@ export default {
       return shuffle(opts);
     }
 
+    // Shrink a stone's label until it fits without breaking inside a word —
+    // long book names ("1 Thessalonians") must wrap at spaces or scale down,
+    // never split mid-word for early readers.
+    function fitStone(btn) {
+      let s = choiceCount === 3 ? 0.98 : 1.1;
+      while (s > 0.72 && btn.scrollWidth > btn.clientWidth + 1) {
+        s -= 0.06;
+        btn.style.fontSize = s.toFixed(2) + 'rem';
+      }
+      if (btn.scrollWidth > btn.clientWidth + 1) btn.style.overflowWrap = 'anywhere';
+    }
+
     function spawnChoices() {
       const words = crossings[crossingIdx];
       const correct = words[stepIdx];
@@ -220,6 +247,7 @@ export default {
         bob.appendChild(btn);
         wrap.appendChild(bob);
         scene.appendChild(wrap);
+        fitStone(btn);
         choiceEls.push(wrap);
       });
     }
@@ -238,6 +266,7 @@ export default {
       }
       locked = true;
       sfx.correct();
+      btn.disabled = true; // used up — the frog's stone must not answer again
       wrap.classList.add('held'); // stop bobbing while the frog stands on it
       const chip = chips[stepIdx];
       chip.textContent = opt.w;

@@ -34,11 +34,19 @@ export default {
       .g-stickers .hid { background: #fff3c4; border: 3px dashed var(--yellow, #ffb703); min-width: 62px; }
       .g-stickers .hid.peek { background: var(--green-soft, #d3f2d9); border-style: solid; border-color: var(--green, #2a9d3f); animation: pop-in 0.25s ease; }
       .g-stickers .hid.locked { background: #ececec; border-color: #b9b9b9; }
-      .g-stickers .board.many .word-tile { font-size: 0.95rem; padding: 6px 10px; margin: 3px; min-height: 40px; }
-      .g-stickers .board.many .hid { min-height: 52px; }
+      .g-stickers .board.many .word-tile { font-size: 1rem; padding: 5px 9px; margin: 3px; min-height: 40px; }
+      .g-stickers .board.many .hid { min-height: 48px; min-width: 52px; }
       .g-stickers .ref-line { text-align: center; font-weight: bold; opacity: 0.7; margin: 8px 0 0; }
       .g-stickers .footer { margin-top: auto; text-align: center; padding-top: 12px; }
-      .g-stickers .peek-chip { display: inline-block; background: #fff; border-radius: 999px; padding: 4px 14px; font-weight: bold; box-shadow: 0 3px 0 rgba(38,50,75,0.12); margin-bottom: 8px; font-size: 0.95rem; }
+      .g-stickers .footer .btn-row { align-items: center; margin: 8px 0 0; }
+      .g-stickers .peek-chip { display: inline-block; background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: bold; box-shadow: 0 3px 0 rgba(38,50,75,0.12); font-size: 0.95rem; }
+      .g-stickers.many .t-step .t-emoji { font-size: 1.5rem; }
+      .g-stickers.many .t-step { min-width: 56px; }
+      .g-stickers.many .t-dash { padding-top: 8px; }
+      .g-stickers.many .prompt { font-size: 1.05rem; margin: 4px 0 6px; }
+      .g-stickers.many .board { padding: 8px 6px; }
+      .g-stickers.many .ref-line { margin: 4px 0 0; font-size: 0.95rem; }
+      .g-stickers.many .footer { padding-top: 6px; }
       .g-stickers .leader { background: #f1e8ff; border: 4px solid var(--purple, #9d4edd); border-radius: 18px; padding: 14px; text-align: center; margin-top: 10px; animation: pop-in 0.3s ease; }
       .g-stickers .leader h3 { margin: 0 0 4px; font-size: 1.25rem; }
       .g-stickers .leader .verse-check { background: #fff; border-radius: 12px; padding: 10px; margin: 10px 0; font-size: 0.95rem; }
@@ -55,11 +63,11 @@ export default {
       .g-stickers .win-title { text-align: center; font-size: 1.5rem; font-weight: bold; margin-top: 14px; }
     `);
 
-    const root = el('div', 'g-stickers');
-    stage.appendChild(root);
-
     const words = ctx.verse.words;
-    const many = words.length > 26;
+    const many = words.length > 19;
+
+    const root = el('div', 'g-stickers' + (many ? ' many' : ''));
+    stage.appendChild(root);
     let peeks = 0;
     let retried = false;   // came back from a 🔁
     let finished = false;
@@ -162,16 +170,15 @@ export default {
       root.appendChild(el('div', 'ref-line', ctx.verse.label));
 
       const footer = el('div', 'footer');
+      const row = el('div', 'btn-row');
       if (step > 0) {
         peekChip = el('div', 'peek-chip');
         if (noPeek) peekChip.textContent = '🙈 No peeking this time!';
         else updatePeekChip();
-        footer.appendChild(peekChip);
+        row.appendChild(peekChip); // chip rides beside the button — keeps the action on-screen
       } else {
         peekChip = null;
       }
-
-      const row = el('div', 'btn-row');
       if (step === 0) {
         const hear = el('button', 'btn btn-blue', '🔊 Hear it');
         hear.onclick = () => { sfx.click(); ctx.speak(); };

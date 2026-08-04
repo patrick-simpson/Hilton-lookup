@@ -34,10 +34,11 @@ export default {
       .g-match .mcard.flipped .mcard-inner { transform: rotateY(180deg); }
       .g-match .mface { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px; border-radius: 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12); }
       .g-match .mface.front { background: var(--blue); color: #fff; font-size: 2rem; }
+      .g-match .mface.front::before { content: '❓'; }
       .g-match .mface.back { background: var(--blue-soft); transform: rotateY(180deg); font-weight: bold; text-align: center; }
       .g-match .mcard.matched .mface.back { background: var(--green-soft); box-shadow: inset 0 0 0 3px var(--green); animation: pop-in 0.25s ease; }
       .g-match .pair-emoji { font-size: 1.25rem; line-height: 1; }
-      .g-match .card-text { font-size: 1.02rem; line-height: 1.15; white-space: pre-line; overflow: hidden; max-height: 100%; }
+      .g-match .card-text { font-size: 1.02rem; line-height: 1.15; white-space: pre-line; overflow-wrap: anywhere; overflow: hidden; max-height: 100%; }
       .g-match .card-text.small { font-size: 0.85rem; }
       .g-match .card-text.tiny { font-size: 0.72rem; }
       .g-match .found-strip { min-height: 36px; margin-top: 10px; text-align: center; font-weight: bold; color: var(--green); }
@@ -46,6 +47,14 @@ export default {
         .g-match .grid { gap: 6px; }
         .g-match .grid.tall { grid-template-columns: repeat(3, 1fr); }
         .g-match .grid.tall .mcard { height: 114px; }
+        /* Big (hard-mode) decks: stay 4-up with shorter cards so all 4 rows
+           fit on one phone screen — never make a kid scroll mid-round. */
+        .g-match .grid.many { grid-template-columns: repeat(4, 1fr); }
+        .g-match .grid.many .mcard { height: 106px; }
+        .g-match .grid.many .mface { padding: 4px; border-radius: 14px; }
+        .g-match .grid.many .card-text { font-size: 0.88rem; }
+        .g-match .grid.many .card-text.small { font-size: 0.8rem; }
+        .g-match .grid.many .card-text.tiny { font-size: 0.7rem; }
       }
     `);
 
@@ -150,16 +159,23 @@ export default {
     root.appendChild(strip);
 
     const tall = deck.some((c) => c.text.length > 14 || c.text.includes('\n'));
-    const grid = el('div', 'grid' + (tall ? ' tall' : ''));
+    const many = deck.length > 12; // hard-mode decks: keep 4 columns on phones
+    const grid = el('div', 'grid' + (tall ? ' tall' : '') + (many ? ' many' : ''));
     for (const c of deck) {
       const btn = el('button', 'mcard');
       const inner = el('div', 'mcard-inner');
-      const front = el('div', 'mface front', '❓');
+      const front = el('div', 'mface front'); // ❓ drawn via CSS ::before
       const back = el('div', 'mface back');
       const len = c.text.length;
+      // size down when the text is long OR its longest unbreakable word is
+      // wide, so words wrap at spaces instead of breaking mid-word; `many`
+      // decks have narrower cards, so they demote a word-length earlier
+      const wl = Math.max(...c.text.split(/\s+/).map((t) => t.length));
+      const sz = len > 34 || wl >= (many ? 11 : 12) ? ' tiny'
+        : len > 16 || wl >= (many ? 9 : 10) ? ' small' : '';
       back.append(
         el('div', 'pair-emoji', c.emoji),
-        el('div', 'card-text' + (len > 34 ? ' tiny' : len > 16 ? ' small' : ''), c.text),
+        el('div', 'card-text' + sz, c.text),
       );
       inner.append(front, back);
       btn.appendChild(inner);
@@ -178,12 +194,41 @@ export default {
     let lock = false;   // input disabled during the flip-back reveal
     let attempts = 0;
     let matchedPairs = 0;
+    let missStreak = 0; // consecutive misses since the last found pair
 
     function flashFound(text) {
       foundStrip.textContent = text;
       foundStrip.classList.remove('flash');
       void foundStrip.offsetWidth; // restart the pop animation
       foundStrip.classList.add('flash');
+    }
+
+    function settlePair(a, c) {
+      a.matched = c.matched = true;
+      a.btn.classList.add('matched');
+      c.btn.classList.add('matched');
+      a.btn.disabled = c.btn.disabled = true; // matched cards are done
+      sfx.correct();
+      badgeEls[c.pairId].classList.add('lit');
+      flashFound(pairs[c.pairId].emoji + ' ' + c.toast);
+      matchedPairs++;
+      missStreak = 0;
+      if (matchedPairs === pairs.length) finish();
+    }
+
+    // Mercy helper: after three misses in a row the game finds one pair by
+    // itself, so young players never get stuck (called with lock held).
+    function mercy() {
+      const left = deck.filter((x) => !x.matched && !x.up);
+      if (left.length < 2) { lock = false; return; }
+      const pick = left[ctx.randInt(left.length)];
+      const mate = left.find((x) => x !== pick && x.pairId === pick.pairId);
+      flashFound('✨ Here is some help!');
+      later(() => {
+        sfx.pop();
+        for (const x of [pick, mate]) { x.up = true; x.btn.classList.add('flipped'); }
+      }, 350);
+      later(() => { lock = false; settlePair(pick, mate); }, 1150);
     }
 
     function tap(c) {
@@ -199,14 +244,7 @@ export default {
       tries.textContent = 'Tries: ' + attempts;
 
       if (a.pairId === c.pairId) {
-        a.matched = c.matched = true;
-        a.btn.classList.add('matched');
-        c.btn.classList.add('matched');
-        sfx.correct();
-        badgeEls[c.pairId].classList.add('lit');
-        flashFound(pairs[c.pairId].emoji + ' ' + c.toast);
-        matchedPairs++;
-        if (matchedPairs === pairs.length) finish();
+        settlePair(a, c);
       } else {
         // no match: gentle reveal, then flip both back — never a failure
         lock = true;
@@ -215,7 +253,9 @@ export default {
           a.up = c.up = false;
           a.btn.classList.remove('flipped');
           c.btn.classList.remove('flipped');
-          lock = false;
+          missStreak++;
+          if (missStreak >= 3) { missStreak = 0; mercy(); } // mercy keeps the lock
+          else lock = false;
         }, 800);
       }
     }

@@ -228,7 +228,7 @@ function stickersView() {
     const card = el('div', 'card');
     card.append(el('h2', null, `${book.emoji} ${book.name}`));
     for (const section of book.sections) {
-      const row = el('div', 'entry-row');
+      const row = el('div', 'entry-row sticker-row');
       row.append(el('span', 'entry-num', section.name));
       const body = el('div');
       for (const entry of section.entries) {

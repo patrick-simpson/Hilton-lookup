@@ -74,10 +74,14 @@ export default {
       }
 
       @media (max-width: 480px) {
-        .g-rocket .gauge { height: 180px; width: 24px; }
-        .g-rocket .rocket-emoji { font-size: 2.8rem; }
-        .g-rocket .rocket-wrap { width: 72px; }
-        .g-rocket .pad { width: 62px; }
+        .g-rocket .layout { gap: 6px; }
+        .g-rocket .pool .word-tile { padding: 8px 10px; margin: 4px 3px; font-size: 1.05rem; min-width: 44px; }
+        .g-rocket .rocket-side { gap: 6px; }
+        .g-rocket .gauge { height: 170px; width: 24px; }
+        .g-rocket .rocket-emoji { font-size: 2.6rem; }
+        .g-rocket .flame { font-size: 1.6rem; }
+        .g-rocket .rocket-wrap { width: 60px; }
+        .g-rocket .pad { width: 54px; }
       }
     `);
 

@@ -44,7 +44,7 @@ export default {
     ctx.addStyle(`
       .g-spinner { text-align: center; }
       .g-spinner .v-wrap { position: relative; background: #f4f8ff; border-radius: 16px; margin-bottom: 8px; }
-      .g-spinner .verse-display.small { font-size: 1rem; }
+      .g-spinner .verse-display.small { font-size: 1.1rem; }
       .g-spinner .v-cover { position: absolute; inset: 0; background: #fff7df; border: 3px dashed var(--yellow); border-radius: 16px; display: none; align-items: center; justify-content: center; gap: 10px; font-weight: bold; font-size: 1.2rem; }
       .g-spinner .v-cover .big-eyes { font-size: 2rem; }
       .g-spinner .v-wrap.covered .v-cover { display: flex; }
@@ -62,6 +62,26 @@ export default {
       .g-spinner .a-tip { font-size: 1.15rem; font-weight: bold; opacity: 0.85; }
       .g-spinner .s-chip { min-height: 52px; min-width: 62px; font-size: 1.35rem; justify-content: center; }
       .g-spinner .btn-row { margin: 8px 0 4px; }
+      /* Short phones: shrink the wheel with the viewport and sit the buttons
+         beside the announcement so the whole game fits without scrolling. */
+      @media (max-height: 820px) {
+        .g-spinner .verse-display { font-size: 1.1rem; line-height: 1.3; padding: 4px 8px; }
+        .g-spinner .verse-display .verse-ref { margin-top: 2px; font-size: 0.9rem; }
+        .g-spinner .v-wrap { margin-bottom: 6px; }
+        .g-spinner .v-cover { font-size: 1.05rem; }
+        .g-spinner .dots { font-size: 1.1rem; letter-spacing: 6px; margin: 0 0 2px; }
+        .g-spinner .wheel-box { width: min(78vw, 270px, 30vh); }
+        .g-spinner .wheel { border-width: 6px; }
+        .g-spinner .lab { font-size: 1.45rem; top: 5px; }
+        .g-spinner .hub { width: 48px; height: 48px; font-size: 1.3rem; }
+        .g-spinner .pointer { border-left-width: 12px; border-right-width: 12px; border-top-width: 20px; top: -5px; }
+        .g-spinner .foot { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 4px; }
+        .g-spinner .announce { min-height: 52px; flex: 1; min-width: 0; }
+        .g-spinner .a-style { font-size: 1.25rem; padding: 4px 12px; }
+        .g-spinner .a-tip { font-size: 1rem; }
+        .g-spinner .btn-row { margin: 0; flex-direction: column; gap: 6px; flex-shrink: 0; }
+        .g-spinner .s-chip { min-height: 44px; min-width: 56px; font-size: 1.15rem; }
+      }
     `);
 
     const root = el('div', 'g-spinner');
@@ -101,7 +121,9 @@ export default {
 
     const announce = el('div', 'announce');
     const controls = el('div', 'btn-row');
-    root.append(vwrap, dots, wheelBox, announce, controls);
+    const foot = el('div', 'foot');
+    foot.append(announce, controls);
+    root.append(vwrap, dots, wheelBox, foot);
 
     // ----- state -----
     let totalRot = 0;

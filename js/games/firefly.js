@@ -202,22 +202,57 @@ export default {
         const cellH = H / rows;
         const col = i % cols;
         const row = Math.floor(i / cols);
+        const fw = node.offsetWidth;
+        const fh = node.offsetHeight;
         const f = {
           node,
           btn,
           correct: item.correct,
-          x: clamp(col * cellW + Math.random() * Math.max(10, cellW - node.offsetWidth - 8), 4, Math.max(4, W - node.offsetWidth - 4)),
-          y: clamp(row * cellH + Math.random() * Math.max(10, cellH - node.offsetHeight - 8), 4, Math.max(4, H - node.offsetHeight - 4)),
+          w: fw,
+          h: fh,
+          x: clamp(col * cellW + Math.random() * Math.max(10, cellW - fw - 8), 4, Math.max(4, W - fw - 4)),
+          y: clamp(row * cellH + Math.random() * Math.max(10, cellH - fh - 8), 4, Math.max(4, H - fh - 6)),
           heading: Math.random() * Math.PI * 2,
           speed: baseSpeed + Math.random() * speedVar,
           phase: Math.random() * Math.PI * 2,
           scatterUntil: 0,
           caught: false,
         };
-        node.style.transform = `translate(${f.x}px, ${f.y}px)`;
         btn.onclick = () => tap(f);
         flies.push(f);
       });
+      // relax any spawn overlaps (narrow skies) so every word starts readable
+      for (let k = 0; k < 30; k++) separate(6);
+      for (const f of flies) f.node.style.transform = `translate(${f.x}px, ${f.y}px)`;
+    }
+
+    // Push overlapping (or nearly touching) fireflies apart so a word never
+    // hides underneath another — vital on narrow 360px skies.
+    function separate(push) {
+      const W = sky.clientWidth;
+      const H = sky.clientHeight;
+      for (let i = 0; i < flies.length; i++) {
+        const a = flies[i];
+        if (a.caught) continue;
+        for (let j = i + 1; j < flies.length; j++) {
+          const b = flies[j];
+          if (b.caught) continue;
+          const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) + 10;
+          const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) + 8;
+          if (ox <= 0 || oy <= 0) continue;
+          if (ox < oy) {
+            const dir = a.x + a.w / 2 <= b.x + b.w / 2 ? 1 : -1;
+            const step = Math.min(push, ox / 2 + 1);
+            a.x = clamp(a.x - dir * step, 0, Math.max(0, W - a.w));
+            b.x = clamp(b.x + dir * step, 0, Math.max(0, W - b.w));
+          } else {
+            const dir = a.y + a.h / 2 <= b.y + b.h / 2 ? 1 : -1;
+            const step = Math.min(push, oy / 2 + 1);
+            a.y = clamp(a.y - dir * step, 2, Math.max(2, H - a.h - 6));
+            b.y = clamp(b.y + dir * step, 2, Math.max(2, H - b.h - 6));
+          }
+        }
+      }
     }
 
     function loop(ts) {
@@ -232,20 +267,23 @@ export default {
         if (f.caught) continue;
         const scattering = now < f.scatterUntil;
         f.heading += (Math.random() - 0.5) * 3.2 * dt; // gentle wandering
-        const w = f.node.offsetWidth;
-        const h = f.node.offsetHeight;
         const m = 26;
-        if (f.x < m || f.x > W - w - m || f.y < m || f.y > H - h - m) {
+        if (f.x < m || f.x > W - f.w - m || f.y < m || f.y > H - f.h - m) {
           // steer back toward the middle of the sky
-          const target = Math.atan2(H / 2 - (f.y + h / 2), W / 2 - (f.x + w / 2));
+          const target = Math.atan2(H / 2 - (f.y + f.h / 2), W / 2 - (f.x + f.w / 2));
           let d = target - f.heading;
           while (d > Math.PI) d -= 2 * Math.PI;
           while (d < -Math.PI) d += 2 * Math.PI;
           f.heading += d * (scattering ? 2.2 : 3.5) * dt;
         }
         const sp = f.speed * (scattering ? 6 : 1);
-        f.x = clamp(f.x + Math.cos(f.heading) * sp * dt, 0, Math.max(0, W - w));
-        f.y = clamp(f.y + Math.sin(f.heading) * sp * dt, 0, Math.max(0, H - h));
+        f.x = clamp(f.x + Math.cos(f.heading) * sp * dt, 0, Math.max(0, W - f.w));
+        f.y = clamp(f.y + Math.sin(f.heading) * sp * dt, 2, Math.max(2, H - f.h - 6));
+      }
+      // keep any two word bubbles from covering each other
+      separate(Math.max(1, 90 * dt));
+      for (const f of flies) {
+        if (f.caught) continue;
         const bob = Math.sin((now / 1000) * 2.2 + f.phase) * 3;
         f.node.style.transform = `translate(${f.x}px, ${f.y + bob}px)`;
       }

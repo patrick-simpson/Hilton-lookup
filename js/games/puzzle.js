@@ -25,24 +25,28 @@ export default {
       .g-puzzle .pic.done .pic-emoji { animation: pop-in 0.5s ease, floaty 2.6s ease-in-out 0.5s infinite; }
       .g-puzzle .covers { position: absolute; inset: 0; display: flex; flex-direction: column; }
       .g-puzzle .cover-row { flex: 1; display: flex; }
-      .g-puzzle .cover {
-        flex: 1; min-height: 52px; min-width: 0;
+      /* The button keeps its full grid-cell size forever (honest tap target);
+         only the inner face shrinks/fades away when solved. */
+      .g-puzzle .cover { flex: 1; min-width: 0; min-height: 52px; display: flex; padding: 0; background: none; border: 0; }
+      .g-puzzle .cface {
+        flex: 1; min-width: 0;
         display: flex; align-items: center; justify-content: center;
         text-align: center; padding: 4px 6px;
         font-weight: bold; font-size: 1.05rem; color: var(--ink);
         background: #cfe3ff; border: 2px solid #f5f9ff; border-radius: 10px;
         transition: opacity 0.45s ease, transform 0.45s ease;
-        user-select: none;
+        overflow-wrap: anywhere; user-select: none;
       }
-      .g-puzzle .cover.alt { background: #e6dcff; }
-      .g-puzzle .cover.long { font-size: 0.9rem; }
-      .g-puzzle .cover.xlong { font-size: 0.78rem; }
-      .g-puzzle .cover.solved { opacity: 0; transform: scale(0.5) rotate(8deg); pointer-events: none; }
-      .g-puzzle .cover.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); }
+      .g-puzzle .cover.alt .cface { background: #e6dcff; }
+      .g-puzzle .cover.long .cface { font-size: 0.95rem; }
+      .g-puzzle .cover.xlong .cface { font-size: 0.82rem; }
+      .g-puzzle .cover.solved { pointer-events: none; }
+      .g-puzzle .cover.solved .cface { opacity: 0; transform: scale(0.5) rotate(8deg); }
+      .g-puzzle .cover.wrong .cface { animation: wiggle 0.35s ease; background: var(--red-soft); }
       .g-puzzle .hint {
         min-height: 46px; background: #f4f8ff; border-radius: 14px;
         padding: 8px 12px; margin-top: 12px; text-align: center;
-        font-size: 1.05rem; font-weight: bold; color: var(--green);
+        font-size: 1.1rem; font-weight: bold; color: var(--green);
       }
       .g-puzzle .btn-row { margin: 12px 0 0; }
     `);
@@ -120,12 +124,14 @@ export default {
           if ((r + c) % 2 === 1) cls += ' alt';
           if (w.length >= 14) cls += ' xlong';
           else if (w.length >= 9) cls += ' long';
-          const cover = el('button', cls, w);
+          const cover = el('button', cls);
+          cover.appendChild(el('span', 'cface', w));
           cover.onclick = () => {
             if (cover.classList.contains('solved')) return;
             if (cleanWord(w) === cleanWord(words[nextIdx])) {
               sfx.correct();
               cover.classList.add('solved');
+              cover.disabled = true; // out of play — taps fall through to the picture
               revealed.push(words[nextIdx]);
               nextIdx++;
               updateHint();

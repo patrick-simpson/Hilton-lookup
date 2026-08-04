@@ -16,15 +16,16 @@ export default {
 
     ctx.addStyle(`
       .g-train { text-align: center; }
-      .g-train .round-label { font-weight: bold; opacity: 0.75; margin-bottom: 6px; font-size: 1.05rem; }
-      .g-train .hint { font-size: 0.95rem; opacity: 0.8; margin: 2px 0 8px; }
+      .g-train .hint { font-size: 1rem; font-weight: bold; opacity: 0.8; margin: 0 0 8px; }
+      .g-train .hint .round-label { opacity: 1; }
       .g-train .track-wrap {
         background: linear-gradient(180deg, #e3f4ff 0%, #f4fbe9 100%);
         border: 3px solid #d5e8ff;
+        border-bottom: 6px solid #a5825a;
         border-radius: 16px;
         overflow-x: auto;
         overflow-y: hidden;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
       .g-train .track {
         display: flex;
@@ -32,8 +33,7 @@ export default {
         gap: 4px;
         width: max-content;
         min-width: 100%;
-        padding: 16px 18px 15px;
-        border-bottom: 6px solid #a5825a;
+        padding: 12px 14px;
       }
       .g-train .track.depart { animation: g-train-go 1.25s ease-in forwards; }
       @keyframes g-train-go {
@@ -50,7 +50,7 @@ export default {
       }
       .g-train .puff {
         position: absolute;
-        top: -12px;
+        top: -6px;
         left: 2px;
         font-size: 1.25rem;
         pointer-events: none;
@@ -58,7 +58,7 @@ export default {
       }
       @keyframes g-train-puff {
         0% { opacity: 1; transform: translate(0, 0) scale(0.6); }
-        100% { opacity: 0; transform: translate(-16px, -28px) scale(1.5); }
+        100% { opacity: 0; transform: translate(-18px, -12px) scale(1.4); }
       }
       .g-train .car {
         position: relative;
@@ -98,9 +98,9 @@ export default {
         flex-wrap: wrap;
         justify-content: center;
         align-items: flex-start;
-        gap: 18px 10px;
+        gap: 14px 8px;
         min-height: 90px;
-        padding: 6px 4px 16px;
+        padding: 4px 2px 12px;
       }
       .g-train .pool .car {
         cursor: pointer;
@@ -112,6 +112,12 @@ export default {
         animation: wiggle 0.35s ease;
         background: var(--red-soft, #ffd6d9);
         border-color: var(--red, #e63946);
+      }
+      .g-train .btn-row { margin: 6px 0 0; }
+      @media (max-width: 420px) {
+        .g-train .engine { font-size: 2.4rem; }
+        .g-train .car { padding: 8px 12px; font-size: 1rem; min-width: 56px; }
+        .g-train .track { padding: 10px 12px; }
       }
     `);
 
@@ -144,10 +150,14 @@ export default {
       let nextIdx = 0;
       let locked = false;
 
+      const hint = el('div', 'hint');
       if (trains.length > 1) {
-        root.appendChild(el('div', 'round-label', `🚂 Train ${trainIdx + 1} of ${trains.length}`));
+        hint.appendChild(el('span', 'round-label', `🚂 Train ${trainIdx + 1} of ${trains.length} · `));
+        hint.appendChild(el('span', '', 'Tap the next car!'));
+      } else {
+        hint.appendChild(el('span', '', 'Tap the car that comes next!'));
       }
-      root.appendChild(el('div', 'hint', 'Tap the car that comes next!'));
+      root.appendChild(hint);
 
       const wrap = el('div', 'track-wrap');
       const track = el('div', 'track');

@@ -26,20 +26,27 @@ export default {
       .g-disappear .blank { background: #f1e8ff; border: 3px dashed var(--purple, #9d4edd); color: var(--purple, #9d4edd); min-width: 66px; letter-spacing: 2px; }
       .g-disappear .blank.peek { background: #fff3c4; border-style: solid; border-color: var(--yellow, #ffb703); color: var(--ink, #26324b); letter-spacing: normal; animation: pop-in 0.25s ease; }
       .g-disappear .blank.locked { background: #ececec; border-color: #b9b9b9; color: #8a8a8a; letter-spacing: normal; }
-      .g-disappear .board.many .word-tile { font-size: 0.95rem; padding: 6px 10px; margin: 3px; min-height: 40px; }
-      .g-disappear .board.many .blank { min-height: 52px; }
+      .g-disappear .board.many .word-tile { font-size: 1rem; padding: 5px 9px; margin: 3px; min-height: 40px; }
+      .g-disappear .board.many .blank { min-height: 48px; min-width: 54px; letter-spacing: 1px; }
       .g-disappear .ref-line { text-align: center; font-weight: bold; opacity: 0.7; margin: 8px 0 0; }
       .g-disappear .footer { margin-top: auto; text-align: center; padding-top: 12px; }
-      .g-disappear .peek-chip { display: inline-block; background: #fff; border-radius: 999px; padding: 4px 14px; font-weight: bold; box-shadow: 0 3px 0 rgba(38,50,75,0.12); margin-bottom: 10px; font-size: 0.95rem; }
+      .g-disappear .footer .btn-row { align-items: center; margin: 8px 0 0; }
+      .g-disappear .peek-chip { display: inline-block; background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: bold; box-shadow: 0 3px 0 rgba(38,50,75,0.12); font-size: 0.95rem; }
+      .g-disappear.many .rounds { font-size: 1.35rem; }
+      .g-disappear.many .prompt { font-size: 1.05rem; margin: 2px 0 6px; }
+      .g-disappear.many .board { padding: 8px 6px; }
+      .g-disappear.many .ref-line { margin: 4px 0 0; font-size: 0.95rem; }
+      .g-disappear.many .footer { padding-top: 6px; }
       @keyframes gdis-poof { to { transform: scale(0.15) rotate(14deg); opacity: 0; } }
       .g-disappear .word-tile.vanish { animation: gdis-poof 0.55s ease forwards; }
     `);
 
-    const root = el('div', 'g-disappear');
-    stage.appendChild(root);
-
     const words = ctx.verse.words;
     const n = words.length;
+    const many = n > 19;
+
+    const root = el('div', 'g-disappear' + (many ? ' many' : ''));
+    stage.appendChild(root);
 
     // One shuffled order of word indices — round r hides the first
     // hiddenCounts[r] of them, so each round's hidden set is a superset
@@ -97,7 +104,7 @@ export default {
       root.appendChild(ind);
       root.appendChild(el('div', 'prompt', promptFor(roundIdx)));
 
-      const board = el('div', 'board' + (n > 26 ? ' many' : ''));
+      const board = el('div', 'board' + (many ? ' many' : ''));
       words.forEach((w, i) => {
         let tile;
         if (!hiddenSet.has(i)) {
@@ -133,8 +140,8 @@ export default {
       const row = el('div', 'btn-row');
       const btn = el('button', 'btn btn-green btn-big', last ? 'I said it! 🎉' : 'I said it! ➡');
       btn.onclick = advance;
-      row.appendChild(btn);
-      footer.append(peekChip, row);
+      row.append(peekChip, btn); // chip rides beside the button — keeps the action on-screen
+      footer.appendChild(row);
       root.appendChild(footer);
     }
 

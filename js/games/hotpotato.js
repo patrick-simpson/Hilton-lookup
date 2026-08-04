@@ -56,6 +56,14 @@ export default {
         .g-hotpotato .say-phrase { font-size: 1.5rem; }
         .g-hotpotato .say-phrase.long { font-size: 1.15rem; }
       }
+      /* Short phones: float the "say it" card over the (paused) ring so the
+         phrase and the ✅ button never fall below the fold mid-round. */
+      @media (max-height: 780px) {
+        .g-hotpotato .hp-content { position: relative; }
+        .g-hotpotato .say-card { position: absolute; left: 2px; right: 2px; top: 10px; margin: 0; max-width: none; z-index: 6; box-shadow: 0 10px 26px rgba(38, 50, 75, 0.35); }
+        .g-hotpotato .say-kid { font-size: 2.4rem; }
+        .g-hotpotato .say-phrase { margin: 6px 4px 8px; }
+      }
     `);
 
     const root = el('div', 'g-hotpotato');

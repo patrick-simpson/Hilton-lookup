@@ -31,16 +31,29 @@ export default {
       .g-refrace .round-label { font-weight: bold; opacity: 0.75; }
       .g-refrace .say-btn { min-height: 52px; min-width: 62px; font-size: 1.5rem; padding: 6px 14px; }
       .g-refrace .verse-display { font-size: 1.3rem; }
-      .g-refrace .verse-display.long { font-size: 1.02rem; }
+      .g-refrace .verse-display.long { font-size: 1.1rem; }
       .g-refrace .timer-track { height: 24px; background: #eef2fa; border-radius: 999px; margin: 10px 6px 14px; overflow: visible; }
       .g-refrace .timer-fill { position: relative; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--yellow), #ff9e6d); animation: g-refrace-shrink linear forwards; }
       .g-refrace .timer-fill::after { content: '✨'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 1.25rem; }
       @keyframes g-refrace-shrink { from { width: 100%; } to { width: 0%; } }
-      .g-refrace .ref-btn { min-height: 64px; min-width: 200px; font-size: 1.25rem; background: var(--blue-soft); border: 3px solid transparent; }
+      /* 2-up answer grid keeps 3-4 big buttons + track + timer on one screen;
+         an odd last button stretches across both columns. */
+      .g-refrace .ref-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 480px; margin: 12px auto 4px; }
+      .g-refrace .ref-btn { min-height: 64px; padding: 8px 10px; font-size: clamp(0.95rem, 4.2vw, 1.2rem); background: var(--blue-soft); border: 3px solid transparent; }
+      .g-refrace .ref-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
       .g-refrace .ref-btn.correct { background: var(--green-soft); border-color: var(--green); animation: pop-in 0.25s ease; }
       .g-refrace .ref-btn.wrong { background: var(--red-soft); animation: wiggle 0.35s ease; }
       .g-refrace .msg { text-align: center; font-size: 1.3rem; font-weight: bold; margin: 6px 0; animation: pop-in 0.3s ease; }
       .g-refrace .finish-msg { text-align: center; font-size: 1.7rem; font-weight: bold; margin-top: 40px; animation: pop-in 0.35s ease; }
+      @media (max-width: 480px) {
+        .g-refrace .race-track { height: 46px; margin-bottom: 8px; }
+        .g-refrace .race-flag, .g-refrace .race-runner { font-size: 1.6rem; }
+        .g-refrace .verse-display { font-size: 1.15rem; padding: 8px 6px; }
+        .g-refrace .timer-track { height: 20px; margin: 8px 6px 10px; }
+        .g-refrace .ref-row { gap: 8px; margin-top: 8px; }
+        .g-refrace .ref-btn { min-height: 58px; }
+        .g-refrace .msg { font-size: 1.15rem; margin: 4px 0; }
+      }
     `);
 
     const root = el('div', 'g-refrace');
@@ -139,7 +152,7 @@ export default {
         playRound(true);
       }, timerMs);
 
-      const row = el('div', 'btn-row');
+      const row = el('div', 'ref-row');
       const options = shuffle([verse.label, ...decoysFor(verse)]);
       for (const label of options) {
         const btn = el('button', 'btn ref-btn', label);

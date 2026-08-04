@@ -36,8 +36,12 @@ export default {
       .g-karaoke .k-phase { display: inline-block; font-weight: bold; font-size: 1.2rem; background: #fff7df; border: 3px solid var(--yellow); border-radius: 999px; padding: 8px 20px; margin-bottom: 2px; }
       .g-karaoke .k-phase.pop { animation: pop-in 0.3s ease; }
       .g-karaoke .k-tiles { position: relative; padding: 50px 2px 8px; }
-      .g-karaoke .k-tile { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 8px 14px; margin: 5px; border-radius: 14px; background: var(--blue-soft); border: 3px solid transparent; font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12); user-select: none; }
-      .g-karaoke .k-tile.compact { font-size: 0.95rem; padding: 6px 10px; margin: 4px; }
+      .g-karaoke .k-tile { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 48px; padding: 8px 14px; margin: 5px; border-radius: 14px; background: var(--blue-soft); border: 3px solid transparent; font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12); user-select: none; }
+      .g-karaoke .k-tile.compact { font-size: 1rem; padding: 6px 9px; margin: 3px; }
+      .g-karaoke.compact .k-phase { font-size: 1.1rem; padding: 6px 16px; }
+      .g-karaoke.compact .k-tiles { padding: 42px 0 4px; }
+      .g-karaoke.compact .k-hint { margin: 4px 0 2px; font-size: 1rem; }
+      .g-karaoke.compact .k-ref { margin-top: 2px; }
       .g-karaoke .k-tile.note { background: #efe2ff; border-color: #dcc6f7; }
       .g-karaoke .k-tile.sung { background: var(--green-soft); border-color: var(--green); }
       .g-karaoke .k-tile.now { background: var(--yellow); border-color: #d99b00; transform: scale(1.08); }
@@ -51,7 +55,7 @@ export default {
       .g-karaoke .k-bow { animation: pop-in 0.35s ease; }
     `);
 
-    const root = el('div', 'g-karaoke');
+    const root = el('div', 'g-karaoke' + (compact ? ' compact' : ''));
     const badge = el('div', 'k-phase');
     const tilesWrap = el('div', 'k-tiles');
     const hint = el('div', 'k-hint');
@@ -96,7 +100,7 @@ export default {
 
     function moveStar(tile, instant, raised) {
       const x = tile.offsetLeft + tile.offsetWidth / 2;
-      const y = tile.offsetTop - (raised ? 68 : 40);
+      const y = tile.offsetTop - (raised ? (compact ? 58 : 68) : 40);
       if (instant) star.style.transition = 'none';
       star.style.left = x + 'px';
       star.style.top = y + 'px';

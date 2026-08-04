@@ -16,17 +16,17 @@ export default {
 
     ctx.addStyle(`
       .g-hopscotch { text-align: center; }
-      .g-hopscotch .hs-head { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+      .g-hopscotch .hs-head { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
       .g-hopscotch .hs-label { font-weight: bold; opacity: 0.75; }
-      .g-hopscotch .hs-listen { min-height: 52px; min-width: 52px; padding: 8px 16px; }
-      .g-hopscotch .hs-wrap { position: relative; max-width: 420px; margin: 0 auto 10px; padding: 14px 10px 4px; border-radius: 18px; background: linear-gradient(180deg, #e6f3ff, #f4fbe6); }
-      .g-hopscotch .hs-row { display: flex; justify-content: center; gap: 10px; margin: 8px auto; }
-      .g-hopscotch .hs-sq { display: flex; align-items: center; justify-content: center; min-height: 54px; width: 58%; padding: 6px 8px; border-radius: 14px; border: 3px dashed #9db8dd; background: rgba(255,255,255,0.9); font-weight: bold; font-size: 1.05rem; color: #93a9cc; overflow-wrap: anywhere; }
+      .g-hopscotch .hs-listen { min-height: 48px; min-width: 48px; padding: 6px 14px; }
+      .g-hopscotch .hs-wrap { position: relative; max-width: 420px; margin: 0 auto 8px; padding: 10px 10px 2px; border-radius: 18px; background: linear-gradient(180deg, #e6f3ff, #f4fbe6); }
+      .g-hopscotch .hs-row { display: flex; justify-content: center; gap: 8px; margin: 6px auto; }
+      .g-hopscotch .hs-sq { display: flex; align-items: center; justify-content: center; min-height: 46px; width: 58%; padding: 4px 8px; border-radius: 14px; border: 3px dashed #9db8dd; background: rgba(255,255,255,0.9); font-weight: bold; font-size: 1rem; color: #93a9cc; overflow-wrap: anywhere; }
       .g-hopscotch .hs-row.double .hs-sq { width: 47%; }
       .g-hopscotch .hs-sq.filled { border-style: solid; border-color: var(--green); background: var(--green-soft); color: var(--ink); animation: pop-in 0.3s ease; }
-      .g-hopscotch .hs-start { height: 54px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; letter-spacing: 8px; opacity: 0.85; }
+      .g-hopscotch .hs-start { height: 42px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; letter-spacing: 6px; opacity: 0.85; }
       .g-hopscotch .hs-roo { position: absolute; left: 0; top: 0; z-index: 5; pointer-events: none; transform: translate(-50%, -70%); transition: left 0.45s cubic-bezier(0.4, 0.9, 0.4, 1), top 0.45s cubic-bezier(0.4, 0.9, 0.4, 1); }
-      .g-hopscotch .hs-roo-body { display: inline-block; font-size: 2.5rem; filter: drop-shadow(0 4px 3px rgba(38,50,75,0.3)); }
+      .g-hopscotch .hs-roo-body { display: inline-block; font-size: 2.3rem; filter: drop-shadow(0 4px 3px rgba(38,50,75,0.3)); }
       .g-hopscotch .hs-roo-body.hop { animation: hs-hop 0.45s ease; }
       .g-hopscotch .hs-roo-body.flip { animation: hs-flip 1s ease; }
       @keyframes hs-hop {
@@ -44,11 +44,20 @@ export default {
         100% { transform: translateY(0) rotate(-360deg); }
       }
       .g-hopscotch .hs-banner { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: bold; background: rgba(255,255,255,0.8); border-radius: 18px; animation: pop-in 0.3s ease; }
-      .g-hopscotch .hs-ask { font-weight: bold; font-size: 1.15rem; margin: 6px 0; }
-      .g-hopscotch .hs-choices { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding-bottom: 6px; }
-      .g-hopscotch .hs-choice { min-height: 58px; min-width: 100px; max-width: 100%; padding: 10px 22px; border-radius: 18px; background: var(--blue-soft); border: 3px solid transparent; font-size: 1.25rem; font-weight: bold; box-shadow: 0 5px 0 rgba(38,50,75,0.15); transition: transform 0.08s ease; overflow-wrap: anywhere; }
+      .g-hopscotch .hs-ask { font-weight: bold; font-size: 1.1rem; margin: 4px 0; }
+      .g-hopscotch .hs-choices { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding-bottom: 4px; }
+      .g-hopscotch .hs-choice { min-height: 56px; min-width: 96px; max-width: 100%; padding: 8px 18px; border-radius: 18px; background: var(--blue-soft); border: 3px solid transparent; font-size: 1.2rem; font-weight: bold; box-shadow: 0 5px 0 rgba(38,50,75,0.15); transition: transform 0.08s ease; overflow-wrap: anywhere; }
       .g-hopscotch .hs-choice:active { transform: translateY(3px); box-shadow: none; }
       .g-hopscotch .hs-choice.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); }
+      /* Short phones: tighten the court so the choice buttons stay on screen. */
+      @media (max-height: 700px) {
+        .g-hopscotch .hs-wrap { padding-top: 8px; }
+        .g-hopscotch .hs-row { margin: 4px auto; }
+        .g-hopscotch .hs-sq { min-height: 40px; font-size: 0.95rem; }
+        .g-hopscotch .hs-start { height: 34px; font-size: 1rem; }
+        .g-hopscotch .hs-roo-body { font-size: 2rem; }
+        .g-hopscotch .hs-choice { min-height: 52px; }
+      }
     `);
 
     const timers = new Set();
@@ -118,10 +127,11 @@ export default {
       const words = courts[courtIdx];
       label.textContent = courts.length > 1 ? `Court ${courtIdx + 1} of ${courts.length}` : '';
 
-      // Classic pattern from the bottom up: single, double, single, double...
+      // Pattern from the bottom up: double, single, double, single... Starting
+      // with a double keeps 8-word courts to 5 rows so choices fit on phones.
       const rowEls = [];
       let i = 0;
-      let dbl = false;
+      let dbl = true;
       while (i < words.length) {
         const take = dbl ? Math.min(2, words.length - i) : 1;
         const rowEl = el('div', 'hs-row' + (take === 2 ? ' double' : ''));

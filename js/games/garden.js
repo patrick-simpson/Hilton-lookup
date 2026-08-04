@@ -25,6 +25,7 @@ export default {
       .g-garden .can.pouring { animation: g-garden-pour 1.4s ease; }
       .g-garden .drop { position: absolute; top: 42px; z-index: 2; font-size: 1rem; opacity: 0; pointer-events: none; animation: g-garden-drip 0.65s ease-in forwards; }
       .g-garden .side { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      .g-garden .side-info { display: contents; }
       .g-garden .round-label { font-weight: bold; opacity: 0.75; }
       .g-garden .drops-meter { font-size: 1.5rem; letter-spacing: 5px; }
       .g-garden .drops-meter .pending { opacity: 0.25; }
@@ -56,6 +57,25 @@ export default {
         25% { transform: translate(20px, -24px) rotate(10deg); }
         50% { transform: translate(-8px, -44px) rotate(-8deg); }
         75% { transform: translate(-22px, -16px) rotate(12deg); }
+      }
+      /* Short phones: shrink the pot band and tighten the verse + tiles so
+         pot, blanks and word choices share one screen with no scrolling. */
+      @media (max-height: 780px) {
+        .g-garden .garden-top { gap: 8px; flex-wrap: nowrap; }
+        .g-garden .pot-zone { width: 100px; min-height: 88px; }
+        .g-garden .plant { font-size: 2.2rem; margin-bottom: -8px; }
+        .g-garden .pot { font-size: 1.8rem; }
+        .g-garden .can { font-size: 1.6rem; top: 0; right: 2px; }
+        .g-garden .drop { top: 26px; font-size: 0.85rem; }
+        .g-garden .side { flex-direction: row; gap: 8px; }
+        .g-garden .side-info { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .g-garden .side .btn { min-height: 48px; padding: 8px 12px; font-size: 1rem; }
+        .g-garden .round-label { font-size: 0.9rem; }
+        .g-garden .drops-meter { font-size: 1.1rem; letter-spacing: 2px; }
+        .g-garden .verse-area { padding: 8px; margin: 8px 0; font-size: 1.1rem; line-height: 1.8; }
+        .g-garden .blank { min-width: 54px; min-height: 34px; padding: 1px 8px; border-width: 2px; border-radius: 10px; }
+        .g-garden .choices { margin: 6px 0 2px; }
+        .g-garden .choices .word-tile { min-height: 48px; padding: 8px 13px; margin: 3px; font-size: 1.08rem; }
       }
     `);
 
@@ -100,6 +120,7 @@ export default {
     potZone.append(can, plant, pot);
 
     const side = el('div', 'side');
+    const sideInfo = el('div', 'side-info');
     const roundLabel = el('div', 'round-label', `Round 1 of ${ROUNDS}`);
     const meter = el('div', 'drops-meter');
     const meterDrops = [];
@@ -108,9 +129,10 @@ export default {
       meterDrops.push(d);
       meter.appendChild(d);
     }
+    sideInfo.append(roundLabel, meter);
     const listenBtn = el('button', 'btn', '🔊 Hear it');
     listenBtn.onclick = () => { sfx.click(); ctx.speak(); };
-    side.append(roundLabel, meter, listenBtn);
+    side.append(sideInfo, listenBtn);
 
     top.append(potZone, side);
     root.appendChild(top);
