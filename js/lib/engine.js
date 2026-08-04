@@ -3,6 +3,7 @@
 
 import { BOOK_LISTS, OT_BOOKS, NT_BOOKS } from '../data/verses.js';
 import { verseText, getTranslationId, activeTranslation } from '../data/translations.js';
+import { playVerse, stopAudio } from './audio.js';
 
 // ---------- DOM ----------
 
@@ -245,8 +246,8 @@ export function makeCtx({ verse, verses, entry, book, section, hard, hooks, stag
     tokenize,
     cleanWord,
     sfx,
-    speak: (text) => speak(text == null ? verse.spokenText : text),
-    stopSpeak,
+    speak: (text) => (text == null ? playVerse(verse, { kind: 'read' }) : speak(text)),
+    stopSpeak: stopAudio,
     confetti: (host) => confetti(host || stage),
     distractors: (count, v) => distractors(v || verse, count),
     chunk: (words, size = 4) => {
@@ -264,7 +265,7 @@ export function makeCtx({ verse, verses, entry, book, section, hard, hooks, stag
     win: (opts = {}) => {
       if (won) return;
       won = true;
-      stopSpeak();
+      stopAudio();
       sfx.win();
       hooks.onWin(opts.stars == null ? 3 : opts.stars, opts.message);
     },

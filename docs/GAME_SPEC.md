@@ -32,7 +32,7 @@ export default {
 | `ctx.chunk(words, size)` | Split a word array into phrase chunks. |
 | `ctx.distractors(count)` | Decoy words NOT in the current verse (book names for list verses). |
 | `ctx.sfx` | `.click() .pop() .correct() .wrong() .tick() .win()` — WebAudio, no assets. |
-| `ctx.speak(text?)` | Reads text aloud (defaults to the whole verse + reference). `ctx.stopSpeak()`. |
+| `ctx.speak(text?)` | No-arg: plays the official Awana recording for the current verse when one exists, falling back to device speech otherwise. Called with text: always uses device speech (for dynamic strings, e.g. reading back a single word). `ctx.stopSpeak()` stops either — file audio and device speech both go silent. |
 | `ctx.confetti()` | Confetti burst inside the stage. |
 | `ctx.addStyle(css)` | Injects a `<style>` tag, auto-removed on unmount. Prefix every selector with `.g-<id>` and add that class to your root element so styles never leak. |
 | `ctx.win({ stars, message })` | Call EXACTLY ONCE when the round is complete. `stars`: 1–3 (3 = flawless). The shell records progress and shows the celebration screen. |

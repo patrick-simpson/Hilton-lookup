@@ -6,8 +6,9 @@ import { MUSIC_LINKS, BIO_PDFS } from './data/music-links.js';
 import { TRANSLATIONS, getTranslationId, setTranslationId, activeTranslation } from './data/translations.js';
 import { GAMES } from './games/index.js';
 import {
-  el, clear, sectionInstances, makeCtx, speak, stopSpeak, sfx, confetti,
+  el, clear, sectionInstances, makeCtx, sfx, confetti,
 } from './lib/engine.js';
+import { playVerse, songEntryFor, stopAudio } from './lib/audio.js';
 import {
   getStars, addStars, sectionProgress, bookProgress, entryComplete,
   activityKey, isActivityDone, toggleActivity, growthStage, GROWTH_EMOJI,
@@ -21,7 +22,7 @@ let activeCleanup = null;
 let activeCtx = null;
 
 function teardownGame() {
-  stopSpeak();
+  stopAudio();
   if (activeCleanup) { try { activeCleanup(); } catch { /* game already gone */ } }
   if (activeCtx) activeCtx._cleanupStyles();
   activeCleanup = null;
@@ -216,9 +217,16 @@ function gameView(book, section, verseIdx) {
 
   const controls = el('div', 'btn-row');
   const hear = el('button', 'btn', '🔊 Hear the verse');
-  hear.onclick = () => speak(verse.spokenText);
+  hear.onclick = () => playVerse(verse, { kind: 'read' });
+  controls.append(hear);
+  const songEntry = songEntryFor(verse.ref);
+  if (songEntry) {
+    const sing = el('button', 'btn', '🎵 Sing it');
+    sing.onclick = () => playVerse(verse, { kind: 'sing' });
+    controls.append(sing);
+  }
   const help = el('button', 'btn', '❓ How to play');
-  controls.append(hear, help);
+  controls.append(help);
   app.append(controls);
 
   const helpCard = el('div', 'card');
