@@ -200,7 +200,9 @@ for (const s of sections.filter(wanted)) {
   const inst = s.instances[idx];
   const tag = `${s.book}/${s.section} ${s.game}${s.hard ? '(hard)' : ''} [${inst.label}]`;
   pageErrors.length = 0;
-  await page.goto(`${base}/#/b/${s.book}/${s.section}/play/${idx}`);
+  // Drive straight to the section's game (skipping the verse ladder menu) —
+  // s.game is the strategy map's key, i.e. the direct game route's gameId.
+  await page.goto(`${base}/#/b/${s.book}/${s.section}/play/${idx}/${s.game}`);
   await wait(1000);
   await checkMobile(tag, mobileIssues);
 

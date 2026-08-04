@@ -77,7 +77,13 @@ console.log(`${sections.length} sections to test`);
 
 for (const s of sections) {
   await check(`${s.book}/${s.section} → ${s.game}${s.hard ? ' (hard)' : ''}`, async () => {
+    // play/0 with no gameId now lands on the verse ladder screen, not the game.
     await page.goto(`${base}/#/b/${s.book}/${s.section}/play/0`);
+    await page.waitForTimeout(400);
+    const buildRow = page.locator('.ladder-row', { hasText: 'Build' }).first();
+    if (await buildRow.count() === 0) throw new Error('verse ladder screen missing a Build row');
+    // Click the featured build-row game button — this is the section's signature game.
+    await buildRow.locator('button').first().click();
     await page.waitForTimeout(1200);
     const kids = await page.locator('.stage *').count();
     if (kids === 0) throw new Error('stage is empty');

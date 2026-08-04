@@ -1,5 +1,13 @@
 # Game Module Spec — Sparks Verse Arcade
 
+## Routing
+
+Games mount at `#/b/<book>/<section>/play/<verseIdx>/<gameId>`. The bare
+`#/b/<book>/<section>/play/<verseIdx>` route (no `gameId`) is the **verse
+ladder screen** — a per-verse menu of the four suggested Mastery Ladder
+stages (Listen & Sing, Build, Recall, Recite; see `js/lib/ladder.js`), each
+offering one or two game buttons that link into the route above.
+
 Every game lives in `js/games/<id>.js` and default-exports:
 
 ```js

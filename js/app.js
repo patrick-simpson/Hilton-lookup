@@ -14,9 +14,14 @@ import {
   activityKey, isActivityDone, toggleActivity, growthStage, GROWTH_EMOJI,
   SECTION_STICKERS, resetAll,
 } from './lib/progress.js';
+import { ladderFor, stageDone, nextRow } from './lib/ladder.js';
 
 const app = document.getElementById('app');
 const JEWEL_ICON = { rank: '🏅', red: '❤️', green: '💚' };
+// Verbs for the win-overlay "next stage" suggestion, keyed by ladder row key.
+const LADDER_VERB = {
+  listen: 'Listen & Sing it', build: 'Build it', recall: 'Recall it', recite: 'Recite it',
+};
 
 let activeCleanup = null;
 let activeCtx = null;
@@ -193,16 +198,10 @@ function sectionView(book, section) {
   app.append(list);
 }
 
-function gameView(book, section, verseIdx) {
-  const game = GAMES[section.game];
-  const instances = sectionInstances(book, section);
-  const idx = Math.max(0, Math.min(instances.length - 1, verseIdx));
-  const verse = instances[idx];
-  const sectionHash = `#/b/${book.id}/${section.id}`;
-
-  topBar(`${game.icon} ${game.title}`, sectionHash);
-
-  // Verse picker chips — a single scrollable rail so the game stays above the fold
+// Verse picker chips — a single scrollable rail so the screen below stays
+// above the fold. Chips always link to the verse (ladder) screen, never
+// straight to a game, on both the verse screen and the game screen.
+function verseChipRail(book, section, instances, idx, sectionHash) {
   const chips = el('div', 'chip-scroller');
   let activeChip = null;
   instances.forEach((inst, i) => {
@@ -214,7 +213,10 @@ function gameView(book, section, verseIdx) {
   });
   app.append(chips);
   if (activeChip) activeChip.scrollIntoView({ inline: 'center', block: 'nearest' });
+}
 
+// 🔊 Hear + conditional 🎵 Sing controls, shared by the verse and game screens.
+function hearSingControls(verse) {
   const controls = el('div', 'btn-row');
   const hear = el('button', 'btn', '🔊 Hear the verse');
   hear.onclick = () => playVerse(verse, { kind: 'read' });
@@ -225,6 +227,71 @@ function gameView(book, section, verseIdx) {
     sing.onclick = () => playVerse(verse, { kind: 'sing' });
     controls.append(sing);
   }
+  return controls;
+}
+
+// The per-verse Mastery Ladder menu (plans.html §3.3): a verse card, then
+// four always-tappable stage rows suggesting which game to play next.
+function verseView(book, section, verseIdx) {
+  const instances = sectionInstances(book, section);
+  const idx = Math.max(0, Math.min(instances.length - 1, verseIdx));
+  const verse = instances[idx];
+  const sectionHash = `#/b/${book.id}/${section.id}`;
+
+  topBar(section.name, sectionHash);
+  verseChipRail(book, section, instances, idx, sectionHash);
+
+  const stage = getStars(verse.key);
+  const card = el('div', 'card verse-card');
+  card.append(el('h2', null, verse.label));
+  card.append(el('div', 'verse-display', verse.text));
+  card.append(el('div', 'stars-big', starsText(stage)));
+  card.append(hearSingControls(verse));
+  app.append(card);
+
+  const suggested = nextRow(stage);
+  for (const row of ladderFor(book, section, GAMES)) {
+    const rowCard = el('div', 'card ladder-row');
+    const head = el('div', 'ladder-row-head');
+    head.append(el('span', 'ladder-row-title', `${row.n} ${row.icon} ${row.title}`));
+    if (stageDone(row.n, stage)) {
+      head.append(el('span', 'ladder-done', 'done ✓'));
+    } else if (row.n === suggested && row.games.length) {
+      head.append(el('span', 'ladder-hint', '← play me'));
+    }
+    rowCard.append(head);
+    if (row.games.length) {
+      const btnRow = el('div', 'btn-row ladder-games');
+      for (const gameId of row.games) {
+        const game = GAMES[gameId];
+        const featured = gameId === section.game;
+        const btn = el('button', 'btn' + (featured ? ' btn-primary' : ''), `${game.icon} ${game.title}${featured ? ' ★' : ''}`);
+        btn.onclick = () => { sfx.click(); go(`${sectionHash}/play/${idx}/${gameId}`); };
+        btnRow.append(btn);
+      }
+      rowCard.append(btnRow);
+    } else {
+      rowCard.append(el('p', 'ladder-empty', 'Coming soon!'));
+    }
+    app.append(rowCard);
+  }
+}
+
+// Mounts a single chosen game for a verse. Falls back to the section's
+// signature game when gameId is missing or unknown.
+function gameView(book, section, verseIdx, gameId) {
+  const game = GAMES[gameId] || GAMES[section.game];
+  const resolvedId = GAMES[gameId] ? gameId : section.game;
+  const instances = sectionInstances(book, section);
+  const idx = Math.max(0, Math.min(instances.length - 1, verseIdx));
+  const verse = instances[idx];
+  const sectionHash = `#/b/${book.id}/${section.id}`;
+  const verseHash = `${sectionHash}/play/${idx}`;
+
+  topBar(`${game.icon} ${game.title}`, verseHash);
+  verseChipRail(book, section, instances, idx, sectionHash);
+
+  const controls = hearSingControls(verse);
   const help = el('button', 'btn', '❓ How to play');
   controls.append(help);
   app.append(controls);
@@ -246,7 +313,7 @@ function gameView(book, section, verseIdx) {
       confetti(document.body, 80);
       showWinOverlay({ stars, message, book, section, instances, idx, sectionHash });
     },
-    onExit: () => go(sectionHash),
+    onExit: () => go(verseHash),
   };
 
   activeCtx = makeCtx({ verse, verses: instances, entry: null, book, section, hard: !!section.hard, hooks, stage });
@@ -254,7 +321,7 @@ function gameView(book, section, verseIdx) {
   if (typeof maybeCleanup === 'function') activeCleanup = maybeCleanup;
 }
 
-function showWinOverlay({ stars, message, instances, idx, sectionHash }) {
+function showWinOverlay({ stars, message, book, section, instances, idx, sectionHash }) {
   const overlay = el('div', 'overlay');
   const card = el('div', 'card');
   card.append(
@@ -266,6 +333,17 @@ function showWinOverlay({ stars, message, instances, idx, sectionHash }) {
   const again = el('button', 'btn btn-primary', '🔁 Play again');
   again.onclick = () => { overlay.remove(); render(); };
   row.append(again);
+
+  // Suggest the next not-yet-done ladder stage for this verse, if it has a
+  // game to offer today (future rows like Recite may still be empty).
+  const postWinStage = getStars(instances[idx].key);
+  const nextRowInfo = ladderFor(book, section, GAMES).find((r) => r.n === nextRow(postWinStage));
+  if (nextRowInfo && nextRowInfo.games.length && !stageDone(nextRowInfo.n, postWinStage)) {
+    const nextBtn = el('button', 'btn btn-blue', `${nextRowInfo.icon} Next: ${LADDER_VERB[nextRowInfo.key]}!`);
+    nextBtn.onclick = () => { overlay.remove(); go(`${sectionHash}/play/${idx}/${nextRowInfo.games[0]}`); };
+    row.append(nextBtn);
+  }
+
   if (idx + 1 < instances.length) {
     const next = el('button', 'btn btn-green', '➡ Next verse');
     next.onclick = () => { overlay.remove(); go(`${sectionHash}/play/${idx + 1}`); };
@@ -341,7 +419,11 @@ function render() {
       const section = book.sections.find((s) => s.id === parts[2]);
       if (!section) return bookView(book);
       if (parts.length === 3) return sectionView(book, section);
-      if (parts[3] === 'play') return gameView(book, section, parseInt(parts[4] || '0', 10) || 0);
+      if (parts[3] === 'play') {
+        const idx = parseInt(parts[4] || '0', 10) || 0;
+        if (parts[5]) return gameView(book, section, idx, parts[5]);
+        return verseView(book, section, idx);
+      }
       return sectionView(book, section);
     }
     homeView();

@@ -223,6 +223,32 @@ button {
 .grownups-list { margin-top: 6px; }
 .grownups-list .chip { font-size: 0.85rem; padding: 6px 12px; }
 
+/* ---------- verse screen: the Mastery Ladder menu (plans.html §3.3) ---------- */
+
+.verse-card { text-align: center; }
+.verse-card h2 { margin: 0 0 4px; font-size: 1.3rem; }
+.verse-card .verse-display { padding: 4px 6px; font-size: 1.1rem; }
+.verse-card .stars-big { font-size: 1.6rem; letter-spacing: 3px; margin: 2px 0 8px; }
+
+.ladder-row-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.ladder-row-title { font-weight: bold; font-size: 1.05rem; }
+.ladder-done { color: var(--green); font-weight: bold; }
+/* Gentle pulse draws the eye to the suggested "play next" row without
+   implying anything else is locked — the ladder never blocks a tap. */
+.ladder-hint { color: var(--red); font-weight: bold; animation: ladder-pulse 1.4s ease-in-out infinite; }
+@keyframes ladder-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.ladder-games { margin: 0; justify-content: flex-start; }
+.ladder-empty { margin: 0; opacity: 0.6; font-size: 0.95rem; }
+
 /* ---------- game stage ---------- */
 
 .stage {
