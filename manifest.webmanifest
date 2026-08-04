@@ -1,0 +1,18 @@
+{
+  "name": "Sparks Verse Arcade",
+  "short_name": "Verse Arcade",
+  "description": "20 Bible-memory games covering the Awana Sparks handbooks",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#aee3ff",
+  "theme_color": "#aee3ff",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23aee3ff'/><text x='50' y='50' text-anchor='middle' dominant-baseline='central' font-size='64'>✨</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
