@@ -48,6 +48,17 @@ page.on('console', (msg) => {
 
 const failures = [];
 
+// Writes sparksArcade.v2 straight into localStorage, then navigates with a
+// cache-busting query string so the browser does a real full-document
+// reload (a same-document hash-only goto would leave js/lib/progress.js's
+// already-loaded module state stale, never re-reading what we just wrote).
+let seedNonce = 0;
+async function gotoWithProgress(hash, state) {
+  await page.evaluate((s) => localStorage.setItem('sparksArcade.v2', JSON.stringify(s)), state);
+  seedNonce++;
+  await page.goto(`${base}/index.html?seed=${seedNonce}${hash}`);
+}
+
 async function check(name, fn) {
   pageErrors.length = 0;
   try {
@@ -152,6 +163,48 @@ await check('sticker book view', async () => {
 await check('verse garden view', async () => {
   await page.goto(`${base}/#/garden`);
   await page.waitForSelector('.card', { timeout: 5000 });
+});
+
+await check('trophy shelf: empty state renders with no errors', async () => {
+  await page.goto(`${base}/#/trophies`);
+  await page.waitForSelector('.trophy-empty', { timeout: 5000 });
+  const cards = await page.locator('.trophy-card').count();
+  if (cards !== 0) throw new Error(`expected 0 trophy cards in the empty state, got ${cards}`);
+});
+
+await check('trophy shelf: 1 stage-3 verse shows 1 trophy card (date + mode)', async () => {
+  await gotoWithProgress('#/trophies', {
+    verses: {
+      'hg.rank.Rank 1.1 John 4:14': {
+        stage: 3, passes: {}, lastPlayed: new Date().toISOString(),
+        recited: { at: new Date().toISOString(), mode: 'checkoff' },
+      },
+    },
+    activities: {}, practiceDays: [], drawings: {},
+  });
+  await page.waitForSelector('.trophy-card', { timeout: 5000 });
+  const n = await page.locator('.trophy-card').count();
+  if (n !== 1) throw new Error(`expected 1 trophy card, got ${n}`);
+  const meta = await page.locator('.trophy-meta').first().textContent();
+  if (!meta || !meta.trim()) throw new Error('trophy card is missing its date/mode meta line');
+});
+
+await check('book screen: ≥2 stage≥1 verses shows the 🔁 Review my verses card', async () => {
+  await gotoWithProgress('#/b/hg', {
+    verses: {
+      'hg.rank.Rank 1.1 John 4:14': { stage: 1, passes: {}, recited: null, lastPlayed: null },
+      'hg.rank.Rank 3.Psalm 147:5': { stage: 1, passes: {}, recited: null, lastPlayed: new Date().toISOString() },
+    },
+    activities: {}, practiceDays: [], drawings: {},
+  });
+  await page.waitForSelector('.review-card', { timeout: 5000 });
+});
+
+await check('book screen: <2 stage≥1 verses hides the review card', async () => {
+  await gotoWithProgress('#/b/hg', { verses: {}, activities: {}, practiceDays: [], drawings: {} });
+  await page.waitForSelector('.section-row', { timeout: 5000 });
+  const n = await page.locator('.review-card').count();
+  if (n !== 0) throw new Error(`expected no review card with an empty progress state, got ${n}`);
 });
 
 await browser.close();

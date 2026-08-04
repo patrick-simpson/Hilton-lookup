@@ -75,7 +75,9 @@ export default {
 
     const hard = ctx.hard;
     const optionCount = hard ? 4 : 3;
-    const timerMs = hard ? 6000 : 10000;
+    // Encore (plans.html §9.5): hard mode keeps the same 4 options as before
+    // but the timer is back to 8s — memory demand over speed pressure.
+    const timerMs = hard ? 8000 : 10000;
 
     // Round verses: every non-list verse in the section. If the section is
     // all book-lists, fall back to the lists themselves (their labels work

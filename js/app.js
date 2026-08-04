@@ -15,13 +15,15 @@ import {
 import {
   getStars, addStars, sectionProgress, bookProgress, entryComplete,
   activityKey, isActivityDone, toggleActivity, growthStage, GROWTH_EMOJI,
-  SECTION_STICKERS, resetAll,
+  SECTION_STICKERS, resetAll, getVerse, practiceDaysThisWeek,
 } from './lib/progress.js';
 import { ladderFor, stageDone, nextRow } from './lib/ladder.js';
 import { reciteView } from './lib/recite.js';
 
 const app = document.getElementById('app');
 const JEWEL_ICON = { rank: '🏅', red: '❤️', green: '💚' };
+// Recitation mode icons (plans.html §8), reused on the Trophy Shelf (P4.5b).
+const MODE_ICON = { checkoff: '🧑‍🤝‍🧑', recording: '🎙️', sr: '🪄', club: '🏠' };
 
 // Official Awana art (see img/): book emblems/wordmarks + celebration pieces.
 const BOOK_ART = {
@@ -75,6 +77,97 @@ function go(hash) { location.hash = hash; }
 function starsText(n) { return n > 0 ? '⭐'.repeat(n) : '·'; }
 
 function findBook(id) { return BOOKS.find((b) => b.id === id); }
+
+// ---------- review queue (plans.html §9 P4.4): spaced practice, no scheduler ----------
+//
+// A lightweight module-level queue of routes, persisted to sessionStorage
+// (not just a variable) so it survives the hashchange re-render between
+// each queued verse. Built once when "🔁 Review my verses" is tapped: the
+// book's stage≥1 verses, oldest lastPlayed first (nulls first — never
+// played beats "played ages ago"), capped at 5, each pointed at its ladder
+// Recall row's first available game.
+const REVIEW_KEY = 'sparksArcade.reviewQueue';
+
+function getReviewQueue() {
+  try {
+    const raw = sessionStorage.getItem(REVIEW_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.routes) || !parsed.routes.length) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+function saveReviewQueue(rq) {
+  try { sessionStorage.setItem(REVIEW_KEY, JSON.stringify(rq)); } catch { /* private mode */ }
+}
+function clearReviewQueue() {
+  try { sessionStorage.removeItem(REVIEW_KEY); } catch { /* private mode */ }
+}
+
+// How many of this book's verses are eligible for review (stage ≥ 1) — the
+// book screen only offers the review card once there are ≥2 of them.
+function reviewEligibleCount(book) {
+  let n = 0;
+  for (const section of book.sections) {
+    for (const inst of sectionInstances(book, section)) {
+      if (getStars(inst.key) >= 1) n++;
+    }
+  }
+  return n;
+}
+
+function startReviewQueue(book) {
+  const items = [];
+  for (const section of book.sections) {
+    sectionInstances(book, section).forEach((inst, idx) => {
+      if (getStars(inst.key) < 1) return;
+      items.push({ section, idx, verse: inst, lastPlayed: getVerse(inst.key).lastPlayed });
+    });
+  }
+  // Oldest first; never-played (lastPlayed null) sorts before anything dated.
+  items.sort((a, b) => {
+    if (!a.lastPlayed && !b.lastPlayed) return 0;
+    if (!a.lastPlayed) return -1;
+    if (!b.lastPlayed) return 1;
+    return new Date(a.lastPlayed) - new Date(b.lastPlayed);
+  });
+  const routes = items.slice(0, 5).map((item) => {
+    const recallRow = ladderRowsFor(book, item.section, item.verse).find((r) => r.n === 3);
+    const gameId = recallRow && recallRow.games[0];
+    if (!gameId) return null;
+    return `#/b/${book.id}/${item.section.id}/play/${item.idx}/${gameId}`;
+  }).filter(Boolean);
+  if (!routes.length) return;
+  saveReviewQueue({ routes, index: 0 });
+  go(routes[0]);
+}
+
+// Advances to the next queued verse, or clears the queue when it was the
+// last one (the win overlay handles the "sparkling" celebration itself).
+function advanceReviewQueue() {
+  const rq = getReviewQueue();
+  if (!rq) return;
+  const nextIndex = rq.index + 1;
+  if (nextIndex >= rq.routes.length) { clearReviewQueue(); return; }
+  saveReviewQueue({ routes: rq.routes, index: nextIndex });
+  go(rq.routes[nextIndex]);
+}
+
+function reviewCard(book) {
+  const card = el('button', 'card review-card');
+  card.append(el('span', 'review-card-icon', '🔁'));
+  const body = el('div', 'review-card-body');
+  body.append(el('h3', null, 'Review my verses'), el('p', null, 'Practice a few you haven’t played in a while.'));
+  card.append(body);
+  card.onclick = () => { sfx.click(); startReviewQueue(book); };
+  return card;
+}
+
+function reviewChip(rq) {
+  return el('span', 'chip review-chip', `reviewing ${rq.index + 1}/${rq.routes.length}`);
+}
 
 // ---------- 🎧 listen rows (Story Time page + section "tonight's story" cards) ----------
 
@@ -205,6 +298,13 @@ function homeView() {
   hero.append(mascot, el('h1', null, 'Sparks Verse Arcade'), el('p', null, 'Pick your handbook and play your way to hiding God’s Word in your heart!'));
   app.append(hero);
 
+  // Gentle streaks (P4.5c): celebration-only — nothing shows at 0 days, and
+  // there is never a broken-streak or reminder framing.
+  const practiceDays = practiceDaysThisWeek();
+  if (practiceDays >= 1) {
+    app.append(el('p', 'streak-line', `🎉 You practiced ${practiceDays} day${practiceDays === 1 ? '' : 's'} this week!`));
+  }
+
   for (const book of BOOKS) {
     const p = bookProgress(book);
     const card = el('button', `card book-card book-${book.color}`);
@@ -222,7 +322,9 @@ function homeView() {
   gardenBtn.onclick = () => go('#/garden');
   const storytimeBtn = el('button', 'btn btn-blue', '📻 Story Time');
   storytimeBtn.onclick = () => go('#/storytime');
-  row.append(stickersBtn, gardenBtn, storytimeBtn);
+  const trophiesBtn = el('button', 'btn btn-red', '🏆 Trophies');
+  trophiesBtn.onclick = () => go('#/trophies');
+  row.append(stickersBtn, gardenBtn, storytimeBtn, trophiesBtn);
   app.append(row);
 
   // Bible translation picker
@@ -252,7 +354,9 @@ function homeView() {
 function topBar(title, backHash) {
   const bar = el('div', 'top-bar');
   const back = el('button', 'back-btn', '⬅ Back');
-  back.onclick = () => go(backHash);
+  // Leaving via Back always clears any in-progress review queue (P4.4) — a
+  // no-op when there isn't one.
+  back.onclick = () => { clearReviewQueue(); go(backHash); };
   bar.append(back, el('h1', null, title));
   app.append(bar);
   return bar;
@@ -261,6 +365,9 @@ function topBar(title, backHash) {
 function bookView(book) {
   topBar(`${book.emoji} ${book.name}`, '#/');
   app.append(artImg(BOOK_ART[book.id].banner, `book-banner banner-${book.id}`, book.name));
+  // Per-book review chip (plans.html §9 P4.4): only worth offering once
+  // there's a real pool of stage≥1 verses to draw from.
+  if (reviewEligibleCount(book) >= 2) app.append(reviewCard(book));
   for (const section of book.sections) {
     const game = GAMES[section.game];
     const p = sectionProgress(book, section);
@@ -485,6 +592,8 @@ function gameView(book, section, verseIdx, gameId) {
   const verseHash = `${sectionHash}/play/${idx}`;
 
   topBar(`${game.icon} ${game.title}`, verseHash);
+  const rq = getReviewQueue();
+  if (rq) app.append(reviewChip(rq));
   verseChipRail(book, section, instances, idx, sectionHash);
 
   const controls = hearSingControls(verse);
@@ -526,10 +635,27 @@ function showWinOverlay({ stars, message, book, section, instances, idx, section
     el('h2', null, message || 'Way to go, Sparky!'),
     el('p', null, instances[idx].label),
   );
+
+  // Review queue (P4.4): while active, the primary button drives the queue
+  // forward instead of just replaying; the last verse gets a small
+  // celebration and the queue clears right here.
+  const rq = getReviewQueue();
+  const reviewQueueDone = !!(rq && rq.index + 1 >= rq.routes.length);
+  if (reviewQueueDone) {
+    card.append(el('p', 'review-celebrate', '✨ Your verses are sparkling!'));
+    clearReviewQueue();
+  }
+
   const row = el('div', 'btn-row');
-  const again = el('button', 'btn btn-primary', '🔁 Play again');
-  again.onclick = () => { overlay.remove(); render(); };
-  row.append(again);
+  if (rq && !reviewQueueDone) {
+    const nextReview = el('button', 'btn btn-primary', '➡️ Next review verse');
+    nextReview.onclick = () => { overlay.remove(); advanceReviewQueue(); };
+    row.append(nextReview);
+  } else {
+    const again = el('button', 'btn btn-primary', '🔁 Play again');
+    again.onclick = () => { overlay.remove(); render(); };
+    row.append(again);
+  }
 
   // Suggest the next not-yet-done ladder stage for this verse. Row 4
   // (Recite) always has somewhere to send the kid — the recitation module —
@@ -608,6 +734,10 @@ function storyTimeView() {
 function gardenView() {
   topBar('🌻 Verse Garden', '#/');
   app.append(el('p', null, 'Every verse you practice grows a plant. Three stars makes it bloom!'));
+  // Mastery map legend (P4.5a) — growthStage() already derives straight from
+  // the storage stage (see js/lib/progress.js), so the garden's tiles are
+  // honest mastery, not a separate "played a game" counter.
+  app.append(el('p', 'garden-legend', '🌰 not started · 🌱 built it · 🌿 recalled it · 🌻 recited word-perfect'));
   for (const book of BOOKS) {
     const card = el('div', 'card');
     card.append(el('h2', null, `${book.emoji} ${book.name}`));
@@ -626,6 +756,48 @@ function gardenView() {
   }
 }
 
+// Trophy Shelf (P4.5b): the mastery-honest reward — one medal per verse that
+// has actually reached stage 3 (word-perfect recitation, via recordRecited),
+// never for a game win alone. Walks every verse instance in the curriculum
+// (BOOKS × sectionInstances), not just what's been touched this session.
+function trophiesView() {
+  topBar('🏆 Trophy Shelf', '#/');
+  let any = false;
+  for (const book of BOOKS) {
+    const trophies = [];
+    for (const section of book.sections) {
+      for (const inst of sectionInstances(book, section)) {
+        const v = getVerse(inst.key);
+        if (v.stage === 3) trophies.push({ inst, v });
+      }
+    }
+    if (!trophies.length) continue;
+    any = true;
+    const card = el('div', 'card');
+    const head = el('div', 'trophy-book-head');
+    head.append(artImg(BOOK_ART[book.id].emblem, 'trophy-emblem', `${book.name} emblem`), el('h2', null, book.name));
+    card.append(head);
+    const grid = el('div', 'trophy-grid');
+    for (const { inst, v } of trophies) {
+      const medal = el('div', 'trophy-card');
+      medal.append(el('span', 'trophy-medal', '🏅'));
+      medal.append(el('div', 'trophy-ref', inst.label));
+      const dateStr = v.recited?.at ? new Date(v.recited.at).toLocaleDateString() : '';
+      const modeIcon = MODE_ICON[v.recited?.mode] || '';
+      medal.append(el('div', 'trophy-meta', [dateStr, modeIcon].filter(Boolean).join(' ')));
+      grid.append(medal);
+    }
+    card.append(grid);
+    app.append(card);
+  }
+  if (!any) {
+    const empty = el('div', 'card trophy-empty');
+    empty.append(artImg('img/sparky-bookstack.webp', 'trophy-empty-art', 'Sparky with a stack of books'));
+    empty.append(el('p', null, 'Say a verse word-perfect to a grown-up to win your first trophy!'));
+    app.append(empty);
+  }
+}
+
 // ---------- router ----------
 
 function render() {
@@ -637,6 +809,7 @@ function render() {
     if (parts[0] === 'stickers') return stickersView();
     if (parts[0] === 'garden') return gardenView();
     if (parts[0] === 'storytime') return storyTimeView();
+    if (parts[0] === 'trophies') return trophiesView();
     if (parts[0] === 'b') {
       const book = findBook(parts[1]);
       if (!book) return homeView();

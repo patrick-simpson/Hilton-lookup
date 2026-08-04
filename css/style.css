@@ -145,6 +145,19 @@ button {
   white-space: nowrap;
 }
 
+/* Gentle streak line (plans.html §9 P4.5c) — celebration-only, never shown
+   at 0 practice days this week, never a broken-streak/reminder framing. */
+.streak-line {
+  text-align: center;
+  font-weight: bold;
+  color: var(--green);
+  background: var(--green-soft);
+  border-radius: 999px;
+  padding: 8px 14px;
+  margin: 4px auto 10px;
+  width: fit-content;
+}
+
 /* ---------- sections & entries ---------- */
 
 .section-row {
@@ -288,6 +301,39 @@ button {
 .grownups a.chip { text-decoration: none; display: inline-block; }
 .grownups-list { margin-top: 6px; }
 .grownups-list .chip { font-size: 0.85rem; padding: 6px 12px; }
+
+/* ---------- review queue (plans.html §9 P4.4): spaced practice card, chip,
+   celebration ---------- */
+
+.review-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  min-height: 64px;
+  border-left: 12px solid var(--purple);
+  background: #f7f0ff;
+}
+.review-card-icon { font-size: 2.2rem; flex: 0 0 auto; }
+.review-card-body h3 { margin: 0; font-size: 1.1rem; }
+.review-card-body p { margin: 2px 0 0; font-size: 0.9rem; opacity: 0.85; }
+
+.review-chip {
+  display: flex;
+  width: fit-content;
+  margin: 0 0 8px;
+  background: #f7f0ff;
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.review-celebrate {
+  text-align: center;
+  font-weight: bold;
+  color: var(--purple);
+  margin: 4px 0 0;
+}
 
 /* ---------- verse screen: the Mastery Ladder menu (plans.html §3.3) ---------- */
 
@@ -503,6 +549,46 @@ button {
 .verse-display .verse-ref { display: block; margin-top: 8px; font-size: 1rem; opacity: 0.75; font-weight: bold; }
 
 .stars-big { font-size: 3rem; text-align: center; letter-spacing: 6px; }
+
+/* ---------- Verse Garden legend (plans.html §9 P4.5a) ---------- */
+
+.garden-legend {
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  margin: -6px 0 12px;
+}
+
+/* ---------- Trophy Shelf (plans.html §9 P4.5b): mastery-honest rewards —
+   one medal per verse actually recited word-perfect (stage 3), never for a
+   game win alone. ---------- */
+
+.trophy-book-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.trophy-emblem { width: 46px; height: auto; flex: 0 0 auto; }
+.trophy-book-head h2 { margin: 0; font-size: 1.2rem; }
+
+.trophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+.trophy-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff7df;
+  border: 3px solid var(--yellow);
+  border-radius: 16px;
+  padding: 10px 6px;
+}
+.trophy-medal { font-size: 2.4rem; }
+.trophy-ref { font-weight: bold; font-size: 0.95rem; margin-top: 4px; }
+.trophy-meta { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
+
+.trophy-empty { text-align: center; }
+.trophy-empty-art { height: 100px; width: auto; }
+.trophy-empty p { font-weight: bold; margin-top: 8px; }
 
 /* ---------- overlay (win screen) ---------- */
 

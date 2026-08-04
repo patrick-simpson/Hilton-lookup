@@ -2,6 +2,13 @@
 // missing word. One blank per round, up to 6 blanks (9 in hard mode) spread
 // left-to-right across the verse. Wrong balloons wiggle and stay; the kid
 // just tries again. Long verses show a phrase window around the blank.
+//
+// Encore (plans.html §9.5, ctx.hard): the think-first beat stays silent (no
+// spoken prompt), but instead of hiding each balloon's label entirely while
+// it's airborne, balloons show just the first letter (a recall nudge) —
+// full words reveal once the beat resolves, same as every other difficulty.
+
+import { fadeWord } from '../lib/engine.js';
 
 export default {
   id: 'balloon',
@@ -200,11 +207,15 @@ export default {
         spot.style.animationDelay = (-Math.random() * 2.5).toFixed(2) + 's';
         spot.style.marginTop = ctx.randInt(jitterMax) + 'px';
 
-        const b = el('button', 'balloon wordless');
-        b.disabled = true; // inert while wordless — no mistake can register
+        // Hard mode peeks the first letter instead of hiding the label
+        // outright — everyone else gets the classic blank-label "wordless"
+        // look until the beat resolves.
+        const b = el('button', 'balloon' + (ctx.hard ? '' : ' wordless'));
+        b.disabled = true; // inert while airborne — no mistake can register
         const bal = el('span', 'bal', '🎈');
         bal.style.filter = `hue-rotate(${ctx.randInt(300)}deg)`;
-        const lbl = el('span', 'lbl', '');
+        const lbl = el('span', 'lbl', ctx.hard ? fadeWord(trim(word), 1) : '');
+        b.dataset.word = trim(word); // full word, for test drivers matching a faded label
         b.append(bal, lbl);
 
         b.onclick = () => {
