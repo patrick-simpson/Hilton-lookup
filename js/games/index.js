@@ -9,7 +9,7 @@ import disappear from './disappear.js';
 import balloon from './balloon.js';
 import firefly from './firefly.js';
 import karaoke from './karaoke.js';
-import match from './match.js';
+import echo from './echo.js';
 import refrace from './refrace.js';
 import feed from './feed.js';
 import hopscotch from './hopscotch.js';
@@ -24,7 +24,7 @@ import garden from './garden.js';
 
 const list = [
   scramble, falling, train, puzzle, disappear, balloon, firefly, karaoke,
-  match, refrace, feed, hopscotch, slash, stones, rocket, spinner, relay,
+  echo, refrace, feed, hopscotch, slash, stones, rocket, spinner, relay,
   hotpotato, stickers, garden,
 ];
 

@@ -33,7 +33,7 @@ scope and sequence — all three handbooks, every section, every verse.
 | 6 | 🎈 Pop the Balloon | HangGlider Green Jewel 1 (+ SkyStormer Red Jewel 2) |
 | 7 | 🏮 Firefly Catch | HangGlider Red Jewel 4 |
 | 8 | 🎤 Verse Karaoke | WingRunner Green Jewel 1 |
-| 9 | 🃏 Memory Match | HangGlider Red Jewel 2 (+ SkyStormer Green Jewel 4) |
+| 9 | 🔊 Echo Chamber | HangGlider Red Jewel 2 (+ SkyStormer Green Jewel 4) |
 | 10 | 🏁 Reference Race | WingRunner Green Jewel 2 (+ SkyStormer Green Jewel 2) |
 | 11 | 🍎 Feed Sparky | WingRunner Red Jewel 1 |
 | 12 | 🦘 Verse Hopscotch | WingRunner Green Jewel 3 |

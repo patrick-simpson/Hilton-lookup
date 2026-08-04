@@ -29,7 +29,7 @@ const STRATEGY = {
   rocket: 'order', falling: 'order', slash: 'order', puzzle: 'order',
   relay: 'multi', feed: 'multi',
   disappear: 'monkey', balloon: 'monkey', firefly: 'monkey', karaoke: 'monkey',
-  match: 'monkey', refrace: 'monkey', spinner: 'monkey', hotpotato: 'monkey',
+  echo: 'monkey', refrace: 'monkey', spinner: 'monkey', hotpotato: 'monkey',
   stickers: 'monkey', garden: 'monkey',
 };
 // Buttons that move the game forward without being word answers.

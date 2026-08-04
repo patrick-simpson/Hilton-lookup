@@ -45,7 +45,7 @@ export const BOOKS = [
         ],
       },
       {
-        id: 'rj2', name: 'Red Jewel 2', jewel: 'red', game: 'match',
+        id: 'rj2', name: 'Red Jewel 2', jewel: 'red', game: 'echo',
         entries: [
           { n: '2:1', title: 'Return Flight', refs: ['Genesis 1:1'], review: true },
           { n: '2:2', title: 'Noah and the Flood', refs: ['John 17:17'] },
@@ -280,7 +280,7 @@ export const BOOKS = [
         ],
       },
       {
-        id: 'gj4', name: 'Green Jewel 4', jewel: 'green', game: 'match', hard: true,
+        id: 'gj4', name: 'Green Jewel 4', jewel: 'green', game: 'echo', hard: true,
         entries: [
           { n: '4:1', title: 'Being a Good Friend', refs: ['Proverbs 17:17'] },
           { n: '4:2', title: 'Being a Good Friend', refs: [] },
