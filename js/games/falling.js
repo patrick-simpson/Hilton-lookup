@@ -1,6 +1,15 @@
 // Falling Words — words rain down from the sky and the kid taps the word
 // that comes NEXT in the verse. Long verses play chunk-by-chunk. Hard mode
 // makes the rain fall faster and mixes in a distractor word.
+//
+// Recall-gate (plans.html §5.5 P2.4): before each catch the rain pauses (a
+// slow calm drift, never a hard stop — the RAF loop keeps running), the
+// falling tiles go wordless + disabled so a tap can't miss-count, and the
+// fading guide strip (ctx.guide) pulses at the next slot while
+// ctx.thinkBeat runs. Only once the beat resolves do the words fade back
+// onto the tiles and the rain speeds back up for the actual catch — so the
+// kid has to recall the word from memory before the reflex/elimination game
+// even starts, instead of just reading it off an airborne tile.
 
 export default {
   id: 'falling',
@@ -24,9 +33,12 @@ export default {
       .g-falling .cloud { position: absolute; font-size: 2.1rem; opacity: 0.8; pointer-events: none;
         animation: floaty 4s ease-in-out infinite; }
       .g-falling .faller { position: absolute; left: 0; top: 0; margin: 0; will-change: transform; }
-      .g-falling .faller .word-tile { margin: 0; white-space: nowrap; }
-      .g-falling .strip { min-height: 74px; background: #f4f8ff; border-radius: 16px; padding: 8px; text-align: center; }
-      .g-falling .strip .word-tile { min-height: 44px; padding: 6px 12px; font-size: 1.05rem; margin: 4px; }
+      .g-falling .faller .word-tile { margin: 0; white-space: nowrap; transition: opacity 0.3s ease; }
+      /* think-first beat: the tile keeps its real, measured size (so nothing
+         jumps or overflows when the word appears) but the word itself is
+         invisible + inert while the kid recalls it from memory. */
+      .g-falling .faller.wordless .word-tile { opacity: 0; }
+      .g-falling .guide-word.g-next { box-shadow: 0 0 0 3px var(--yellow); animation: think-pulse 1.1s ease-in-out infinite; }
       .g-falling .start-overlay { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column;
         gap: 14px; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.6); }
       .g-falling .start-overlay p { margin: 0; font-weight: bold; font-size: 1.1rem; }
@@ -50,8 +62,11 @@ export default {
       sky.appendChild(c);
     });
 
-    const strip = el('div', 'strip');
-    root.append(hud, sky, strip);
+    root.append(hud, sky);
+    // The fading guide strip (below the sky, where the old ?-slot strip
+    // lived) is created lazily in startRound() once the first chunk's
+    // words are known, then just .reset() on every later chunk.
+    let guide = null;
 
     // ----- game state -----
     const chunkSize = 6;
@@ -59,15 +74,16 @@ export default {
     const fallerCount = ctx.hard ? 4 : 3;   // hard adds a distractor tile
     const speedMin = ctx.hard ? 85 : 45;    // px per second
     const speedVar = ctx.hard ? 50 : 30;
+    const pausedFactor = 0.15;              // slow calm drift during the beat — never a hard stop
 
     let roundIdx = 0;
     let nextIdx = 0;
     let mistakes = 0;
     let chunkWords = rounds[0];
-    let slots = [];
     let fallers = [];
     let roundActive = false;
     let running = false;
+    let paused = false;
     let rafId = 0;
     let lastTs = 0;
 
@@ -133,9 +149,15 @@ export default {
       return min + Math.random() * (max - min);
     }
 
+    // Tiles always carry their real word (so sizing/position math is based
+    // on the actual rendered width and never jumps when the word reveals)
+    // but spawn wordless + disabled — the beat's PROMPT phase — until
+    // revealPhase() flips them visible. This also means a tap during the
+    // beat is a no-op: disabled buttons don't fire click at all.
     function spawnFaller(word, isDistractor, stagger, lane) {
-      const node = el('div', 'faller');
+      const node = el('div', 'faller wordless');
       const btn = el('button', 'word-tile', word);
+      btn.disabled = true;
       if (word.length > 12) btn.style.fontSize = '0.95rem';
       node.appendChild(btn);
       sky.appendChild(node);
@@ -160,10 +182,11 @@ export default {
       if (!running) return;
       if (lastTs) {
         const dt = Math.min((ts - lastTs) / 1000, 0.05);
+        const factor = paused ? pausedFactor : 1; // calm drift during the beat, never a hard stop
         const H = sky.clientHeight;
         for (const f of fallers) {
           if (f.flying) continue;
-          f.y += f.speed * dt;
+          f.y += f.speed * dt * factor;
           if (f.y > H) { // fell out — respawn up top at a new spot
             f.y = -f.node.offsetHeight - ctx.randInt(120);
             f.x = randX(f.node.offsetWidth, null);
@@ -173,6 +196,37 @@ export default {
       }
       lastTs = ts;
       rafId = requestAnimationFrame(loop);
+    }
+
+    // ----- recall-gate beat: pause + hide, think, then reveal + resume -----
+    function syncGuidePulse() {
+      const tiles = guide.el.querySelectorAll('.guide-word');
+      tiles.forEach((t, i) => t.classList.toggle('g-next', i === nextIdx));
+    }
+
+    function enterPrompt() {
+      paused = true;
+      for (const f of fallers) {
+        f.btn.disabled = true;
+        f.node.classList.add('wordless');
+      }
+      syncGuidePulse();
+    }
+
+    function revealPhase() {
+      paused = false;
+      for (const f of fallers) {
+        f.btn.disabled = false;
+        f.node.classList.remove('wordless');
+      }
+    }
+
+    async function beginCycle() {
+      if (!running || !roundActive) return;
+      enterPrompt();
+      await ctx.thinkBeat({ anchor: sky });
+      if (!running || !roundActive) return; // round finished/unmounted while waiting
+      revealPhase();
     }
 
     // ----- taps -----
@@ -197,6 +251,7 @@ export default {
       const idx = nextIdx;
       nextIdx++;
       fallers = fallers.filter((x) => x !== f);
+      guide.markDone(idx);
 
       // fly down toward the strip, shrinking as it goes
       const W = sky.clientWidth;
@@ -208,19 +263,13 @@ export default {
       f.node.style.opacity = '0';
       later(() => f.node.remove(), 400);
 
-      // land in the built-so-far strip
-      later(() => {
-        const slot = slots[idx];
-        slot.textContent = chunkWords[idx];
-        slot.className = 'word-tile correct';
-      }, 280);
-
       if (nextIdx >= chunkWords.length) {
         roundActive = false;
         endRound();
       } else {
         const rep = replacementWord();
         spawnFaller(rep.word, rep.isDistractor, 0, ctx.randInt(fallerCount));
+        beginCycle(); // next PROMPT: pause + hide, think, then reveal
       }
     }
 
@@ -232,9 +281,12 @@ export default {
         ? `Part ${roundIdx + 1} of ${rounds.length}`
         : ctx.verse.label;
 
-      clear(strip);
-      slots = chunkWords.map(() => el('span', 'word-tile ghost', '?'));
-      slots.forEach((s) => strip.appendChild(s));
+      if (!guide) {
+        guide = ctx.guide(chunkWords);
+        root.appendChild(guide.el);
+      } else {
+        guide.reset(chunkWords);
+      }
 
       for (const f of fallers) f.node.remove();
       fallers = [];
@@ -252,9 +304,11 @@ export default {
 
       roundActive = true;
       if (roundIdx > 0) speakChunk(); // round 0 already heard the whole verse
+      beginCycle();
     }
 
     function endRound() {
+      paused = false;
       const gone = fallers;
       fallers = [];
       for (const f of gone) {
@@ -272,7 +326,7 @@ export default {
         cancelAnimationFrame(rafId);
         ctx.confetti();
         const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-        later(() => ctx.win({ stars }), 700);
+        later(() => ctx.win({ stars, mistakes }), 700);
       }
     }
 
