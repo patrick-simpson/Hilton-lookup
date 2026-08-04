@@ -1,12 +1,23 @@
-// Reference Race — read the verse, then race to tap the right Bible
-// reference before the sparkle timer runs out. Every correct answer moves
-// the runner one step down the track toward the finish flag (5 steps).
-// Reading game: no speak on mount; a 🔊 button reads each round's verse
-// text (never the reference — that would give the answer away!).
+// Reference Race — trains the verse↔reference link in BOTH directions.
+// Odd races (1st, 3rd, 5th): read the verse, race to tap its Bible
+// reference. Even races (2nd, 4th): see the reference, race to tap how the
+// verse starts. Either way, tap before the sparkle timer runs out. Every
+// correct answer moves the runner one step down the track toward the
+// finish flag (5 steps). Reading game: no speak on mount; a 🔊 button reads
+// each round's verse text (never the reference — that would give the
+// answer away!).
 
 const FALLBACK_REFS = [
   'John 3:16', 'Psalm 23:1', 'Romans 3:23', 'Acts 16:31',
   'Genesis 1:1', '1 John 4:14', 'Joshua 1:9', 'Psalm 147:5',
+];
+
+// First-~5-word phrases for the same eight fallback verses, used only when
+// a section's verse pool is too small to supply enough phrase decoys.
+const FALLBACK_PHRASES = [
+  'For God so loved the…', 'The LORD is my shepherd,…', 'For all have sinned and…',
+  'Believe in the Lord Jesus,…', 'In the beginning God created…', 'The Father has sent his…',
+  'Have I not commanded you?…', 'Great is our Lord and…',
 ];
 
 const TOTAL_STEPS = 5;
@@ -15,8 +26,8 @@ export default {
   id: 'refrace',
   title: 'Reference Race',
   icon: '🏁',
-  tagline: 'Race to tap the right reference!',
-  howTo: 'Read the verse, then tap where it lives in the Bible before the sparkle timer runs out! Every right answer runs you closer to the finish flag. Tap 🔊 to hear the verse read out loud.',
+  tagline: 'Race to match verses and references!',
+  howTo: 'Read the verse, then tap where it lives in the Bible before the sparkle timer runs out! Some races flip it around — you’ll see the reference first and pick how the verse starts. Every right answer runs you closer to the finish flag. Tap 🔊 to hear the verse read out loud.',
   group: false,
 
   mount(stage, ctx) {
@@ -32,6 +43,8 @@ export default {
       .g-refrace .say-btn { min-height: 52px; min-width: 62px; font-size: 1.5rem; padding: 6px 14px; }
       .g-refrace .verse-display { font-size: 1.3rem; }
       .g-refrace .verse-display.long { font-size: 1.1rem; }
+      .g-refrace .verse-display.ref-mode { font-weight: bold; font-size: 1.6rem; background: var(--blue-soft); border-radius: 14px; }
+      .g-refrace .prompt-line { text-align: center; font-weight: bold; opacity: 0.65; margin: 2px 0; font-size: 0.9rem; }
       .g-refrace .timer-track { height: 24px; background: #eef2fa; border-radius: 999px; margin: 10px 6px 14px; overflow: visible; }
       .g-refrace .timer-fill { position: relative; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--yellow), #ff9e6d); animation: g-refrace-shrink linear forwards; }
       .g-refrace .timer-fill::after { content: '✨'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 1.25rem; }
@@ -49,6 +62,7 @@ export default {
         .g-refrace .race-track { height: 46px; margin-bottom: 8px; }
         .g-refrace .race-flag, .g-refrace .race-runner { font-size: 1.6rem; }
         .g-refrace .verse-display { font-size: 1.15rem; padding: 8px 6px; }
+        .g-refrace .verse-display.ref-mode { font-size: 1.35rem; }
         .g-refrace .timer-track { height: 20px; margin: 8px 6px 10px; }
         .g-refrace .ref-row { gap: 8px; margin-top: 8px; }
         .g-refrace .ref-btn { min-height: 58px; }
@@ -119,10 +133,39 @@ export default {
       return decoys;
     }
 
+    // The "first phrase" of a verse, for the reverse (reference→text) round.
+    // Book lists have no sentence to quote, so their label stands in.
+    function phraseFor(verse) {
+      if (verse.isList) return verse.label;
+      const w = verse.words;
+      if (w.length <= 5) return verse.text;
+      return w.slice(0, 5).join(' ') + '…';
+    }
+
+    function phraseDecoysFor(verse) {
+      const need = optionCount - 1;
+      const target = phraseFor(verse);
+      const fromSection = [...new Set(
+        versePool.map((v) => phraseFor(v)).filter((p) => p !== target)
+      )];
+      let decoys = shuffle(fromSection).slice(0, need);
+      if (decoys.length < need) {
+        const extra = FALLBACK_PHRASES.filter(
+          (p) => p !== target && !decoys.includes(p)
+        );
+        decoys = decoys.concat(shuffle(extra).slice(0, need - decoys.length));
+      }
+      return decoys;
+    }
+
     function playRound(retry) {
       if (finished) return;
       clear(panel);
       const verse = plan[step];
+      // Odd races (1st, 3rd, 5th) show the text and ask for the reference;
+      // even races (2nd, 4th) flip it — show the reference, ask for the
+      // verse's opening words. Both directions train the same link.
+      const refMode = step % 2 === 1;
       let answered = false;
 
       if (retry) panel.appendChild(el('div', 'msg', 'Try again! 🐢'));
@@ -135,8 +178,16 @@ export default {
       top.appendChild(say);
       panel.appendChild(top);
 
-      const display = el('div', 'verse-display' + (verse.text.length > 150 ? ' long' : ''), verse.text);
-      panel.appendChild(display);
+      let answerKey;
+      if (refMode) {
+        panel.appendChild(el('div', 'prompt-line', 'Which verse starts like this?'));
+        panel.appendChild(el('div', 'verse-display ref-mode', verse.label));
+        answerKey = phraseFor(verse);
+      } else {
+        panel.appendChild(el('div', 'prompt-line', 'Where does it live?'));
+        panel.appendChild(el('div', 'verse-display' + (verse.text.length > 150 ? ' long' : ''), verse.text));
+        answerKey = verse.label;
+      }
 
       const timerTrack = el('div', 'timer-track');
       const fill = el('div', 'timer-fill');
@@ -153,12 +204,13 @@ export default {
       }, timerMs);
 
       const row = el('div', 'ref-row');
-      const options = shuffle([verse.label, ...decoysFor(verse)]);
+      const decoys = refMode ? phraseDecoysFor(verse) : decoysFor(verse);
+      const options = shuffle([answerKey, ...decoys]);
       for (const label of options) {
         const btn = el('button', 'btn ref-btn', label);
         btn.onclick = () => {
           if (answered || finished) return;
-          if (label === verse.label) {
+          if (label === answerKey) {
             answered = true;
             cancel(timerTimeout);
             fill.style.animationPlayState = 'paused';
@@ -188,7 +240,7 @@ export default {
         panel.appendChild(el('div', 'finish-msg', '🏁 You made it! 🎉'));
         ctx.confetti();
         const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-        later(() => ctx.win({ stars }), 900);
+        later(() => ctx.win({ stars, mistakes }), 900);
       }, 550);
     }
 

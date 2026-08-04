@@ -1,8 +1,13 @@
 // Verse Karaoke — a bouncing star hops word-to-word while the kid sings along.
-// Phase 1 LISTEN: the star hops on a timer (turtle/rabbit speed) while the verse
-// is spoken. Phase 2 YOUR TURN: every 3rd word becomes 🎵 and the star only hops
-// when the kid taps. Phase 3 STAR PERFORMANCE: (almost) all words hidden — recite
-// it all, then take a bow! Performance game: always 3 stars for finishing.
+// Phase 1 LISTEN: when this verse has a real song recording, the star's hops
+// are driven straight off the audio's word timeline (see js/lib/audio.js);
+// otherwise it falls back to a timer (turtle/rabbit speed) while the verse
+// is spoken. Phase 2 YOUR TURN: every 3rd word becomes 🎵 and the star only
+// hops when the kid taps. Phase 3 STAR PERFORMANCE: (almost) all words
+// hidden — recite it all, then take a bow! Performance game: always 3 stars
+// for finishing.
+
+import { songEntryFor, playVerse, onWordTick } from '../lib/audio.js';
 
 export default {
   id: 'karaoke',
@@ -72,6 +77,12 @@ export default {
     let tiles = [];
     let hopTimer = null;
     let finished = false;
+    let songDriven = false; // phase 1 only: hops come from onWordTick, not a timer
+    let songUnsub = null;
+
+    function stopSongTicks() {
+      if (songUnsub) { songUnsub(); songUnsub = null; }
+    }
 
     const BADGES = { 1: '👂 Listen!', 2: '🎵 Your turn!', 3: '🌟 Star show!' };
     const HINTS = {
@@ -131,26 +142,32 @@ export default {
     function buildControls() {
       clear(controls);
       if (phase === 1) {
-        const slow = chip('🐢');
-        const fast = chip('🐇');
-        const setSpeed = (ms) => {
-          sfx.click();
-          speed = (speed === ms) ? NORMAL : ms; // tap again to go back to normal
-          slow.classList.toggle('active', speed === TURTLE);
-          fast.classList.toggle('active', speed === RABBIT);
-        };
-        slow.onclick = () => setSpeed(TURTLE);
-        fast.onclick = () => setSpeed(RABBIT);
+        if (!songDriven) {
+          // A real recording plays at its own fixed pace, so turtle/rabbit
+          // speed has nothing to act on — only offer it in the timer fallback.
+          const slow = chip('🐢');
+          const fast = chip('🐇');
+          const setSpeed = (ms) => {
+            sfx.click();
+            speed = (speed === ms) ? NORMAL : ms; // tap again to go back to normal
+            slow.classList.toggle('active', speed === TURTLE);
+            fast.classList.toggle('active', speed === RABBIT);
+          };
+          slow.onclick = () => setSpeed(TURTLE);
+          fast.onclick = () => setSpeed(RABBIT);
+          controls.append(slow, fast);
+        }
         const hear = chip('🔊');
         hear.onclick = () => { sfx.click(); ctx.speak(); };
         const skip = el('button', 'btn', 'Skip ⏭️');
         skip.onclick = () => {
           sfx.click();
           if (hopTimer) { unlater(hopTimer); hopTimer = null; }
+          stopSongTicks();
           ctx.stopSpeak();
           startPhase(2);
         };
-        controls.append(slow, fast, hear, skip);
+        controls.append(hear, skip);
       } else if (phase === 2 || (phase === 3 && !hard)) {
         const hear = chip('🔊');
         hear.onclick = () => { sfx.click(); ctx.speak(); };
@@ -159,8 +176,10 @@ export default {
     }
 
     function startPhase(p) {
+      stopSongTicks();
       phase = p;
       idx = -1;
+      songDriven = p === 1 && !!songEntryFor(ctx.verse.ref);
       badge.textContent = BADGES[p];
       hint.textContent = HINTS[p];
       badge.classList.remove('pop');
@@ -169,7 +188,29 @@ export default {
       buildTiles();
       buildControls();
       moveStar(tiles[0], true, true); // hover above the first word, ready to drop
-      if (p === 1) hopTimer = later(hop, 900);
+      if (p === 1) {
+        if (songDriven) {
+          songUnsub = onWordTick(onSongTick);
+          playVerse(ctx.verse, { kind: 'sing' });
+        } else {
+          ctx.speak();
+          hopTimer = later(hop, 900);
+        }
+      }
+    }
+
+    // Song-driven phase 1: onWordTick fires once per word, timed off the
+    // actual audio file's duration — just land the star, no timer of our own.
+    function onSongTick(i) {
+      if (phase !== 1 || i >= words.length) return;
+      idx = i;
+      land(idx);
+      if (idx >= words.length - 1) {
+        stopSongTicks();
+        sfx.pop();
+        hint.textContent = 'Get ready… 🎵';
+        later(() => startPhase(2), 1100);
+      }
     }
 
     function hop() {
@@ -224,13 +265,13 @@ export default {
     };
     window.addEventListener('resize', onResize);
 
-    ctx.speak();
     startPhase(1);
 
     return () => {
       timers.forEach(clearTimeout);
       timers.clear();
       window.removeEventListener('resize', onResize);
+      stopSongTicks();
       ctx.stopSpeak();
     };
   },
