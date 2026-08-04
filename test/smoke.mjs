@@ -106,6 +106,13 @@ await check('hg/rj3 verse 0 (NT-1, has a song) → singalong stage mounts', asyn
   if (tiles === 0) throw new Error('no word tiles in Sing-Along stage');
 });
 
+await check('wr/rank verse 0 (John 3:16) → drawtell stage mounts', async () => {
+  await page.goto(`${base}/#/b/wr/rank/play/0/drawtell`);
+  await page.waitForTimeout(1200);
+  const opts = await page.locator('.stage .emoji-opt').count();
+  if (opts !== 4) throw new Error(`expected 4 emoji option buttons, got ${opts}`);
+});
+
 await check('sticker book view', async () => {
   await page.goto(`${base}/#/stickers`);
   await page.waitForSelector('.card', { timeout: 5000 });
