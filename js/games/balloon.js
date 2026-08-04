@@ -32,7 +32,11 @@ export default {
       .g-balloon .balloon { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 76px; min-height: 118px; padding: 6px 4px; }
       .g-balloon .balloon .bal { font-size: 3.6rem; line-height: 1.05; transition: transform 0.08s ease; }
       .g-balloon .balloon:active .bal { transform: scale(0.92); }
-      .g-balloon .balloon .lbl { background: var(--paper); border: 3px solid var(--blue-soft); border-radius: 14px; padding: 7px 12px; font-weight: bold; font-size: 1.1rem; max-width: 150px; box-shadow: 0 3px 0 rgba(38, 50, 75, 0.12); }
+      .g-balloon .balloon .lbl { background: var(--paper); border: 3px solid var(--blue-soft); border-radius: 14px; padding: 7px 12px; font-weight: bold; font-size: 1.1rem; max-width: 150px; box-shadow: 0 3px 0 rgba(38, 50, 75, 0.12); transition: opacity 0.25s ease; }
+      /* think-first beat: balloons drift wordless (empty label) until the
+         beat resolves, then the labels fade in. */
+      .g-balloon .balloon.wordless .lbl { opacity: 0; }
+      .g-balloon .balloon:disabled { cursor: default; }
       .g-balloon .balloon.wrong { animation: wiggle 0.4s ease; }
       .g-balloon .balloon.wrong .lbl { background: var(--red-soft); border-color: var(--red); }
       .g-balloon .balloon.popped { animation: g-balloon-pop 0.5s ease forwards; }
@@ -158,7 +162,7 @@ export default {
     }
 
     // ---- one round: one blank, one flock of balloons ----
-    function playRound() {
+    async function playRound() {
       clear(root);
       roundOver = false;
       const blankIdx = blanks[roundIdx];
@@ -187,17 +191,20 @@ export default {
         sky.appendChild(c);
       });
 
+      // ---- think-first beat: balloons drift wordless, then reveal ----
       const options = shuffle([answer, ...decoysFor(blankIdx, decoyCount)]);
+      const balloons = [];
       options.forEach((word) => {
         const spot = el('div', 'spot');
         spot.style.animationDuration = (2.6 + Math.random() * 1.6).toFixed(2) + 's';
         spot.style.animationDelay = (-Math.random() * 2.5).toFixed(2) + 's';
         spot.style.marginTop = ctx.randInt(jitterMax) + 'px';
 
-        const b = el('button', 'balloon');
+        const b = el('button', 'balloon wordless');
+        b.disabled = true; // inert while wordless — no mistake can register
         const bal = el('span', 'bal', '🎈');
         bal.style.filter = `hue-rotate(${ctx.randInt(300)}deg)`;
-        const lbl = el('span', 'lbl', trim(word));
+        const lbl = el('span', 'lbl', '');
         b.append(bal, lbl);
 
         b.onclick = () => {
@@ -221,9 +228,17 @@ export default {
           }
         };
 
+        balloons.push({ b, lbl, word });
         spot.appendChild(b);
         sky.appendChild(spot);
       });
+
+      await ctx.thinkBeat({ anchor: sky });
+      for (const { b, lbl, word } of balloons) {
+        lbl.textContent = trim(word);
+        b.disabled = false;
+        b.classList.remove('wordless');
+      }
     }
 
     function endRound() {

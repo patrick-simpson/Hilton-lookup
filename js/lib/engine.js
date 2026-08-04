@@ -330,6 +330,43 @@ function createGuide(verse, gameId, hard, words) {
   };
 }
 
+// ---------- "think first" beat (plans.html §7.2 / §5.2) ----------
+
+// A ~2s invitation to recall silently before a cloze game reveals its word
+// candidates. Renders a small badge inside `anchor` (never a full-stage
+// overlay — it must never cover an answer target) and resolves either when
+// `ms` elapses or the instant the kid taps anywhere on the stage, whichever
+// comes first. It only ever touches its own badge element, so if the game
+// unmounts mid-beat the eventual resolve (or the fallback timer) is harmless
+// — there is nothing to cancel from the outside.
+function thinkBeat(stage, { anchor, ms = 1800 } = {}) {
+  const host = anchor || stage;
+  return new Promise((resolve) => {
+    const badge = el('div', 'think-beat');
+    badge.append(
+      el('span', 'think-beat-face', '🤔'),
+      el('span', 'think-beat-text', 'What comes next?'),
+      el('span', 'think-beat-spark', '✨'),
+    );
+    host.appendChild(badge);
+
+    let settled = false;
+    const onTap = () => finish();
+    const timer = setTimeout(finish, ms);
+    function finish() {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      stage.removeEventListener('pointerdown', onTap, true);
+      badge.remove();
+      resolve();
+    }
+    // Capture phase, one-shot: any tap anywhere on the stage skips the beat
+    // instantly, whether or not it lands on a (still-inert) answer target.
+    stage.addEventListener('pointerdown', onTap, true);
+  });
+}
+
 // ---------- ctx factory ----------
 
 // Builds the ctx handed to game.mount(stageEl, ctx). `hooks` is supplied by
@@ -375,6 +412,7 @@ export function makeCtx({ verse, verses, entry, book, section, hard, hooks, stag
       latestGuide = createGuide(verse, game?.id, hard, words);
       return latestGuide;
     },
+    thinkBeat: (opts = {}) => thinkBeat(stage, opts),
     win: (opts = {}) => {
       if (won) return;
       won = true;

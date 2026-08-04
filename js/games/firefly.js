@@ -47,6 +47,12 @@ export default {
       .g-firefly .fly-btn:active { filter: brightness(1.12); }
       .g-firefly .fly-btn.wrong { animation: wiggle 0.35s ease; background: #ffd6d9;
         box-shadow: 0 0 10px 3px rgba(255, 120, 120, 0.55); }
+      /* think-first beat: fireflies wander wordless (no word span text)
+         until the beat resolves, then the word fades/pops in. */
+      .g-firefly .fly-word { transition: opacity 0.25s ease; opacity: 1; }
+      .g-firefly .fly-btn.wordless .fly-word { opacity: 0; }
+      .g-firefly .fly-btn.revealed .fly-word { animation: pop-in 0.3s ease; }
+      .g-firefly .fly-btn:disabled { opacity: 1; cursor: default; }
       .g-firefly .jar { position: absolute; right: 8px; bottom: 4px; text-align: center; z-index: 1; pointer-events: none; }
       .g-firefly .jar .jar-emoji { display: block; font-size: 3.4rem; line-height: 1;
         filter: drop-shadow(0 0 10px rgba(255, 236, 130, 0.4)); }
@@ -193,9 +199,11 @@ export default {
       const rows = Math.ceil(set.length / cols);
       set.forEach((item, i) => {
         const node = el('div', 'fly');
-        const btn = el('button', 'fly-btn');
-        btn.append(el('span', null, '✨'), el('span', null, item.w));
-        if (item.w.length > 12) btn.style.fontSize = '0.9rem';
+        const btn = el('button', 'fly-btn wordless');
+        btn.disabled = true; // inert while wordless — no mistake can register
+        const wordSpan = el('span', 'fly-word', '');
+        btn.append(el('span', null, '✨'), wordSpan);
+        if (item.w.length > 12) wordSpan.style.fontSize = '0.9rem';
         node.appendChild(btn);
         sky.appendChild(node);
         const cellW = W / cols;
@@ -208,6 +216,8 @@ export default {
           node,
           btn,
           correct: item.correct,
+          word: item.w,
+          wordSpan,
           w: fw,
           h: fh,
           x: clamp(col * cellW + Math.random() * Math.max(10, cellW - fw - 8), 4, Math.max(4, W - fw - 4)),
@@ -359,13 +369,27 @@ export default {
     }
 
     // ----- rounds -----
-    function startRound() {
+    // Fireflies spawn wordless and keep wandering (the physics loop never
+    // pauses); the think-first beat just delays when tapping starts to count
+    // and when each firefly's word fades in.
+    function revealFlies() {
+      for (const f of flies) {
+        f.wordSpan.textContent = f.word;
+        f.btn.disabled = false;
+        f.btn.classList.remove('wordless');
+        f.btn.classList.add('revealed');
+      }
+    }
+
+    async function startRound() {
       renderLine();
       spawnFlies(words[blankIdxs[round]]);
-      active = true;
       const w = windowFor(blankIdxs[round]);
       if (round > 0 && w.start !== lastWinStart) speakWindow(); // new phrase — read it
       lastWinStart = w.start;
+      await ctx.thinkBeat({ anchor: sky });
+      revealFlies();
+      active = true;
     }
 
     function nextRound() {

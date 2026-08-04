@@ -36,6 +36,12 @@ export default {
       .g-garden .blank.next { border-color: var(--yellow); background: #fff7df; animation: g-garden-pulse 1.1s ease-in-out infinite; }
       .g-garden .blank.done { border-style: solid; border-color: var(--green); background: var(--green-soft); animation: pop-in 0.3s ease; }
       .g-garden .choices .word-tile.used { opacity: 0.3; pointer-events: none; box-shadow: none; }
+      /* think-first beat: word-bank buttons render wordless+disabled until
+         the beat resolves (once per round, before the first blank), then
+         fade in. */
+      .g-garden .choices .word-tile { transition: opacity 0.25s ease; }
+      .g-garden .choices .word-tile.wordless { opacity: 0; }
+      .g-garden .choices .word-tile.revealed { animation: pop-in 0.3s ease; }
       .g-garden .bfly { position: absolute; z-index: 5; font-size: 2.1rem; pointer-events: none; animation-name: g-garden-flutter; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-duration: 3s; }
       .g-garden .bloom-note { font-size: 1.3rem; margin-top: 6px; font-weight: bold; }
       @keyframes g-garden-pour {
@@ -165,7 +171,7 @@ export default {
     }
 
     // ---- one fill-in-the-blank round ----
-    function playRound() {
+    async function playRound() {
       clear(quiz);
       roundLabel.textContent = `Round ${roundIdx + 1} of ${ROUNDS}`;
 
@@ -197,8 +203,13 @@ export default {
       let ptr = 0;
       blankEls[0].classList.add('next');
 
+      // Word-bank buttons start wordless+disabled; the think-first beat runs
+      // once per round (not once per blank — that would feel naggy) before
+      // any of them appear.
+      const tiles = [];
       for (const wd of options) {
-        const tile = el('button', 'word-tile', tidy(wd));
+        const tile = el('button', 'word-tile wordless');
+        tile.disabled = true;
         tile.onclick = () => {
           if (tile.classList.contains('used') || ptr >= blankIdxs.length) return;
           if (cleanWord(wd) === cleanWord(rw[blankIdxs[ptr]])) {
@@ -223,7 +234,16 @@ export default {
             tile.classList.add('wrong');
           }
         };
+        tiles.push({ tile, wd });
         row.appendChild(tile);
+      }
+
+      await ctx.thinkBeat({ anchor: area });
+      for (const { tile, wd } of tiles) {
+        tile.textContent = tidy(wd);
+        tile.disabled = false;
+        tile.classList.remove('wordless');
+        tile.classList.add('revealed');
       }
     }
 

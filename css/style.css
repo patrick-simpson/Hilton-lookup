@@ -334,6 +334,35 @@ button {
   cursor: pointer;
 }
 
+/* ---------- "think first" beat (plans.html §7.2 / §5.2, ctx.thinkBeat) ---
+   A ~2s invitation to recall silently before a cloze game (balloon/firefly/
+   garden) reveals its word candidates. Rendered inside the game's own
+   layout by ctx.thinkBeat() — small badge, never a full-stage overlay. */
+.think-beat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 8px auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #fff7df;
+  border: 2px dashed var(--yellow);
+  font-weight: bold;
+  font-size: 1.05rem;
+  color: #6b5a00;
+  animation: think-pulse 1.1s ease-in-out infinite;
+}
+.think-beat .think-beat-spark { animation: think-twinkle 1.1s ease-in-out infinite; }
+@keyframes think-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.88; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes think-twinkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.85) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(12deg); }
+}
+
 .verse-display {
   font-size: 1.25rem;
   text-align: center;
