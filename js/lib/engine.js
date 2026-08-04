@@ -90,25 +90,60 @@ export const sfx = {
 // ---------- speech ----------
 
 let voice = null;
+
+// Local-service voices tend to be lower-latency and don't depend on a
+// network round-trip, so within a quality tier they win the tiebreak.
+function bestOf(list) {
+  if (!list.length) return null;
+  return list.find((v) => v.localService) || list[0];
+}
+
 function pickVoice() {
   if (!('speechSynthesis' in window)) return null;
   const voices = speechSynthesis.getVoices();
-  return voices.find((v) => /en[-_]/.test(v.lang) && /female|child|kid|samantha|zira/i.test(v.name))
-    || voices.find((v) => /en[-_]/.test(v.lang)) || voices[0] || null;
+  if (!voices.length) return null;
+  const isEn = (v) => /en[-_]/.test(v.lang);
+  const tierA = voices.filter((v) => isEn(v) && /natural|neural|premium|enhanced/i.test(v.name));
+  const tierB = voices.filter((v) => isEn(v) && /samantha|google us english|aria|jenny/i.test(v.name));
+  const tierC = voices.filter(isEn);
+  return bestOf(tierA) || bestOf(tierB) || bestOf(tierC) || voices[0] || null;
 }
-if ('speechSynthesis' in window) {
+// typeof-guard (not just 'in window') because this runs at module load,
+// where a non-browser host (e.g. Node, for import smoke tests) has no
+// `window` global at all and a bare `in window` would throw ReferenceError.
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   speechSynthesis.onvoiceschanged = () => { voice = pickVoice(); };
+}
+
+// Splits at sentence/clause punctuation (kept on the preceding chunk) so
+// each queued utterance gets a natural pause after it — Web Speech has no
+// SSML, so this is the only lever for pacing. No lookbehind, for compat.
+function splitChunks(text) {
+  const parts = text.match(/[^.!?;:]+[.!?;:]*/g) || [text];
+  return parts.map((p) => p.trim()).filter(Boolean);
 }
 
 export function speak(text) {
   if (!('speechSynthesis' in window) || !text) return;
   speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text.replace(/LORD/g, 'Lord'));
   if (!voice) voice = pickVoice();
-  if (voice) utter.voice = voice;
-  utter.rate = 0.85;
-  utter.pitch = 1.1;
-  speechSynthesis.speak(utter);
+  let warned = false;
+  const onerror = () => {
+    // Fail silently — the 🔊 button should stay usable even if TTS misbehaves.
+    if (!warned) { warned = true; console.warn('speech synthesis error'); }
+  };
+  // Queue every chunk up front (not chained via onend) so a single
+  // speechSynthesis.cancel() — from stopSpeak() or the next speak() call —
+  // clears the whole queue instead of leaving later chunks to fire.
+  for (const chunk of splitChunks(text.replace(/LORD/g, 'Lord'))) {
+    const utter = new SpeechSynthesisUtterance(chunk);
+    utter.lang = 'en-US';
+    if (voice) utter.voice = voice;
+    utter.rate = 0.9;
+    utter.pitch = 1.0;
+    utter.onerror = onerror;
+    speechSynthesis.speak(utter);
+  }
 }
 
 export function stopSpeak() {
