@@ -1,27 +1,42 @@
 # Sparks Verse Arcade ✨
 
-A kid-friendly web app of **20 Bible-memory games** covering the complete Awana® Sparks
-scope and sequence — all three handbooks, every section, every verse.
+A kid-friendly web app of **23 Bible-memory games** covering the complete Awana® Sparks
+scope and sequence — all three handbooks, every section, every verse — built around a
+research-backed **Mastery Ladder**: Listen & Sing → Build → Recall → Recite.
 
 > Unofficial practice app made for Sparks clubbers and their leaders.
 > Not affiliated with or endorsed by Awana.
 
 ## How it works
 
-- **Three handbooks:** 🪂 HangGlider (K), 🛩️ WingRunner (1st), 🚀 SkyStormer (2nd) —
-  27 sections in all (Rank + Red Jewels 1–4 + Green Jewels 1–4 per book), following the
-  official Awana Curriculum Scope and Sequence.
-- **Every section is a different game.** All 20 games appear at least once; seven
-  SkyStormer sections replay earlier games in harder "encore" mode.
+- **Three handbooks:** 🪂 HangGlider (K, green), 🛩️ WingRunner (1st, blue),
+  🚀 SkyStormer (2nd, red) — 27 sections in all (Rank + Red Jewels 1–4 + Green
+  Jewels 1–4 per book), following the official Awana Curriculum Scope and Sequence.
+- **The Mastery Ladder.** Every verse offers four suggested stages — 🎵 Listen & Sing,
+  🧱 Build (the section's signature game), 🧠 Recall, 🏆 Recite — all always tappable,
+  never locked. Stars mean mastery, not game score: ⭐ built it · ⭐⭐ recalled it from
+  memory · ⭐⭐⭐ recited word-perfect **with the reference** (only the Recitation screen
+  grants it: grown-up check-off, record-and-listen, Magic Ears, or said-it-at-club).
+- **Games that force recall, not recognition.** Builder games fade their guides across
+  plays (full text → first letters → blanks); arcade games make kids recall the next
+  word *before* targets appear; Echo Chamber, Draw & Tell, and First-Letter Trail are
+  pure retrieval. Seven SkyStormer "encore" sections demand deeper memory, not speed.
+- **Official Awana audio.** Every verse is read by the real handbook narrators (all four
+  translations), 📻 Story Time plays the handbook's 69 narrated stories and lessons
+  (great in the car), and the Books-of-the-Bible songs power 🎶 Sing-Along Stage —
+  which lights up for any verse the moment you add its song file.
 - **Four translations:** NIV (1984), ESV, KJV, and NKJV — pick on the home screen (📖).
-  Non-NIV texts follow the same verse portioning as the NIV84 handbook entries; stars and
-  stickers carry across translations.
-- **Made for K–2:** every verse can be read aloud (tap 🔊), buttons are big, wrong answers
-  just wiggle — no failing, only retrying.
-- **Progress that motivates:** stars per verse, a 📒 Sticker Book, and a 🌻 Verse Garden
-  where each practiced verse grows from seed to bloom. Saved in the browser (localStorage).
+  Stars and stickers carry across translations.
+- **Made for K–2:** audio-first for pre-readers, big buttons, wrong answers just wiggle —
+  no failing, only retrying.
+- **Progress that motivates, honestly:** the 🌻 Verse Garden grows with mastery
+  (sprout = built, stem = recalled, bloom = recited), the 🏆 Trophy Shelf holds one medal
+  per word-perfect recitation, 🔁 per-book review replays your oldest verses, and streaks
+  only ever celebrate — nothing nags. Saved in the browser (localStorage).
 
-## The 20 games
+## The games
+
+Each section's **signature game** (the Build stage of its ladder):
 
 | # | Game | Section |
 |---|------|---------|
@@ -46,6 +61,11 @@ scope and sequence — all three handbooks, every section, every verse.
 | 19 | 📒 Sticker Quest | HangGlider Green Jewel 4 |
 | 20 | 🌻 Verse Garden | WingRunner Green Jewel 4 |
 
+Plus three ladder-only games available on every fitting verse: 🎶 Sing-Along Stage
+(any verse with a song file), 🎨 Draw & Tell (Recall stage, 1st grade+), and
+🔤 First-Letter Trail (Recall stage, 2nd grade). 📻 Story Time and the 🏆 Recitation
+screen round out the ladder's Listen and Recite stages.
+
 ## Running it
 
 It's a static site — no build step, no dependencies.
@@ -57,10 +77,9 @@ npx serve .            # or: python3 -m http.server
 then open the shown URL. (Modern browsers block ES modules over `file://`,
 so use any static server. GitHub Pages works out of the box.)
 
-Game sounds are generated with WebAudio. Verse read-alouds currently use the
-browser's built-in speech synthesis; the repo also carries the **official Awana
-handbook recordings** (see below), which the app will switch to as the audio
-engine from `plans.html` lands.
+Game sounds are generated with WebAudio. Verse read-alouds play the **official
+Awana handbook recordings** (see below); the tuned browser speech synthesis is
+the fallback for dynamic text and the two refs Awana never recorded.
 
 ## Audio assets (official Awana recordings)
 
