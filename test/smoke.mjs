@@ -32,7 +32,12 @@ const server = http.createServer(async (req, res) => {
 await new Promise((r) => server.listen(0, r));
 const base = `http://127.0.0.1:${server.address().port}`;
 
-const browser = await chromium.launch();
+// Use a preinstalled Chromium when the exact Playwright-pinned build is absent
+// (e.g. CLAUDE_CHROMIUM=/opt/pw-browsers/chromium in remote sandboxes).
+import { existsSync } from 'node:fs';
+const prebuilt = process.env.CLAUDE_CHROMIUM
+  || (existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : null);
+const browser = await chromium.launch(prebuilt ? { executablePath: prebuilt } : {});
 const page = await browser.newPage({ viewport: { width: 820, height: 1000 } });
 
 const pageErrors = [];

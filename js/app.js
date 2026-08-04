@@ -152,16 +152,18 @@ function gameView(book, section, verseIdx) {
 
   topBar(`${game.icon} ${game.title}`, sectionHash);
 
-  // Verse picker chips
-  const chips = el('div');
-  chips.style.cssText = 'margin:4px 0;';
+  // Verse picker chips — a single scrollable rail so the game stays above the fold
+  const chips = el('div', 'chip-scroller');
+  let activeChip = null;
   instances.forEach((inst, i) => {
     const chip = el('button', 'chip' + (i === idx ? ' active' : ''));
     chip.append(el('span', null, inst.label), el('span', 'chip-stars', starsText(getStars(inst.key))));
     chip.onclick = () => { sfx.click(); go(`${sectionHash}/play/${i}`); };
+    if (i === idx) activeChip = chip;
     chips.append(chip);
   });
   app.append(chips);
+  if (activeChip) activeChip.scrollIntoView({ inline: 'center', block: 'nearest' });
 
   const controls = el('div', 'btn-row');
   const hear = el('button', 'btn', '🔊 Hear the verse');
@@ -226,7 +228,7 @@ function stickersView() {
     const card = el('div', 'card');
     card.append(el('h2', null, `${book.emoji} ${book.name}`));
     for (const section of book.sections) {
-      const row = el('div', 'entry-row');
+      const row = el('div', 'entry-row sticker-row');
       row.append(el('span', 'entry-num', section.name));
       const body = el('div');
       for (const entry of section.entries) {

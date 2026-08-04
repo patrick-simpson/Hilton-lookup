@@ -24,6 +24,7 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -47,7 +48,7 @@ button {
 #app {
   max-width: 760px;
   margin: 0 auto;
-  padding: 12px 14px 40px;
+  padding: 12px max(14px, env(safe-area-inset-left)) calc(40px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-right));
 }
 
 /* ---------- top bar ---------- */
@@ -173,6 +174,10 @@ button {
   white-space: nowrap;
 }
 
+/* Sticker book rows: label + sticker strip must wrap on narrow phones. */
+.sticker-row { flex-wrap: wrap; }
+.sticker-row .entry-num { white-space: normal; }
+
 .chip {
   display: inline-flex;
   align-items: center;
@@ -187,6 +192,19 @@ button {
 }
 .chip.active { border-color: var(--yellow); background: #fff7df; }
 .chip .chip-stars { font-size: 0.85rem; }
+
+/* One-row scrollable rail for the verse chips on the game screen, so long
+   sections never push the game below the fold on a phone. */
+.chip-scroller {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0;
+  padding: 2px 2px 6px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+.chip-scroller .chip { flex: 0 0 auto; white-space: nowrap; }
 
 /* ---------- game stage ---------- */
 
@@ -302,6 +320,17 @@ button {
 
 @media (max-width: 480px) {
   body { font-size: 16px; }
+  .hero { padding-top: 8px; }
+  .hero .mascot { font-size: 3rem; }
   .hero h1 { font-size: 1.6rem; }
+  .top-bar { padding: 6px 0; }
+  .top-bar h1 { font-size: 1.15rem; }
+  .back-btn { padding: 8px 14px; font-size: 0.95rem; }
+  .card { padding: 12px; margin: 10px 0; }
   .stage { min-height: 380px; padding: 12px; }
+  .btn-row { gap: 8px; margin: 10px 0; }
+  .btn-row .btn { font-size: 0.98rem; min-height: 48px; padding: 8px 16px; }
+  .game-banner .btn-big { width: 100%; }
+  .book-card .book-emoji { font-size: 2.4rem; }
+  .verse-display { font-size: 1.15rem; }
 }

@@ -47,10 +47,12 @@ export default {
       for (const t of tiles) {
         const tile = el('button', 'word-tile', t.w);
         tile.onclick = () => {
-          if (t.i === nextIdx) {
+          // Match by word text (not tile identity) so duplicate words like
+          // "the … the" accept whichever twin the kid taps.
+          if (ctx.cleanWord(t.w) === ctx.cleanWord(words[nextIdx])) {
             sfx.correct();
             tile.remove();
-            const done = el('span', 'word-tile correct', t.w);
+            const done = el('span', 'word-tile correct', words[nextIdx]);
             built.appendChild(done);
             nextIdx++;
             if (nextIdx === words.length) endRound();
