@@ -1,6 +1,8 @@
 // Verse Scramble — tap the jumbled word tiles in order to rebuild the verse.
-// Long verses are played phrase-by-phrase. Hard mode removes the built-so-far
-// preview and jumbles bigger chunks.
+// Long verses are played phrase-by-phrase. Hard mode jumbles bigger chunks;
+// the fading guide strip (ctx.guide) already starts pre-faded for hard/encore
+// plays via supportLevelFor, so this game doesn't need its own hard-mode
+// visibility rule any more.
 
 export default {
   id: 'scramble',
@@ -13,9 +15,7 @@ export default {
   mount(stage, ctx) {
     const { el, clear, shuffle, sfx } = ctx;
     ctx.addStyle(`
-      .g-scramble .built { min-height: 70px; background: #f4f8ff; border-radius: 16px; padding: 8px; margin-bottom: 12px; text-align: center; }
       .g-scramble .pool { text-align: center; }
-      .g-scramble .built .word-tile { background: #d3f2d9; }
       .g-scramble .round-label { text-align: center; font-weight: bold; opacity: 0.75; margin-bottom: 6px; }
     `);
 
@@ -28,6 +28,7 @@ export default {
     const rounds = ctx.chunk(ctx.verse.words, chunkSize);
     let roundIdx = 0;
     let mistakes = 0;
+    let guide = null;
 
     ctx.speak();
 
@@ -38,9 +39,10 @@ export default {
         root.appendChild(el('div', 'round-label', `Part ${roundIdx + 1} of ${rounds.length}`));
       }
 
-      const built = el('div', 'built');
+      if (!guide) guide = ctx.guide(words);
+      else guide.reset(words);
       const pool = el('div', 'pool');
-      root.append(built, pool);
+      root.append(guide.el, pool);
 
       let nextIdx = 0;
       const tiles = shuffle(words.map((w, i) => ({ w, i })));
@@ -52,8 +54,7 @@ export default {
           if (ctx.cleanWord(t.w) === ctx.cleanWord(words[nextIdx])) {
             sfx.correct();
             tile.remove();
-            const done = el('span', 'word-tile correct', words[nextIdx]);
-            built.appendChild(done);
+            guide.markDone(nextIdx);
             nextIdx++;
             if (nextIdx === words.length) endRound();
           } else {
@@ -66,8 +67,6 @@ export default {
         };
         pool.appendChild(tile);
       }
-
-      if (ctx.hard) built.style.filter = 'blur(0px)'; // keep visible; hard mode = bigger chunks
     }
 
     function endRound() {
@@ -78,7 +77,7 @@ export default {
       } else {
         ctx.confetti();
         const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-        setTimeout(() => ctx.win({ stars }), 600);
+        setTimeout(() => ctx.win({ stars, mistakes }), 600);
       }
     }
 

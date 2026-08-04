@@ -316,7 +316,7 @@ function gameView(book, section, verseIdx, gameId) {
     onExit: () => go(verseHash),
   };
 
-  activeCtx = makeCtx({ verse, verses: instances, entry: null, book, section, hard: !!section.hard, hooks, stage });
+  activeCtx = makeCtx({ verse, verses: instances, entry: null, book, section, hard: !!section.hard, hooks, stage, game });
   const maybeCleanup = game.mount(stage, activeCtx);
   if (typeof maybeCleanup === 'function') activeCleanup = maybeCleanup;
 }

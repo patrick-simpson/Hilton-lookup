@@ -293,6 +293,47 @@ button {
 .word-tile.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); }
 .word-tile.ghost { opacity: 0.35; }
 
+/* ---------- fading-support guide strip (plans.html §7.1) ---------- */
+
+.guide-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f8ff;
+  border-radius: 16px;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+.guide-words { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; flex: 1; }
+.guide-word {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 32px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--blue-soft);
+  font-size: 1.1rem;
+  font-weight: bold;
+  opacity: 0.55;
+  user-select: none;
+}
+.guide-word[role="button"] { cursor: pointer; }
+.guide-word.lit { opacity: 1; background: var(--green-soft); }
+.guide-word.peeking { opacity: 1; background: #fff7df; }
+/* Level chip: tap cycles 🌕 full → 🌗 first-letter → 🌑 blank → 🌕, always
+   the kid's call — never locked by pass count. */
+.guide-chip {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px;
+  cursor: pointer;
+}
+
 .verse-display {
   font-size: 1.25rem;
   text-align: center;

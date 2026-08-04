@@ -43,8 +43,57 @@ export default {
 | `ctx.speak(text?)` | No-arg: plays the official Awana recording for the current verse when one exists, falling back to device speech otherwise. Called with text: always uses device speech (for dynamic strings, e.g. reading back a single word). `ctx.stopSpeak()` stops either — file audio and device speech both go silent. |
 | `ctx.confetti()` | Confetti burst inside the stage. |
 | `ctx.addStyle(css)` | Injects a `<style>` tag, auto-removed on unmount. Prefix every selector with `.g-<id>` and add that class to your root element so styles never leak. |
-| `ctx.win({ stars, message })` | Call EXACTLY ONCE when the round is complete. `stars`: 1–3 (3 = flawless). The shell records progress and shows the celebration screen. |
+| `ctx.win({ stars, message, mistakes, peeks, supportLevel })` | Call EXACTLY ONCE when the round is complete. `stars`: 1–3 (3 = flawless). `mistakes`/`peeks` feed the mastery-stage credit check below (in addition to whatever a mounted `ctx.guide` tracked itself — pass your own count, don't double it up). `supportLevel` overrides the guide-derived level for games that don't use `ctx.guide` at all but still want to grant stage-2 credit. The shell records progress and shows the celebration screen. |
 | `ctx.exit()` | Leave to the section page (rarely needed — the shell has a Back button). |
+
+## Fading support (plans.html §7.1)
+
+The seven "tap the next word in order" builder games (Scramble, Train, Rocket,
+Hopscotch, Stones, Falling Words, Sword Slash) always showed the verse or a
+guide strip, so kids pattern-matched instead of recalling. The fix: the guide
+fades as a verse is replayed, so tapping becomes retrieval instead of
+recognition.
+
+- **`ctx.win` always records the play**: every call to `ctx.win()` calls
+  `recordPass(verse.key, game.id)` internally — no game needs to do this
+  itself.
+- **`supportLevelFor(verse, gameId, hard)`** (exported from
+  `js/lib/engine.js`) computes the default guide level for THIS play: 0 (full
+  text) on the first pass, 1 (first letters) on the second, 2 (blanks) from
+  the third pass on. Hard/encore sections start at level 1 or higher. HG
+  (kindergarten) verses cap the *automatic* default at level 1 — a Sparks kid
+  can still push it to blank via the chip, but the engine never forces a K
+  verse to start blank.
+- **`fadeWord(word, level)`** (exported) renders one word at a level: 0
+  unchanged; 1 keeps a leading digit token (e.g. the "1" in "1 Corinthians")
+  plus the first letter, original case, everything else dropped; 2 is a
+  single blank glyph `◻`.
+- **`ctx.guide(words)`** builds the guide-strip controller a builder mounts
+  wherever its own always-visible preview used to live:
+  ```js
+  const guide = ctx.guide(chunkWords);   // once per play
+  root.appendChild(guide.el);            // insert wherever the old preview was
+  guide.markDone(i);                     // word i just got tapped correctly — shows it full + lit
+  guide.reset(nextChunkWords);           // new round/chunk — same controller, level/peeks carry over
+  guide.level;                           // current level (live; the kid can change it)
+  guide.peeks;                           // peeks so far this play (live)
+  ```
+  It renders a small tile per word — done words always show full text (lit);
+  undone words show `fadeWord(word, level)`. A level chip (🌕/🌗/🌑) sits at
+  the strip's end; tapping it cycles the level for *this play only* — kid
+  autonomy, never locked by pass count. At level ≥ 1, tapping an undone word
+  flashes its full text for 1.5s (a "peek") and counts against the pass's
+  stage-2 credit. At level 0, tapping an undone word does nothing.
+- **Stage-2 credit**: after a win, if the level that was in effect (the
+  *lowest* level active at any point in the play — dropping to 0 mid-play via
+  the chip forfeits credit even if raised back up before the end) is ≥ 1, and
+  total mistakes + peeks ≤ 1, the verse is raised to mastery stage 2
+  ("recalled it") via `setStage`.
+- **Builders must route their guide/preview through `ctx.guide`** — that's
+  the only thing that makes recall practice (and the ⭐⭐/stage-2 path) work.
+  See `js/games/scramble.js` for the reference implementation: it replaced
+  its old "built so far" strip — which showed every word of the current
+  chunk and was left fully visible even in hard mode — with `ctx.guide`.
 
 ## Rules
 

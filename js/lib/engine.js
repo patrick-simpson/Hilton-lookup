@@ -4,6 +4,7 @@
 import { BOOK_LISTS, OT_BOOKS, NT_BOOKS } from '../data/verses.js';
 import { verseText, getTranslationId, activeTranslation } from '../data/translations.js';
 import { playVerse, stopAudio } from './audio.js';
+import { getPasses, recordPass, setStage } from './progress.js';
 
 // ---------- DOM ----------
 
@@ -224,13 +225,121 @@ export function distractors(verse, count) {
   return shuffle(pool).slice(0, count);
 }
 
+// ---------- fading support (plans.html §7.1) ----------
+
+// How much of the guide to show THIS play, before any chip taps: pass 1 full
+// text, pass 2 first letters, pass 3+ blanks. Hard/encore sections start
+// pre-faded; kindergarten never auto-reaches blank (a Sparks kid can still
+// raise it manually via the chip — this only caps the automatic default).
+export function supportLevelFor(verse, gameId, hard) {
+  let level = Math.min(getPasses(verse.key, gameId), 2);
+  if (hard) level = Math.max(level, 1);
+  if (verse.key.startsWith('hg.')) level = Math.min(level, 1);
+  return level;
+}
+
+// level 0: unchanged. level 1: leading digit token (e.g. the "1" in
+// "1 Corinthians") plus the first letter of what follows, original case
+// kept, everything else — trailing punctuation, "'s", etc. — dropped.
+// level 2: a single blank glyph, no matter the word.
+export function fadeWord(word, level) {
+  if (level <= 0) return word;
+  if (level >= 2) return '◻';
+  const m = word.match(/^(\d+\s+)?(.)/);
+  return m ? (m[1] || '') + m[2] : word;
+}
+
+const GUIDE_ICON = ['🌕', '🌗', '🌑'];
+
+// Builds the fading guide strip a builder game mounts wherever its old
+// always-visible preview lived. One controller per play; call `.reset()`
+// per new round/chunk rather than creating a fresh guide each time, so
+// level/peeks/minLevel state carries across the whole play.
+function createGuide(verse, gameId, hard, words) {
+  let level = supportLevelFor(verse, gameId, hard);
+  // Lowest level active at any moment — dropping to 0 mid-play (via the
+  // chip) forfeits stage-2 credit for this play even if raised back up.
+  let minLevel = level;
+  let peeks = 0;
+  let done = new Set();
+  let current = words;
+
+  const wrap = el('div', 'guide-strip');
+  const wordsEl = el('div', 'guide-words');
+  const chip = el('button', 'guide-chip', GUIDE_ICON[level]);
+  chip.type = 'button';
+  chip.setAttribute('aria-label', 'Change hint level');
+  wrap.append(wordsEl, chip);
+
+  // Undone words are plain (non-button) tiles — they must never be
+  // selectable by a generic ".stage button" query, so autoplay/test
+  // scripts driving the pool tiles can't mistake a faded guide tile for
+  // the real answer tile.
+  function render() {
+    clear(wordsEl);
+    current.forEach((w, i) => {
+      const isDone = done.has(i);
+      const tile = el('span', 'guide-word' + (isDone ? ' lit' : ''), isDone ? w : fadeWord(w, level));
+      if (!isDone && level >= 1) {
+        tile.setAttribute('role', 'button');
+        tile.tabIndex = 0;
+        tile.onclick = () => peek(i, tile, w);
+      }
+      wordsEl.appendChild(tile);
+    });
+  }
+
+  function peek(i, tile, word) {
+    if (done.has(i)) return;
+    sfx.click();
+    peeks++;
+    tile.textContent = word;
+    tile.classList.add('peeking');
+    setTimeout(() => {
+      // Guard against a round change / level change having already
+      // torn this tile out of the DOM (re-rendered) since the tap.
+      if (!tile.isConnected || done.has(i)) return;
+      tile.textContent = fadeWord(word, level);
+      tile.classList.remove('peeking');
+    }, 1500);
+  }
+
+  chip.onclick = () => {
+    level = (level + 1) % 3;
+    minLevel = Math.min(minLevel, level);
+    chip.textContent = GUIDE_ICON[level];
+    render();
+  };
+
+  render();
+
+  return {
+    el: wrap,
+    markDone(i) {
+      done.add(i);
+      render();
+    },
+    reset(nextWords) {
+      current = nextWords;
+      done = new Set();
+      render();
+    },
+    get level() { return level; },
+    get peeks() { return peeks; },
+    get minLevel() { return minLevel; },
+  };
+}
+
 // ---------- ctx factory ----------
 
 // Builds the ctx handed to game.mount(stageEl, ctx). `hooks` is supplied by
-// the app shell: { onWin(stars), onExit() }.
-export function makeCtx({ verse, verses, entry, book, section, hard, hooks, stage }) {
+// the app shell: { onWin(stars), onExit() }. `game` is the game module
+// ({id, title, ...}) — used for pass-tracking and the fading-support level;
+// optional so tests can still construct a bare ctx.
+export function makeCtx({ verse, verses, entry, book, section, hard, hooks, stage, game }) {
   const styles = [];
   let won = false;
+  let latestGuide = null;
   return {
     verse,
     verses,
@@ -262,11 +371,19 @@ export function makeCtx({ verse, verses, entry, book, section, hard, hooks, stag
       styles.push(node);
       return node;
     },
+    guide: (words) => {
+      latestGuide = createGuide(verse, game?.id, hard, words);
+      return latestGuide;
+    },
     win: (opts = {}) => {
       if (won) return;
       won = true;
       stopAudio();
       sfx.win();
+      if (game?.id) recordPass(verse.key, game.id);
+      const effective = opts.supportLevel != null ? opts.supportLevel : (latestGuide ? latestGuide.minLevel : null);
+      const mist = (opts.mistakes ?? 0) + (latestGuide ? latestGuide.peeks : 0) + (opts.peeks ?? 0);
+      if (effective >= 1 && mist <= 1) setStage(verse.key, 2);
       hooks.onWin(opts.stars == null ? 3 : opts.stars, opts.message);
     },
     exit: () => hooks.onExit(),
