@@ -1,8 +1,17 @@
 // Sword Drill Slash — Fruit-Ninja style: word tiles fly up from the bottom in
 // arcs and the kid slashes (tap or swipe) the word that comes NEXT in the
 // verse. The verse is played in waves of ~6 words. Wrong slashes buzz and
-// wiggle but never end the game. Hard mode: faster physics + 2 decoys/wave
-// and no next-word preview.
+// wiggle but never end the game. Hard mode: faster physics + 2 decoys/wave.
+//
+// Recall-gate (plans.html §5.5 P2.5): before each slash, airborne tiles keep
+// flying but go wordless + disabled (the PROMPT) while the HUD's fading
+// guide strip pulses the next slot and ctx.thinkBeat runs. Only once the
+// beat resolves do the words fade back onto the tiles (REVEAL) — so the kid
+// has to recall the word from memory before the swipe frenzy even starts,
+// instead of just reading it off an airborne tile. A 3s-first-letter hint
+// chip, then the existing 6.5s tile glow, rescue a stuck kid after reveal.
+
+import { fadeWord } from '../lib/engine.js';
 
 export default {
   id: 'slash',
@@ -20,7 +29,8 @@ export default {
       .g-slash .sky { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
       .g-slash .cloud { position: absolute; font-size: 2.4rem; opacity: 0.45; pointer-events: none; animation: floaty 4s ease-in-out infinite; }
       .g-slash .fly { position: absolute; left: 0; top: 0; will-change: transform; }
-      .g-slash .fly .word-tile { margin: 0; pointer-events: none; background: #fff1c9; border-color: var(--yellow); }
+      .g-slash .fly .word-tile { margin: 0; pointer-events: none; background: #fff1c9; border-color: var(--yellow); transition: opacity 0.25s ease; }
+      .g-slash .fly.wordless .word-tile { opacity: 0; }
       .g-slash .fly.hint .word-tile { animation: g-slash-pulse 0.9s ease-in-out infinite; border-color: var(--yellow); }
       @keyframes g-slash-pulse {
         0%, 100% { box-shadow: 0 0 0 3px #ffe9a8, 0 4px 0 rgba(38,50,75,0.12); }
@@ -41,8 +51,10 @@ export default {
       .g-slash .wave-chip { background: #fff7df; border: 3px solid var(--yellow); border-radius: 999px; padding: 8px 16px; font-weight: bold; white-space: nowrap; }
       .g-slash .hear-btn { pointer-events: auto; margin-left: auto; width: 54px; height: 54px; font-size: 1.5rem; background: var(--paper); border-radius: 999px; box-shadow: var(--shadow); }
       .g-slash .hear-btn:active { transform: translateY(3px); box-shadow: none; }
-      .g-slash .built-strip { margin-top: 8px; min-height: 44px; background: rgba(244, 248, 255, 0.92); border-radius: 14px; padding: 3px 6px; text-align: center; }
-      .g-slash .built-strip .word-tile { min-height: 34px; padding: 3px 10px; margin: 3px; font-size: 0.95rem; box-shadow: none; }
+      .g-slash .guide-strip { margin-top: 8px; margin-bottom: 0; pointer-events: auto; background: rgba(244, 248, 255, 0.92); max-height: 40vh; overflow: auto; }
+      .g-slash .guide-word.g-next { box-shadow: 0 0 0 3px var(--yellow); animation: think-pulse 1.1s ease-in-out infinite; }
+      .g-slash .hint-chip { display: none; align-items: center; gap: 6px; width: fit-content; margin: 6px auto 0; padding: 6px 14px; border-radius: 999px; background: #fff7df; border: 2px dashed var(--yellow); font-weight: bold; font-size: 1.1rem; color: #6b5a00; }
+      .g-slash .hint-chip.show { display: flex; animation: pop-in 0.25s ease; }
       .g-slash .msg, .g-slash .start-screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 18px; z-index: 4; }
       .g-slash .start-screen { background: rgba(255, 255, 255, 0.75); z-index: 5; }
       .g-slash .big-emoji { font-size: 4.2rem; animation: floaty 2.5s ease-in-out infinite; }
@@ -50,12 +62,12 @@ export default {
       .g-slash .start-sub { font-size: 1.05rem; opacity: 0.85; max-width: 420px; }
       .g-slash .wave-clear { font-size: 1.9rem; font-weight: bold; background: var(--paper); padding: 16px 28px; border-radius: 20px; box-shadow: var(--shadow); animation: pop-in 0.3s ease; }
       .g-slash .msg .verse-display { background: var(--paper); border-radius: 16px; box-shadow: var(--shadow); max-height: 65%; overflow: auto; animation: pop-in 0.3s ease; }
-      /* Narrow phones: keep the caught-words strip short so it doesn't cover
-         the play area; the ghost preview (the word to find) stays big. */
+      /* Narrow phones: keep the HUD compact so it doesn't cover the play
+         area, but the hint chip stays legible. */
       @media (max-width: 420px) {
-        .g-slash .built-strip { padding: 2px 4px; margin-top: 6px; }
-        .g-slash .built-strip .word-tile { min-height: 26px; padding: 2px 7px; margin: 2px; font-size: 0.8rem; }
-        .g-slash .built-strip .word-tile.ghost { min-height: 32px; padding: 3px 10px; font-size: 1rem; }
+        .g-slash .guide-strip { padding: 5px; margin-top: 6px; }
+        .g-slash .guide-word { min-height: 32px; min-width: 26px; padding: 4px 8px; font-size: 0.9rem; }
+        .g-slash .hint-chip { padding: 4px 10px; font-size: 0.95rem; }
       }
     `);
 
@@ -75,8 +87,8 @@ export default {
     const hearBtn = el('button', 'hear-btn', '🔊');
     hearBtn.onclick = () => { sfx.click(); ctx.speak(); };
     hudRow.append(chip, hearBtn);
-    const strip = el('div', 'built-strip');
-    hud.append(hudRow, strip);
+    const hintChip = el('div', 'hint-chip');
+    hud.append(hudRow, hintChip);
 
     root.append(sky, hud);
     stage.appendChild(root);
@@ -98,8 +110,13 @@ export default {
     let raf = 0;
     let lastT = 0;
     let lastLaunch = 0;
-    let lastProgress = 0;
     let lastWrongAt = 0;
+    let guide = null;
+
+    // Recall-gate: while promptActive, airborne tiles are wordless + inert —
+    // the kid must recall the word before the reveal fades it back on.
+    let promptActive = true;
+    let revealAt = 0;
 
     const timeouts = new Set();
     const later = (fn, ms) => {
@@ -117,17 +134,21 @@ export default {
 
     function updateHud() {
       chip.textContent = `⚔️ Wave ${waveIdx + 1}/${waves.length}`;
-      clear(strip);
-      const words = waves[waveIdx];
-      for (let i = 0; i < idx; i++) strip.appendChild(el('span', 'word-tile correct', words[i]));
-      if (idx < words.length) {
-        // Normal mode previews the next word (visual matching for pre-readers);
-        // hard mode keeps it a memory challenge.
-        strip.appendChild(el('span', 'word-tile ghost', ctx.hard ? '❓' : words[idx]));
-      }
+    }
+
+    function syncGuidePulse() {
+      if (!guide) return;
+      const words = guide.el.querySelectorAll('.guide-word');
+      words.forEach((w, i) => w.classList.toggle('g-next', i === idx));
     }
 
     // ---------- tiles & physics ----------
+
+    function setWordless(tile, wordless) {
+      tile.wordless = wordless;
+      tile.el.classList.toggle('wordless', wordless);
+      tile.inner.disabled = wordless;
+    }
 
     function makeTile(word, decoy) {
       const outer = el('div', 'fly');
@@ -140,7 +161,7 @@ export default {
       const tile = {
         word, decoy, el: outer, inner,
         x: 0, y: 0, vx: 0, vy: 0, rot: 0, vr: 0,
-        w: 110, h: 52, air: false, dead: false, lastWrong: 0,
+        w: 110, h: 52, air: false, dead: false, lastWrong: 0, wordless: false,
       };
       inner.onclick = () => slash(tile);
       return tile;
@@ -170,6 +191,7 @@ export default {
       tile.rot = 0;
       tile.vr = (Math.random() * 2 - 1) * (ctx.hard ? 55 : 28);
       tile.air = true;
+      setWordless(tile, promptActive);
       render(tile);
     }
 
@@ -215,13 +237,46 @@ export default {
         lastLaunch = t;
       }
 
-      // Gentle hint (normal mode only): glow the right tile after a while.
-      const hintOn = !ctx.hard && t - lastProgress > 6500;
+      // Hint ladder (normal mode only, and only once the word is actually
+      // revealed): 3s → first-letter chip near the HUD; 6.5s → glow the
+      // right tile (final rescue).
+      const sinceReveal = t - revealAt;
+      const chipOn = !ctx.hard && !promptActive && needed && sinceReveal > 3000;
+      if (chipOn) hintChip.textContent = `💡 ${fadeWord(needed, 1)}`;
+      hintChip.classList.toggle('show', chipOn);
+      const hintOn = !ctx.hard && !promptActive && sinceReveal > 6500;
       for (const tile of tiles) {
         if (tile.air && !tile.dead) {
           tile.el.classList.toggle('hint', hintOn && matches(tile, needed));
         }
       }
+    }
+
+    // ---------- recall-gate: prompt (hide + inert) -> think -> reveal ----------
+
+    function enterPrompt() {
+      promptActive = true;
+      hintChip.classList.remove('show');
+      for (const tile of tiles) {
+        if (tile.air && !tile.dead) setWordless(tile, true);
+      }
+      syncGuidePulse();
+    }
+
+    function revealPhase() {
+      promptActive = false;
+      revealAt = performance.now();
+      for (const tile of tiles) {
+        if (!tile.dead) setWordless(tile, false);
+      }
+    }
+
+    async function beginCycle() {
+      if (!alive || !playing) return;
+      enterPrompt();
+      await ctx.thinkBeat({ anchor: hud, ms: 1600 });
+      if (!alive || !playing) return; // wave finished / unmounted while waiting
+      revealPhase();
     }
 
     // ---------- slashing ----------
@@ -242,6 +297,7 @@ export default {
 
     function slash(tile) {
       if (tile.dead || !tile.air) return; // already slashed or not flying
+      if (tile.wordless) return;          // still in the recall PROMPT — no-op
       const now = performance.now();
       const needed = neededWord();
       if (!needed) return;
@@ -255,10 +311,15 @@ export default {
         tile.el.classList.add('slashed');
         const deadEl = tile.el;
         later(() => deadEl.remove(), 500);
+        const doneIdx = idx;
         idx++;
-        lastProgress = now;
         updateHud();
-        if (idx >= waves[waveIdx].length) waveClear();
+        guide.markDone(doneIdx);
+        if (idx >= waves[waveIdx].length) {
+          waveClear();
+        } else {
+          beginCycle(); // next PROMPT: hide + inert, think, then reveal
+        }
       } else {
         if (now - tile.lastWrong < 700) return; // don't buzz-spam one tile
         tile.lastWrong = now;
@@ -286,7 +347,7 @@ export default {
       let best = null;
       let bestD = Infinity;
       for (const tile of tiles) {
-        if (!tile.air || tile.dead) continue;
+        if (!tile.air || tile.dead || tile.wordless) continue;
         if (px >= tile.x - pad && px <= tile.x + tile.w + pad &&
             py >= tile.y - pad && py <= tile.y + tile.h + pad) {
           const d = Math.hypot(px - (tile.x + tile.w / 2), py - (tile.y + tile.h / 2));
@@ -317,13 +378,20 @@ export default {
       }
       idx = 0;
       lastLaunch = 0;
-      lastProgress = performance.now();
+      if (!guide) {
+        guide = ctx.guide(waves[waveIdx]);
+        hud.insertBefore(guide.el, hintChip);
+      } else {
+        guide.reset(waves[waveIdx]);
+      }
       updateHud();
       playing = true;
+      beginCycle(); // PROMPT for word 0 of this wave
     }
 
     function waveClear() {
       playing = false;
+      hintChip.classList.remove('show');
       for (const tile of tiles) {
         if (!tile.dead) { tile.dead = true; tile.el.remove(); }
       }
@@ -351,7 +419,7 @@ export default {
       ctx.speak();
       ctx.confetti();
       const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-      later(() => ctx.win({ stars }), 2400);
+      later(() => ctx.win({ stars, mistakes }), 2400);
     }
 
     // ---------- start ----------
