@@ -138,6 +138,13 @@ await check('hg/gj1 section view shows a 🎧 Listen card', async () => {
   if (rows === 0) throw new Error('🎧 Listen card has no rows');
 });
 
+await check('recite screen (hg/rank verse 1, John 3:16) renders with ≥2 mode cards', async () => {
+  await page.goto(`${base}/#/b/hg/rank/recite/1`);
+  await page.waitForSelector('.recite-mode-card', { timeout: 5000 });
+  const n = await page.locator('.recite-mode-card').count();
+  if (n < 2) throw new Error(`expected at least 2 recite mode cards, got ${n}`);
+});
+
 await check('sticker book view', async () => {
   await page.goto(`${base}/#/stickers`);
   await page.waitForSelector('.card', { timeout: 5000 });

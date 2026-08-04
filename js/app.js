@@ -18,6 +18,7 @@ import {
   SECTION_STICKERS, resetAll,
 } from './lib/progress.js';
 import { ladderFor, stageDone, nextRow } from './lib/ladder.js';
+import { reciteView } from './lib/recite.js';
 
 const app = document.getElementById('app');
 const JEWEL_ICON = { rank: '🏅', red: '❤️', green: '💚' };
@@ -448,8 +449,15 @@ function verseView(book, section, verseIdx) {
       head.append(el('span', 'ladder-hint', '← play me'));
     }
     rowCard.append(head);
-    if (row.games.length) {
+    // Row 4 (Recite) always offers the recitation module first — it's the
+    // only path to stage 3, so it never depends on a game registry entry.
+    if (row.n === 4 || row.games.length) {
       const btnRow = el('div', 'btn-row ladder-games');
+      if (row.n === 4) {
+        const reciteBtn = el('button', 'btn btn-primary', '🏅 Say it to a grown-up!');
+        reciteBtn.onclick = () => { sfx.click(); go(`${sectionHash}/recite/${idx}`); };
+        btnRow.append(reciteBtn);
+      }
       for (const gameId of row.games) {
         const game = GAMES[gameId];
         const featured = gameId === section.game;
@@ -523,13 +531,17 @@ function showWinOverlay({ stars, message, book, section, instances, idx, section
   again.onclick = () => { overlay.remove(); render(); };
   row.append(again);
 
-  // Suggest the next not-yet-done ladder stage for this verse, if it has a
-  // game to offer today (future rows like Recite may still be empty).
+  // Suggest the next not-yet-done ladder stage for this verse. Row 4
+  // (Recite) always has somewhere to send the kid — the recitation module —
+  // even though it has no game of its own in the registry.
   const postWinStage = getStars(instances[idx].key);
   const nextRowInfo = ladderRowsFor(book, section, instances[idx]).find((r) => r.n === nextRow(postWinStage));
-  if (nextRowInfo && nextRowInfo.games.length && !stageDone(nextRowInfo.n, postWinStage)) {
+  if (nextRowInfo && !stageDone(nextRowInfo.n, postWinStage) && (nextRowInfo.n === 4 || nextRowInfo.games.length)) {
     const nextBtn = el('button', 'btn btn-blue', `${nextRowInfo.icon} Next: ${LADDER_VERB[nextRowInfo.key]}!`);
-    nextBtn.onclick = () => { overlay.remove(); go(`${sectionHash}/play/${idx}/${nextRowInfo.games[0]}`); };
+    nextBtn.onclick = () => {
+      overlay.remove();
+      go(nextRowInfo.n === 4 ? `${sectionHash}/recite/${idx}` : `${sectionHash}/play/${idx}/${nextRowInfo.games[0]}`);
+    };
     row.append(nextBtn);
   }
 
@@ -636,6 +648,11 @@ function render() {
         const idx = parseInt(parts[4] || '0', 10) || 0;
         if (parts[5]) return gameView(book, section, idx, parts[5]);
         return verseView(book, section, idx);
+      }
+      if (parts[3] === 'recite') {
+        const idx = parseInt(parts[4] || '0', 10) || 0;
+        activeCleanup = reciteView(book, section, idx);
+        return;
       }
       return sectionView(book, section);
     }

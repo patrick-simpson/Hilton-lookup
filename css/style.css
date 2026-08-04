@@ -315,6 +315,72 @@ button {
 .ladder-games { margin: 0; justify-content: flex-start; }
 .ladder-empty { margin: 0; opacity: 0.6; font-size: 0.95rem; }
 
+/* ---------- Recitation module (plans.html §8, the only ⭐⭐⭐ gate) ---------- */
+
+.recite-card { position: relative; text-align: center; overflow: visible; }
+.recite-kid { position: absolute; top: 6px; right: 6px; width: 58px; height: auto; animation: floaty 3s ease-in-out infinite; }
+.recite-again-note { font-weight: bold; color: var(--purple); margin: 4px 0 0; }
+
+.recite-content { display: flex; flex-direction: column; gap: 12px; }
+.recite-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 4px 0; }
+
+.recite-mode-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  width: 100%;
+  min-height: 64px;
+}
+.recite-mode-icon { font-size: 2.1rem; flex: 0 0 auto; }
+.recite-mode-body h3 { margin: 0; font-size: 1.05rem; }
+.recite-mode-body p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.8; }
+
+.recite-back { margin-top: 4px; opacity: 0.8; }
+
+/* Mode 1 — Grown-Up Check */
+.recite-handoff { text-align: center; }
+.recite-handoff-emoji { font-size: 2.6rem; margin-bottom: 4px; }
+.recite-instructions { text-align: center; font-weight: bold; margin: 0 0 4px; }
+.recite-word-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 10px 0; }
+.recite-word-tile.missed { background: #ffe1a8; border-color: var(--yellow); }
+.recite-ref-line { text-align: center; font-weight: bold; opacity: 0.75; margin: 4px 0 8px; }
+.recite-ref-chip { display: flex; margin: 6px auto; width: fit-content; }
+.recite-ref-chip.active { border-color: var(--green); background: var(--green-soft); }
+.recite-encourage { text-align: center; font-weight: bold; color: var(--purple); margin-top: 6px; }
+
+/* Mode 2 — Record & Hear Yourself */
+.recite-privacy-note { text-align: center; font-size: 0.85rem; opacity: 0.75; margin: 0 0 8px; }
+.recite-timer { text-align: center; font-size: 1.6rem; font-weight: bold; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
+.recite-record-btn { display: flex; margin: 0 auto; }
+.recite-record-btn.recording { background: var(--red); color: #fff; animation: think-pulse 1s ease-in-out infinite; }
+.recite-ref { text-align: center; font-weight: bold; opacity: 0.75; }
+.recite-record-unavailable { text-align: center; }
+
+/* Mode 3 — Magic Ears (speech recognition) */
+.recite-sr-note { text-align: center; font-size: 0.85rem; opacity: 0.8; margin: 0 0 8px; }
+.recite-sr-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 10px; }
+.recite-sr-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: #f0f0f0;
+  font-weight: bold;
+  opacity: 0.55;
+}
+.recite-sr-tile.lit { background: var(--green-soft); opacity: 1; animation: pop-in 0.25s ease; }
+.recite-sr-status { text-align: center; font-weight: bold; margin-bottom: 8px; min-height: 1.4em; }
+.recite-mic-btn { display: flex; margin: 0 auto; }
+.recite-sr-result { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px; }
+
+/* Mode 4 — Said It at Club! */
+.recite-club { text-align: center; }
+.recite-mode-date { font-size: 0.9rem; opacity: 0.75; margin-top: -4px; }
+
 /* ---------- game stage ---------- */
 
 .stage {
@@ -515,4 +581,7 @@ button {
   .storytime-hero-art { height: 70px; }
   .storytime-title { font-size: 0.92rem; }
   .storytime-resume { flex-basis: 100%; text-align: right; }
+  .recite-kid { width: 44px; top: 4px; right: 4px; }
+  .recite-modes { grid-template-columns: 1fr; }
+  .recite-mode-icon { font-size: 1.8rem; }
 }

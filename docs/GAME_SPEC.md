@@ -96,6 +96,18 @@ recognition.
   its old "built so far" strip — which showed every word of the current
   chunk and was left fully visible even in hard mode — with `ctx.guide`.
 
+## Mastery stage 3 (⭐⭐⭐) is never a game's job
+
+Stage 3 ("recited it") is granted ONLY by `recordRecited(key, mode)` in
+`js/lib/progress.js`, called ONLY from the Recitation module
+(`js/lib/recite.js`, a shell-level view at
+`#/b/<book>/<section>/recite/<verseIdx>`, not a game). A game's `ctx.win()`
+can raise a verse to stage 1 ("built it") or, with a good `ctx.guide` pass,
+stage 2 ("recalled it") — see the fading-support section above — but no game
+module should ever call `recordRecited` or otherwise try to set stage 3.
+Verified word-perfect recitation (including the reference) is the only way
+in, by design (plans.html §3.2, §8).
+
 ## Rules
 
 1. **Audience is K–2nd grade.** Minimal reading in the UI. Big tap targets (≥52px). Emoji for art. Bright and friendly. No "game over" / failure states — wrong answers get a wiggle + `sfx.wrong()` and another try. Track mistakes and award `stars: 3` (0–1 mistakes), `2` (2–4), `1` (5+) unless the game has a more natural scale.
