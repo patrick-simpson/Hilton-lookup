@@ -46,6 +46,10 @@ let audioEl = null;
 let tickTimes = null;
 let tickIndex = -1;
 const tickListeners = new Set();
+// Fires when the shared element finishes a track on its own (not on a
+// manual stop/pause) — used by the Story Time listening corner to
+// auto-advance to the next track.
+const endedListeners = new Set();
 
 function clearTicks() {
   tickTimes = null;
@@ -71,6 +75,7 @@ function el() {
     audioEl.style.display = 'none';
     audioEl.addEventListener('timeupdate', onTimeUpdate);
     audioEl.addEventListener('ended', clearTicks);
+    audioEl.addEventListener('ended', () => { for (const cb of endedListeners) cb(); });
     // Deliberately NOT clearing ticks on the 'pause' event: pauseAudio()
     // below pauses mid-song for a sing-along gap round and expects
     // tickIndex/tickTimes to survive so resumeAudio() picks the word timeline
@@ -141,6 +146,14 @@ export function stopAudio() {
 export function onWordTick(cb) {
   tickListeners.add(cb);
   return () => tickListeners.delete(cb);
+}
+
+// Subscribes to the shared element's natural "finished playing" moment
+// (never fires on stopAudio()/pauseAudio(), only when a track plays out).
+// Returns an unsubscribe function.
+export function onAudioEnded(cb) {
+  endedListeners.add(cb);
+  return () => endedListeners.delete(cb);
 }
 
 // Pause/resume the shared element in place (word ticks and position survive)

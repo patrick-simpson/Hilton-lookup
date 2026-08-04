@@ -4,11 +4,14 @@
 import { BOOKS } from './data/curriculum.js';
 import { MUSIC_LINKS, BIO_PDFS } from './data/music-links.js';
 import { TRANSLATIONS, getTranslationId, setTranslationId, activeTranslation } from './data/translations.js';
+import { AUDIO } from './data/audio-manifest.js';
 import { GAMES } from './games/index.js';
 import {
   el, clear, sectionInstances, makeCtx, sfx, confetti,
 } from './lib/engine.js';
-import { playVerse, songEntryFor, stopAudio } from './lib/audio.js';
+import {
+  playVerse, playFile, songEntryFor, stopAudio, onAudioEnded, pauseAudio, resumeAudio,
+} from './lib/audio.js';
 import {
   getStars, addStars, sectionProgress, bookProgress, entryComplete,
   activityKey, isActivityDone, toggleActivity, growthStage, GROWTH_EMOJI,
@@ -42,19 +45,155 @@ const LADDER_VERB = {
 let activeCleanup = null;
 let activeCtx = null;
 
+// The "🎧 listen" row (Story Time page, or a section's inline listen card)
+// currently loaded on the shared <audio> element, or null. Shared across
+// every listen row in the app since there's only ever one shared element.
+let activeListenRow = null;
+
 function teardownGame() {
   stopAudio();
+  activeListenRow = null;
   if (activeCleanup) { try { activeCleanup(); } catch { /* game already gone */ } }
   if (activeCtx) activeCtx._cleanupStyles();
   activeCleanup = null;
   activeCtx = null;
 }
 
+// One-time subscription: when a listen row's track finishes on its own
+// (never on a manual stop/pause), reset its UI and let it advance itself
+// (Story Time rows wire up state.onEnded; plain listen-card rows don't).
+onAudioEnded(() => {
+  if (!activeListenRow) return;
+  const { onEnded } = activeListenRow.state;
+  stopActiveListenRow();
+  if (onEnded) onEnded();
+});
+
 function go(hash) { location.hash = hash; }
 
 function starsText(n) { return n > 0 ? '⭐'.repeat(n) : '·'; }
 
 function findBook(id) { return BOOKS.find((b) => b.id === id); }
+
+// ---------- 🎧 listen rows (Story Time page + section "tonight's story" cards) ----------
+
+function stopActiveListenRow() {
+  if (activeListenRow) {
+    activeListenRow.row.classList.remove('playing');
+    activeListenRow.btn.textContent = '▶';
+  }
+  activeListenRow = null;
+}
+
+function activateListenRow(shell) {
+  stopActiveListenRow();
+  playFile(shell.file);
+  shell.row.classList.add('playing');
+  shell.btn.textContent = '⏸';
+  activeListenRow = shell;
+  if (shell.state.onPlay) shell.state.onPlay();
+}
+
+// A play/pause row wired to the shared <audio> element via playFile (new
+// track) or pauseAudio/resumeAudio (same track, in place). Callers append
+// whatever body markup they like into shell.row alongside the button, and
+// may set shell.state.onEnded / .onPlay afterwards (read lazily, so forward
+// references — e.g. "play the next row when this one ends" — just work).
+function listenRowShell(file) {
+  const row = el('div', 'storytime-row');
+  const btn = el('button', 'storytime-play', '▶');
+  btn.setAttribute('aria-label', 'Play');
+  row.append(btn);
+  const shell = { row, btn, file, state: {} };
+  btn.onclick = () => {
+    sfx.click();
+    if (activeListenRow === shell) {
+      if (row.classList.contains('playing')) {
+        pauseAudio();
+        row.classList.remove('playing');
+        btn.textContent = '▶';
+      } else {
+        resumeAudio();
+        row.classList.add('playing');
+        btn.textContent = '⏸';
+      }
+      return;
+    }
+    activateListenRow(shell);
+  };
+  return shell;
+}
+
+function formatDuration(seconds) {
+  const s = Math.round(seconds || 0);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, '0')}`;
+}
+
+function listenRowBody(track, book) {
+  const body = el('div', 'storytime-body');
+  body.append(el('div', 'storytime-title', track.title));
+  const meta = el('div', 'storytime-meta');
+  meta.append(el('span', 'storytime-duration', formatDuration(track.duration)));
+  meta.append(el('span', 'storytime-tag', track.type === 'story' ? '📖 story' : '⭐ lesson'));
+  const section = track.section && book.sections.find((s) => s.id === track.section);
+  if (section) meta.append(el('span', 'chip storytime-section', section.name));
+  body.append(meta);
+  return body;
+}
+
+// ---------- Story Time (plans.html §4.9): the handbook listening corner ----------
+
+const STORYTIME_AUTOPLAY_KEY = 'sparksArcade.storytime.autoplay';
+const STORYTIME_LAST_KEY = 'sparksArcade.storytime.last';
+
+function getStorytimeAutoplay() {
+  try { return localStorage.getItem(STORYTIME_AUTOPLAY_KEY) === '1'; } catch { return false; }
+}
+function setStorytimeAutoplay(on) {
+  try { localStorage.setItem(STORYTIME_AUTOPLAY_KEY, on ? '1' : '0'); } catch { /* private mode */ }
+}
+function getStorytimeLastMap() {
+  try { return JSON.parse(localStorage.getItem(STORYTIME_LAST_KEY)) || {}; } catch { return {}; }
+}
+function setStorytimeLast(bookId, file) {
+  try {
+    const map = getStorytimeLastMap();
+    map[bookId] = file;
+    localStorage.setItem(STORYTIME_LAST_KEY, JSON.stringify(map));
+  } catch { /* private mode — the hint just won't persist */ }
+}
+
+// One card per book: its handbook tracks in manifest order, each a play/
+// pause row with a "🚗 Keep playing" auto-advance chain wired end-to-end.
+function storytimeGroup(book) {
+  const tracks = AUDIO.handbook[book.id] || [];
+  if (!tracks.length) return null;
+
+  const card = el('div', 'card storytime-group');
+  const head = el('div', 'storytime-group-head');
+  head.append(artImg(BOOK_ART[book.id].emblem, 'storytime-emblem', `${book.name} emblem`), el('h2', null, book.name));
+  card.append(head);
+
+  const lastFile = getStorytimeLastMap()[book.id];
+  const shells = tracks.map((track) => {
+    const shell = listenRowShell(track.file);
+    shell.row.append(listenRowBody(track, book));
+    if (track.file === lastFile) shell.row.append(el('span', 'storytime-resume', '▶ resume'));
+    shell.state.onPlay = () => setStorytimeLast(book.id, track.file);
+    card.append(shell.row);
+    return shell;
+  });
+  // Wired after every row exists so each row's onEnded can reach forward to
+  // the next one; stops (rather than wraps) at the end of the group.
+  shells.forEach((shell, i) => {
+    shell.state.onEnded = () => {
+      if (getStorytimeAutoplay() && i + 1 < shells.length) activateListenRow(shells[i + 1]);
+    };
+  });
+  return card;
+}
 
 // ---------- views ----------
 
@@ -80,7 +219,9 @@ function homeView() {
   stickersBtn.onclick = () => go('#/stickers');
   const gardenBtn = el('button', 'btn btn-green', '🌻 Verse Garden');
   gardenBtn.onclick = () => go('#/garden');
-  row.append(stickersBtn, gardenBtn);
+  const storytimeBtn = el('button', 'btn btn-blue', '📻 Story Time');
+  storytimeBtn.onclick = () => go('#/storytime');
+  row.append(stickersBtn, gardenBtn, storytimeBtn);
   app.append(row);
 
   // Bible translation picker
@@ -187,6 +328,20 @@ function sectionView(book, section) {
   play.onclick = () => { sfx.click(); go(`#/b/${book.id}/${section.id}/play/0`); };
   banner.append(play);
   app.append(banner);
+
+  // "Tonight's story" (plans.html §4.9): this section's handbook narration,
+  // if any, playable right here without a trip to the full Story Time page.
+  const handbookTracks = (AUDIO.handbook[book.id] || []).filter((t) => t.section === section.id);
+  if (handbookTracks.length) {
+    const listenCard = el('div', 'card storytime-section-card');
+    listenCard.append(el('h3', null, '🎧 Listen'));
+    for (const track of handbookTracks) {
+      const shell = listenRowShell(track.file);
+      shell.row.append(listenRowBody(track, book));
+      listenCard.append(shell.row);
+    }
+    app.append(listenCard);
+  }
 
   const list = el('div', 'card');
   for (const entry of section.entries) {
@@ -415,6 +570,29 @@ function stickersView() {
   }
 }
 
+function storyTimeView() {
+  topBar('📻 Story Time', '#/');
+
+  const hero = el('div', 'storytime-hero');
+  hero.append(artImg('img/sparky-bookstack.webp', 'storytime-hero-art', 'Sparky with a stack of books'));
+  hero.append(el('p', null, 'Listen to the stories from your handbook!'));
+  app.append(hero);
+
+  const autoplayChip = el('button', 'chip storytime-autoplay' + (getStorytimeAutoplay() ? ' active' : ''), '🚗 Keep playing');
+  autoplayChip.onclick = () => {
+    sfx.click();
+    const on = !getStorytimeAutoplay();
+    setStorytimeAutoplay(on);
+    autoplayChip.classList.toggle('active', on);
+  };
+  app.append(autoplayChip);
+
+  for (const book of BOOKS) {
+    const group = storytimeGroup(book);
+    if (group) app.append(group);
+  }
+}
+
 function gardenView() {
   topBar('🌻 Verse Garden', '#/');
   app.append(el('p', null, 'Every verse you practice grows a plant. Three stars makes it bloom!'));
@@ -446,6 +624,7 @@ function render() {
     if (parts.length === 0) return homeView();
     if (parts[0] === 'stickers') return stickersView();
     if (parts[0] === 'garden') return gardenView();
+    if (parts[0] === 'storytime') return storyTimeView();
     if (parts[0] === 'b') {
       const book = findBook(parts[1]);
       if (!book) return homeView();

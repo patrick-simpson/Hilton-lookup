@@ -215,6 +215,62 @@ button {
 }
 .chip-scroller .chip { flex: 0 0 auto; white-space: nowrap; }
 
+/* ---------- Story Time listening corner (plans.html §4.9) ---------- */
+
+.storytime-hero { text-align: center; padding: 6px 0 2px; }
+.storytime-hero-art { height: 90px; width: auto; }
+.storytime-hero p { margin: 6px 0 0; font-weight: bold; }
+
+.storytime-autoplay { display: flex; width: fit-content; margin: 0 auto 10px; }
+
+.storytime-group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.storytime-emblem { width: 46px; height: auto; flex: 0 0 auto; }
+.storytime-group-head h2 { margin: 0; font-size: 1.2rem; }
+
+.storytime-section-card h3 { margin: 0 0 4px; font-size: 1.05rem; }
+
+.storytime-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 2px dashed #e3e8f2;
+}
+.storytime-row:last-child { border-bottom: none; }
+
+.storytime-play {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  font-size: 1.25rem;
+  box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12);
+}
+.storytime-play:active { transform: translateY(2px); box-shadow: none; }
+.storytime-row.playing .storytime-play { background: var(--yellow); }
+
+.storytime-body { flex: 1; min-width: 0; }
+.storytime-title { font-weight: bold; font-size: 1rem; }
+.storytime-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.storytime-duration { font-variant-numeric: tabular-nums; }
+.storytime-tag { background: var(--sky-top); border-radius: 999px; padding: 2px 8px; font-weight: bold; }
+.storytime-section { padding: 2px 10px; font-size: 0.78rem; margin: 0; }
+.storytime-resume { flex: 0 0 auto; font-size: 0.8rem; font-weight: bold; color: var(--red); white-space: nowrap; }
+
 /* ---------- official Awana art (img/) ---------- */
 
 .hero .hero-art { height: 110px; width: auto; }
@@ -456,4 +512,7 @@ button {
   .game-banner .btn-big { width: 100%; }
   .book-card .book-emoji { font-size: 2.4rem; }
   .verse-display { font-size: 1.15rem; }
+  .storytime-hero-art { height: 70px; }
+  .storytime-title { font-size: 0.92rem; }
+  .storytime-resume { flex-basis: 100%; text-align: right; }
 }

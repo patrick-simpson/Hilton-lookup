@@ -120,6 +120,24 @@ await check('ss/rank verse 0 (John 3:16) → firstletter stage mounts with full 
   if (first !== 'For') throw new Error(`expected first stone to read "For", got "${first}"`);
 });
 
+await check('story time view: ≥60 listen rows across the book groups', async () => {
+  await page.goto(`${base}/#/storytime`);
+  await page.waitForSelector('.storytime-row', { timeout: 5000 });
+  const n = await page.locator('.storytime-row').count();
+  if (n < 60) throw new Error(`expected at least 60 storytime rows, got ${n}`);
+  const groups = await page.locator('.storytime-group').count();
+  if (groups !== 3) throw new Error(`expected 3 book groups, got ${groups}`);
+});
+
+await check('hg/gj1 section view shows a 🎧 Listen card', async () => {
+  await page.goto(`${base}/#/b/hg/gj1`);
+  await page.waitForSelector('.card', { timeout: 5000 });
+  const listenCard = page.locator('.storytime-section-card', { hasText: '🎧 Listen' });
+  if (await listenCard.count() === 0) throw new Error('no 🎧 Listen card on hg/gj1');
+  const rows = await listenCard.locator('.storytime-row').count();
+  if (rows === 0) throw new Error('🎧 Listen card has no rows');
+});
+
 await check('sticker book view', async () => {
   await page.goto(`${base}/#/stickers`);
   await page.waitForSelector('.card', { timeout: 5000 });
