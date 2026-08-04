@@ -1,4 +1,4 @@
-// Registry of all 22 games. Each module default-exports
+// Registry of all 23 games. Each module default-exports
 // { id, title, icon, tagline, howTo, group?, mount(stage, ctx) }.
 
 import scramble from './scramble.js';
@@ -23,11 +23,12 @@ import stickers from './stickers.js';
 import garden from './garden.js';
 import singalong from './singalong.js';
 import drawtell from './drawtell.js';
+import firstletter from './firstletter.js';
 
 const list = [
   scramble, falling, train, puzzle, disappear, balloon, firefly, karaoke,
   echo, refrace, feed, hopscotch, slash, stones, rocket, spinner, relay,
-  hotpotato, stickers, garden, singalong, drawtell,
+  hotpotato, stickers, garden, singalong, drawtell, firstletter,
 ];
 
 export const GAMES = Object.fromEntries(list.map((g) => [g.id, g]));

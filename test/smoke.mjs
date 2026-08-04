@@ -113,6 +113,13 @@ await check('wr/rank verse 0 (John 3:16) → drawtell stage mounts', async () =>
   if (opts !== 4) throw new Error(`expected 4 emoji option buttons, got ${opts}`);
 });
 
+await check('ss/rank verse 0 (John 3:16) → firstletter stage mounts with full words', async () => {
+  await page.goto(`${base}/#/b/ss/rank/play/0/firstletter`);
+  await page.waitForTimeout(1200);
+  const first = await page.locator('.stage .stone').first().textContent();
+  if (first !== 'For') throw new Error(`expected first stone to read "For", got "${first}"`);
+});
+
 await check('sticker book view', async () => {
   await page.goto(`${base}/#/stickers`);
   await page.waitForSelector('.card', { timeout: 5000 });
