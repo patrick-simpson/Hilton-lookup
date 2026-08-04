@@ -71,7 +71,11 @@ function el() {
     audioEl.style.display = 'none';
     audioEl.addEventListener('timeupdate', onTimeUpdate);
     audioEl.addEventListener('ended', clearTicks);
-    audioEl.addEventListener('pause', clearTicks);
+    // Deliberately NOT clearing ticks on the 'pause' event: pauseAudio()
+    // below pauses mid-song for a sing-along gap round and expects
+    // tickIndex/tickTimes to survive so resumeAudio() picks the word timeline
+    // back up where it left off. Full stops (stopAudio) clear ticks
+    // explicitly instead.
     // Attach to the DOM so it's inspectable/queryable like a normal element
     // (and some mobile browsers behave better with playback elements that
     // are actually in the tree rather than detached).
@@ -137,6 +141,18 @@ export function stopAudio() {
 export function onWordTick(cb) {
   tickListeners.add(cb);
   return () => tickListeners.delete(cb);
+}
+
+// Pause/resume the shared element in place (word ticks and position survive)
+// — for Sing-Along Stage's "your turn" gap rounds, which pause the song mid-
+// phrase and pick it back up on the kid's cue. Unlike stopAudio(), these
+// never touch tickTimes/currentTime.
+export function pauseAudio() {
+  if (audioEl) audioEl.pause();
+}
+
+export function resumeAudio() {
+  if (audioEl) audioEl.play().catch(() => { /* no user gesture yet, or blocked */ });
 }
 
 // iOS/Safari only allow the first play() call inside a user gesture to

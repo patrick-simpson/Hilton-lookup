@@ -99,6 +99,13 @@ for (const s of sections) {
   });
 }
 
+await check('hg/rj3 verse 0 (NT-1, has a song) → singalong stage mounts', async () => {
+  await page.goto(`${base}/#/b/hg/rj3/play/0/singalong`);
+  await page.waitForTimeout(1200);
+  const tiles = await page.locator('.stage .sa-tile').count();
+  if (tiles === 0) throw new Error('no word tiles in Sing-Along stage');
+});
+
 await check('sticker book view', async () => {
   await page.goto(`${base}/#/stickers`);
   await page.waitForSelector('.card', { timeout: 5000 });

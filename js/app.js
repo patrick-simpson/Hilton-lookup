@@ -248,6 +248,21 @@ function hearSingControls(verse) {
   return controls;
 }
 
+// ladderFor() lists 'singalong' on every Listen & Sing row (registry
+// presence isn't per-verse), but the game only makes sense once the owner
+// has actually added a song file for THIS verse — drop it otherwise so kids
+// don't land on Karaoke's song-less sibling by accident.
+function ladderRowsFor(book, section, verse) {
+  const hasSong = !!songEntryFor(verse.ref);
+  const rows = ladderFor(book, section, GAMES);
+  if (hasSong) return rows;
+  return rows.map((row) => (
+    row.games.includes('singalong')
+      ? { ...row, games: row.games.filter((id) => id !== 'singalong') }
+      : row
+  ));
+}
+
 // The per-verse Mastery Ladder menu (plans.html §3.3): a verse card, then
 // four always-tappable stage rows suggesting which game to play next.
 function verseView(book, section, verseIdx) {
@@ -268,7 +283,7 @@ function verseView(book, section, verseIdx) {
   app.append(card);
 
   const suggested = nextRow(stage);
-  for (const row of ladderFor(book, section, GAMES)) {
+  for (const row of ladderRowsFor(book, section, verse)) {
     const rowCard = el('div', 'card ladder-row');
     const head = el('div', 'ladder-row-head');
     head.append(el('span', 'ladder-row-title', `${row.n} ${row.icon} ${row.title}`));
@@ -356,7 +371,7 @@ function showWinOverlay({ stars, message, book, section, instances, idx, section
   // Suggest the next not-yet-done ladder stage for this verse, if it has a
   // game to offer today (future rows like Recite may still be empty).
   const postWinStage = getStars(instances[idx].key);
-  const nextRowInfo = ladderFor(book, section, GAMES).find((r) => r.n === nextRow(postWinStage));
+  const nextRowInfo = ladderRowsFor(book, section, instances[idx]).find((r) => r.n === nextRow(postWinStage));
   if (nextRowInfo && nextRowInfo.games.length && !stageDone(nextRowInfo.n, postWinStage)) {
     const nextBtn = el('button', 'btn btn-blue', `${nextRowInfo.icon} Next: ${LADDER_VERB[nextRowInfo.key]}!`);
     nextBtn.onclick = () => { overlay.remove(); go(`${sectionHash}/play/${idx}/${nextRowInfo.games[0]}`); };
