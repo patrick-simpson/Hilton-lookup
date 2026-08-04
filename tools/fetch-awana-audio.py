@@ -44,8 +44,10 @@ def wanted_outputs(book_id, translation):
 
 def convert(src, dest, kind):
     dest.parent.mkdir(parents=True, exist_ok=True)
+    # -ar 44100 matters: loudnorm silently resamples to 96 kHz, and low-bitrate
+    # AAC spread over that bandwidth sounds like static.
     cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-i', str(src), '-ac', '1',
-           '-b:a', BITRATE[kind], '-af', 'loudnorm=I=-16:TP=-1.5',
+           '-b:a', BITRATE[kind], '-af', 'loudnorm=I=-16:TP=-1.5', '-ar', '44100',
            '-movflags', '+faststart', str(dest)]
     subprocess.run(cmd, check=True)
 
