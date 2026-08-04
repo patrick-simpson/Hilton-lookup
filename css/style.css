@@ -215,6 +215,14 @@ button {
 }
 .chip-scroller .chip { flex: 0 0 auto; white-space: nowrap; }
 
+/* "For grown-ups" footer on the book screen: song album + biography PDF links. */
+.grownups { margin-top: 14px; opacity: 0.92; }
+.grownups-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+.grownups-label { font-size: 0.9rem; font-weight: bold; color: var(--ink-soft, #666); margin-right: 4px; }
+.grownups a.chip { text-decoration: none; display: inline-block; }
+.grownups-list { margin-top: 6px; }
+.grownups-list .chip { font-size: 0.85rem; padding: 6px 12px; }
+
 /* ---------- game stage ---------- */
 
 .stage {

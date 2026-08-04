@@ -1,0 +1,1536 @@
+{
+ "generated": "by gen_track_map.mjs from ZIP central-directory recon",
+ "zipUrl": "https://awana-wordpress.s3.amazonaws.com/Downloads/{Book}Audio{T}.zip",
+ "zipNames": {
+  "hg": "HangGlider",
+  "wr": "WingRunner",
+  "ss": "SkyStormer"
+ },
+ "translations": {
+  "niv84": "NIV",
+  "esv": "ESV",
+  "kjv": "KJV",
+  "nkjv": "NKJV"
+ },
+ "books": {
+  "hg": {
+   "tracks": {
+    "1": {
+     "title": "S Is For Savior",
+     "mb": 2,
+     "type": "lesson",
+     "out": "audio/handbook/hg/01-s-is-for-savior.m4a",
+     "section": "rank"
+    },
+    "2": {
+     "title": "1 John 4_14",
+     "mb": 0.22,
+     "type": "verse",
+     "refs": [
+      "1 John 4:14"
+     ],
+     "out": "audio/read/{t}/1-john-4-14.m4a",
+     "section": "rank"
+    },
+    "3": {
+     "title": "John 3_16",
+     "mb": 0.28,
+     "type": "verse",
+     "refs": [
+      "John 3:16"
+     ],
+     "out": "audio/read/{t}/john-3-16.m4a",
+     "section": "rank"
+    },
+    "4": {
+     "title": "P Is For Power",
+     "mb": 1.54,
+     "type": "lesson",
+     "out": "audio/handbook/hg/04-p-is-for-power.m4a",
+     "section": "rank"
+    },
+    "5": {
+     "title": "Psalm 147_5",
+     "mb": 0.2,
+     "type": "verse",
+     "refs": [
+      "Psalm 147:5"
+     ],
+     "out": "audio/read/{t}/psalm-147-5.m4a",
+     "section": "rank"
+    },
+    "6": {
+     "title": "A Is For According...",
+     "mb": 2.61,
+     "type": "lesson",
+     "out": "audio/handbook/hg/06-a-is-for-according.m4a",
+     "section": "rank"
+    },
+    "7": {
+     "title": "1 Cor. 15_3",
+     "mb": 0.35,
+     "type": "verse",
+     "refs": [
+      "1 Corinthians 15:3"
+     ],
+     "out": "audio/read/{t}/1-corinthians-15-3.m4a",
+     "section": "rank"
+    },
+    "8": {
+     "title": "R Is For Rose Again",
+     "mb": 1.68,
+     "type": "lesson",
+     "out": "audio/handbook/hg/08-r-is-for-rose-again.m4a",
+     "section": "rank"
+    },
+    "9": {
+     "title": "1 Cor. 15_4",
+     "mb": 0.25,
+     "type": "verse",
+     "refs": [
+      "1 Corinthians 15:4"
+     ],
+     "out": "audio/read/{t}/1-corinthians-15-4.m4a",
+     "section": "rank"
+    },
+    "10": {
+     "title": "K Is For Keep",
+     "mb": 2.72,
+     "type": "lesson",
+     "out": "audio/handbook/hg/10-k-is-for-keep.m4a",
+     "section": "rank"
+    },
+    "11": {
+     "title": "James 2_10",
+     "mb": 0.27,
+     "type": "verse",
+     "refs": [
+      "James 2:10"
+     ],
+     "out": "audio/read/{t}/james-2-10.m4a",
+     "section": "rank"
+    },
+    "12": {
+     "title": "S Is For Savior",
+     "mb": 2.77,
+     "type": "lesson",
+     "out": "audio/handbook/hg/12-s-is-for-savior.m4a",
+     "section": "rank"
+    },
+    "13": {
+     "title": "Acts 16_31",
+     "mb": 0.31,
+     "type": "verse",
+     "refs": [
+      "Acts 16:31"
+     ],
+     "out": "audio/read/{t}/acts-16-31.m4a",
+     "section": "rank"
+    },
+    "14": {
+     "title": "God Talks To Us...",
+     "mb": 1.49,
+     "type": "lesson",
+     "out": "audio/handbook/hg/14-god-talks-to-us.m4a",
+     "section": "rj1"
+    },
+    "15": {
+     "title": "John 20_31 & 3 Names",
+     "mb": 0.35,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "John 20:31"
+     ],
+     "note": "preferred copy: wr track 12"
+    },
+    "16": {
+     "title": "Talk To God In Prayer",
+     "mb": 1.42,
+     "type": "lesson",
+     "out": "audio/handbook/hg/16-talk-to-god-in-prayer.m4a",
+     "section": "rj1"
+    },
+    "17": {
+     "title": "Psalm 118_1",
+     "mb": 0.15,
+     "type": "verse",
+     "refs": [
+      "Psalm 118:1"
+     ],
+     "out": "audio/read/{t}/psalm-118-1.m4a",
+     "section": "rj1"
+    },
+    "18": {
+     "title": "Bible_ God Who Loves Us",
+     "mb": 1.04,
+     "type": "lesson",
+     "out": "audio/handbook/hg/18-bible-god-who-loves-us.m4a",
+     "section": "rj1"
+    },
+    "19": {
+     "title": "1 John 4_19",
+     "mb": 0.2,
+     "type": "verse",
+     "refs": [
+      "1 John 4:19"
+     ],
+     "out": "audio/read/{t}/1-john-4-19.m4a",
+     "section": "rj1"
+    },
+    "20": {
+     "title": "In The Beginning",
+     "mb": 5.16,
+     "type": "story",
+     "out": "audio/handbook/hg/20-in-the-beginning.m4a",
+     "section": "gj1"
+    },
+    "21": {
+     "title": "Gen. 1_1",
+     "mb": 0.16,
+     "type": "verse",
+     "refs": [
+      "Genesis 1:1"
+     ],
+     "out": "audio/read/{t}/genesis-1-1.m4a",
+     "section": "gj1"
+    },
+    "22": {
+     "title": "God Saw It Was Good",
+     "mb": 5.34,
+     "type": "story",
+     "out": "audio/handbook/hg/22-god-saw-it-was-good.m4a",
+     "section": "gj1"
+    },
+    "23": {
+     "title": "Gen. 1_31",
+     "mb": 0.21,
+     "type": "verse",
+     "refs": [
+      "Genesis 1:31"
+     ],
+     "out": "audio/read/{t}/genesis-1-31.m4a",
+     "section": "gj1"
+    },
+    "24": {
+     "title": "Adam And Eve Sin",
+     "mb": 6.11,
+     "type": "story",
+     "out": "audio/handbook/hg/24-adam-and-eve-sin.m4a",
+     "section": "gj1"
+    },
+    "25": {
+     "title": "Rome. 3_23",
+     "mb": 0.16,
+     "type": "verse",
+     "refs": [
+      "Romans 3:23"
+     ],
+     "out": "audio/read/{t}/romans-3-23.m4a",
+     "section": "gj1"
+    },
+    "26": {
+     "title": "Noah And Flood",
+     "mb": 4.91,
+     "type": "story",
+     "out": "audio/handbook/hg/26-noah-and-flood.m4a",
+     "section": "rj2"
+    },
+    "27": {
+     "title": "John 17_17",
+     "mb": 0.18,
+     "type": "verse",
+     "refs": [
+      "John 17:17"
+     ],
+     "out": "audio/read/{t}/john-17-17.m4a",
+     "section": "rj2"
+    },
+    "28": {
+     "title": "Noah And God's Promise",
+     "mb": 5.87,
+     "type": "story",
+     "out": "audio/handbook/hg/28-noah-and-god-s-promise.m4a",
+     "section": "rj2"
+    },
+    "29": {
+     "title": "1 Peter 1_25",
+     "mb": 0.17,
+     "type": "verse",
+     "refs": [
+      "1 Peter 1:25"
+     ],
+     "out": "audio/read/{t}/1-peter-1-25.m4a",
+     "section": "rj2"
+    },
+    "30": {
+     "title": "The Tower Of Babel",
+     "mb": 5.04,
+     "type": "story",
+     "out": "audio/handbook/hg/30-the-tower-of-babel.m4a",
+     "section": "rj2"
+    },
+    "31": {
+     "title": "John 14_6",
+     "mb": 0.25,
+     "type": "verse",
+     "refs": [
+      "John 14:6"
+     ],
+     "out": "audio/read/{t}/john-14-6.m4a",
+     "section": "rj2"
+    },
+    "32": {
+     "title": "What Is A Missionary_",
+     "mb": 1.3,
+     "type": "lesson",
+     "out": "audio/handbook/hg/32-what-is-a-missionary.m4a",
+     "section": "gj2"
+    },
+    "33": {
+     "title": "Where Do Missionaries Work_",
+     "mb": 1.28,
+     "type": "lesson",
+     "out": "audio/handbook/hg/33-where-do-missionaries-work.m4a",
+     "section": "gj2"
+    },
+    "34": {
+     "title": "What Do Missionaries Do_",
+     "mb": 1.87,
+     "type": "lesson",
+     "out": "audio/handbook/hg/34-what-do-missionaries-do.m4a",
+     "section": "gj2"
+    },
+    "35": {
+     "title": "Colossians 1_3",
+     "mb": 0.2,
+     "type": "verse",
+     "refs": [
+      "Colossians 1:3"
+     ],
+     "out": "audio/read/{t}/colossians-1-3.m4a",
+     "section": "gj2"
+    },
+    "36": {
+     "title": "New Test Books 1-8",
+     "mb": 0.31,
+     "type": "verse-list",
+     "refs": [
+      "NT-1"
+     ],
+     "out": "audio/read/common/nt-1.m4a"
+    },
+    "37": {
+     "title": "New Test Books 9-17",
+     "mb": 0.36,
+     "type": "verse-list",
+     "refs": [
+      "NT-2"
+     ],
+     "out": "audio/read/common/nt-2.m4a"
+    },
+    "38": {
+     "title": "New Test Books 18-27",
+     "mb": 0.41,
+     "type": "verse-list",
+     "refs": [
+      "NT-3"
+     ],
+     "out": "audio/read/common/nt-3.m4a"
+    },
+    "39": {
+     "title": "New Test All Books",
+     "mb": 1.37,
+     "type": "verse-list",
+     "refs": [
+      "NT-ALL"
+     ],
+     "out": "audio/read/common/nt-all.m4a"
+    },
+    "40": {
+     "title": "God Saves Baby Moses",
+     "mb": 5.63,
+     "type": "story",
+     "out": "audio/handbook/hg/40-god-saves-baby-moses.m4a",
+     "section": "gj3"
+    },
+    "41": {
+     "title": "John 3_14 (Pt. 1)",
+     "mb": 0.18,
+     "type": "verse",
+     "refs": [
+      "John 3:14a"
+     ],
+     "out": "audio/read/{t}/john-3-14a.m4a",
+     "section": "gj3"
+    },
+    "42": {
+     "title": "God Helps Moses",
+     "mb": 5.39,
+     "type": "story",
+     "out": "audio/handbook/hg/42-god-helps-moses.m4a",
+     "section": "gj3"
+    },
+    "43": {
+     "title": "John 3_14 (Pt. 2)",
+     "mb": 0.18,
+     "type": "verse",
+     "refs": [
+      "John 3:14b"
+     ],
+     "out": "audio/read/{t}/john-3-14b.m4a",
+     "section": "gj3"
+    },
+    "44": {
+     "title": "God Saves Israelites",
+     "mb": 5.95,
+     "type": "story",
+     "out": "audio/handbook/hg/44-god-saves-israelites.m4a",
+     "section": "gj3"
+    },
+    "45": {
+     "title": "John 3_15",
+     "mb": 0.19,
+     "type": "verse",
+     "refs": [
+      "John 3:15"
+     ],
+     "out": "audio/read/{t}/john-3-15.m4a",
+     "section": "gj3"
+    },
+    "46": {
+     "title": "The Israelites Complain",
+     "mb": 5.14,
+     "type": "story",
+     "out": "audio/handbook/hg/46-the-israelites-complain.m4a",
+     "section": "rank"
+    },
+    "47": {
+     "title": "John 3_16",
+     "mb": 0.29,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "John 3:16"
+     ],
+     "note": "preferred copy: hg track 3"
+    },
+    "48": {
+     "title": "John 3_14-16",
+     "mb": 0.58,
+     "type": "verse",
+     "refs": [
+      "John 3:14-16"
+     ],
+     "out": "audio/read/{t}/john-3-14-16.m4a",
+     "section": "rj4"
+    },
+    "49": {
+     "title": "Joshua And Caleb Trust God",
+     "mb": 5.16,
+     "type": "story",
+     "out": "audio/handbook/hg/49-joshua-and-caleb-trust-god.m4a",
+     "section": "rj4"
+    },
+    "50": {
+     "title": "Joshua 1_9",
+     "mb": 0.23,
+     "type": "verse",
+     "refs": [
+      "Joshua 1:9"
+     ],
+     "out": "audio/read/{t}/joshua-1-9.m4a",
+     "section": "rj4"
+    },
+    "51": {
+     "title": "Josh. & Israelites Make Good Choices",
+     "mb": 6.51,
+     "type": "story",
+     "out": "audio/handbook/hg/51-josh-israelites-make-good-choices.m4a",
+     "section": "rj4"
+    },
+    "52": {
+     "title": "Joshua 24_24",
+     "mb": 0.22,
+     "type": "verse",
+     "refs": [
+      "Joshua 24:24"
+     ],
+     "out": "audio/read/{t}/joshua-24-24.m4a",
+     "section": "rj4"
+    },
+    "53": {
+     "title": "Obey Your Parents",
+     "mb": 2.38,
+     "type": "lesson",
+     "out": "audio/handbook/hg/53-obey-your-parents.m4a",
+     "section": "gj4"
+    },
+    "54": {
+     "title": "Eph. 6_1",
+     "mb": 0.17,
+     "type": "verse",
+     "refs": [
+      "Ephesians 6:1"
+     ],
+     "out": "audio/read/{t}/ephesians-6-1.m4a",
+     "section": "gj4"
+    },
+    "55": {
+     "title": "Books Of The Bible Song",
+     "mb": 2.97,
+     "type": "song",
+     "out": "audio/songs/common/books-of-the-bible.m4a"
+    }
+   }
+  },
+  "wr": {
+   "tracks": {
+    "1": {
+     "title": "Verse - John 3_16",
+     "mb": 0.78,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "John 3:16"
+     ],
+     "note": "preferred copy: hg track 3"
+    },
+    "2": {
+     "title": "Character Story - A Present For Mrs. Torres",
+     "mb": 1.44,
+     "type": "story",
+     "out": "audio/handbook/wr/02-character-story-a-present-for-mrs-torres.m4a",
+     "section": "rank"
+    },
+    "3": {
+     "title": "Verse - 1 John 4_14 (S is for Savior)",
+     "mb": 0.24,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "1 John 4:14"
+     ],
+     "note": "preferred copy: hg track 2"
+    },
+    "4": {
+     "title": "Verse - Psalm 147_5 (P is for Power)",
+     "mb": 0.23,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "Psalm 147:5"
+     ],
+     "note": "preferred copy: hg track 5"
+    },
+    "5": {
+     "title": "Character Story - Who's There_",
+     "mb": 1.53,
+     "type": "story",
+     "out": "audio/handbook/wr/05-character-story-who-s-there.m4a",
+     "section": "rank"
+    },
+    "6": {
+     "title": "Verse - 1 Corinthians 15_3 (A is for According To The Scriptures)",
+     "mb": 0.29,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "1 Corinthians 15:3"
+     ],
+     "note": "preferred copy: hg track 7"
+    },
+    "7": {
+     "title": "Verse - 1 Corinthians 15_4 (R is for Raised)",
+     "mb": 0.29,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "1 Corinthians 15:4"
+     ],
+     "note": "preferred copy: hg track 9"
+    },
+    "8": {
+     "title": "Character Story - A Curious Visitor",
+     "mb": 1.33,
+     "type": "story",
+     "out": "audio/handbook/wr/08-character-story-a-curious-visitor.m4a",
+     "section": "rank"
+    },
+    "9": {
+     "title": "Verse - James 2_10 (K is for Keep)",
+     "mb": 0.29,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "James 2:10"
+     ],
+     "note": "preferred copy: hg track 11"
+    },
+    "10": {
+     "title": "Verse - Acts 16_31 (S is for Saved)",
+     "mb": 0.3,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "Acts 16:31"
+     ],
+     "note": "preferred copy: hg track 13"
+    },
+    "11": {
+     "title": "Character Story - A Good Time To Pray",
+     "mb": 1.68,
+     "type": "story",
+     "out": "audio/handbook/wr/11-character-story-a-good-time-to-pray.m4a",
+     "section": "rank"
+    },
+    "12": {
+     "title": "Verse - John 20_31",
+     "mb": 0.25,
+     "type": "verse",
+     "refs": [
+      "John 20:31"
+     ],
+     "out": "audio/read/{t}/john-20-31.m4a",
+     "section": "rank"
+    },
+    "13": {
+     "title": "Verse - Psalm 118_1",
+     "mb": 0.2,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "Psalm 118:1"
+     ],
+     "note": "preferred copy: hg track 17"
+    },
+    "14": {
+     "title": "Character Story - The Best Gift of All",
+     "mb": 2.05,
+     "type": "story",
+     "out": "audio/handbook/wr/14-character-story-the-best-gift-of-all.m4a",
+     "section": "rank"
+    },
+    "15": {
+     "title": "Verse - Romans 6_23",
+     "mb": 0.31,
+     "type": "verse",
+     "refs": [
+      "Romans 6:23"
+     ],
+     "out": "audio/read/{t}/romans-6-23.m4a",
+     "section": "rank"
+    },
+    "16": {
+     "title": "New Testament Books of the Bible Song",
+     "mb": 1.31,
+     "type": "song",
+     "out": "audio/songs/common/nt-books-song.m4a"
+    },
+    "17": {
+     "title": "Bible Biography - Deborah, A Mother In Israel",
+     "mb": 4.92,
+     "type": "story",
+     "out": "audio/handbook/wr/17-bible-biography-deborah-a-mother-in-israel.m4a",
+     "section": "rj1"
+    },
+    "18": {
+     "title": "Verse - Deuteronomy 6_5",
+     "mb": 0.23,
+     "type": "verse",
+     "refs": [
+      "Deuteronomy 6:5"
+     ],
+     "out": "audio/read/{t}/deuteronomy-6-5.m4a",
+     "section": "rj1"
+    },
+    "19": {
+     "title": "Verse - Psalm 96_2",
+     "mb": 0.24,
+     "type": "verse",
+     "refs": [
+      "Psalm 96:2"
+     ],
+     "out": "audio/read/{t}/psalm-96-2.m4a",
+     "section": "rj1"
+    },
+    "20": {
+     "title": "Bible Biography - Samson, The Strong Judge",
+     "mb": 5.77,
+     "type": "story",
+     "out": "audio/handbook/wr/20-bible-biography-samson-the-strong-judge.m4a",
+     "section": "rj1"
+    },
+    "21": {
+     "title": "Verse - Jeremiah 32_27",
+     "mb": 0.27,
+     "type": "verse",
+     "refs": [
+      "Jeremiah 32:27"
+     ],
+     "out": "audio/read/{t}/jeremiah-32-27.m4a",
+     "section": "rj1"
+    },
+    "22": {
+     "title": "Verse - Leviticus 19_2",
+     "mb": 0.28,
+     "type": "verse",
+     "refs": [
+      "Leviticus 19:2"
+     ],
+     "out": "audio/read/{t}/leviticus-19-2.m4a",
+     "section": "rj1"
+    },
+    "23": {
+     "title": "Bible Biography - Samuel, The Listening Prophet",
+     "mb": 6.24,
+     "type": "story",
+     "out": "audio/handbook/wr/23-bible-biography-samuel-the-listening-prophet.m4a",
+     "section": "rj1"
+    },
+    "24": {
+     "title": "Verse - Proverbs 20_11",
+     "mb": 0.25,
+     "type": "verse",
+     "refs": [
+      "Proverbs 20:11"
+     ],
+     "out": "audio/read/{t}/proverbs-20-11.m4a",
+     "section": "rj1"
+    },
+    "25": {
+     "title": "Bible Biography - David, The Shepherd King",
+     "mb": 4.54,
+     "type": "story",
+     "out": "audio/handbook/wr/25-bible-biography-david-the-shepherd-king.m4a",
+     "section": "gj1"
+    },
+    "26": {
+     "title": "Verse - Psalm 23_1-2",
+     "mb": 0.35,
+     "type": "verse",
+     "refs": [
+      "Psalm 23:1",
+      "Psalm 23:2"
+     ],
+     "out": "audio/read/{t}/psalm-23-1-2.m4a",
+     "section": "gj1"
+    },
+    "27": {
+     "title": "Verse - Psalm 23_3",
+     "mb": 0.24,
+     "type": "verse",
+     "refs": [
+      "Psalm 23:3"
+     ],
+     "out": "audio/read/{t}/psalm-23-3.m4a",
+     "section": "gj1"
+    },
+    "28": {
+     "title": "Bible Biography - Solomon, The Wise King",
+     "mb": 5.21,
+     "type": "story",
+     "out": "audio/handbook/wr/28-bible-biography-solomon-the-wise-king.m4a",
+     "section": "gj1"
+    },
+    "29": {
+     "title": "Verse - Psalm 23_4",
+     "mb": 0.32,
+     "type": "verse",
+     "refs": [
+      "Psalm 23:4"
+     ],
+     "out": "audio/read/{t}/psalm-23-4.m4a",
+     "section": "gj1"
+    },
+    "30": {
+     "title": "Verse - Psalm 23_5",
+     "mb": 0.32,
+     "type": "verse",
+     "refs": [
+      "Psalm 23:5"
+     ],
+     "out": "audio/read/{t}/psalm-23-5.m4a",
+     "section": "gj1"
+    },
+    "31": {
+     "title": "Bible Biography - Elijah, The Running Prophet",
+     "mb": 6.67,
+     "type": "story",
+     "out": "audio/handbook/wr/31-bible-biography-elijah-the-running-prophet.m4a",
+     "section": "gj1"
+    },
+    "32": {
+     "title": "Verse - Psalm 23_6",
+     "mb": 0.27,
+     "type": "verse",
+     "refs": [
+      "Psalm 23:6"
+     ],
+     "out": "audio/read/{t}/psalm-23-6.m4a",
+     "section": "gj1"
+    },
+    "33": {
+     "title": "Verse - 1 Peter 5_7",
+     "mb": 0.2,
+     "type": "verse",
+     "refs": [
+      "1 Peter 5:7"
+     ],
+     "out": "audio/read/{t}/1-peter-5-7.m4a",
+     "section": "gj1"
+    },
+    "34": {
+     "title": "Verse - Psalm 23_1-6",
+     "mb": 0.99,
+     "type": "skip-extra-verse",
+     "note": "not a curriculum ref"
+    },
+    "35": {
+     "title": "Character Story - A Friend from Faraway",
+     "mb": 1.05,
+     "type": "story",
+     "out": "audio/handbook/wr/35-character-story-a-friend-from-faraway.m4a",
+     "section": "rj2"
+    },
+    "36": {
+     "title": "Character Story - A Very Different Sparks Club",
+     "mb": 2.15,
+     "type": "story",
+     "out": "audio/handbook/wr/36-character-story-a-very-different-sparks-club.m4a",
+     "section": "rj2"
+    },
+    "37": {
+     "title": "Character Story - Not That Different After All!",
+     "mb": 1.17,
+     "type": "story",
+     "out": "audio/handbook/wr/37-character-story-not-that-different-after-all.m4a",
+     "section": "rj2"
+    },
+    "38": {
+     "title": "Verse - Mark 16_15",
+     "mb": 0.25,
+     "type": "verse",
+     "refs": [
+      "Mark 16:15"
+     ],
+     "out": "audio/read/{t}/mark-16-15.m4a",
+     "section": "rj2"
+    },
+    "39": {
+     "title": "Character Story - Tell Everybody!",
+     "mb": 1.07,
+     "type": "story",
+     "out": "audio/handbook/wr/39-character-story-tell-everybody.m4a",
+     "section": "gj2"
+    },
+    "40": {
+     "title": "Bible Biography - King Josiah, Lover Of God's Word",
+     "mb": 5.85,
+     "type": "story",
+     "out": "audio/handbook/wr/40-bible-biography-king-josiah-lover-of-god-s-word.m4a",
+     "section": "gj2"
+    },
+    "41": {
+     "title": "Verse - 1 Peter 1_25",
+     "mb": 0.19,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "1 Peter 1:25"
+     ],
+     "note": "preferred copy: hg track 29"
+    },
+    "42": {
+     "title": "Bible Biography - Daniel, The Praying Prophet",
+     "mb": 6.43,
+     "type": "story",
+     "out": "audio/handbook/wr/42-bible-biography-daniel-the-praying-prophet.m4a",
+     "section": "gj2"
+    },
+    "43": {
+     "title": "Verse - 1 Thessalonians 5_17-18",
+     "mb": 0.46,
+     "type": "verse",
+     "refs": [
+      "1 Thessalonians 5:17-18"
+     ],
+     "out": "audio/read/{t}/1-thessalonians-5-17-18.m4a",
+     "section": "gj2"
+    },
+    "44": {
+     "title": "Bible Biography - Nehemiah, God's Workman",
+     "mb": 5.72,
+     "type": "story",
+     "out": "audio/handbook/wr/44-bible-biography-nehemiah-god-s-workman.m4a",
+     "section": "gj2"
+    },
+    "45": {
+     "title": "Verse - Colossians 3_23",
+     "mb": 0.25,
+     "type": "verse",
+     "refs": [
+      "Colossians 3:23"
+     ],
+     "out": "audio/read/{t}/colossians-3-23.m4a",
+     "section": "gj2"
+    },
+    "46": {
+     "title": "Old Testament (First Five Books)",
+     "mb": 0.25,
+     "type": "verse-list",
+     "refs": [
+      "OT-1"
+     ],
+     "out": "audio/read/common/ot-1.m4a"
+    },
+    "47": {
+     "title": "Old Testament (Next Seven Books)",
+     "mb": 0.29,
+     "type": "verse-list",
+     "refs": [
+      "OT-2"
+     ],
+     "out": "audio/read/common/ot-2.m4a"
+    },
+    "48": {
+     "title": "Old Testament (Next Eight Books)",
+     "mb": 0.36,
+     "type": "verse-list",
+     "refs": [
+      "OT-3"
+     ],
+     "out": "audio/read/common/ot-3.m4a"
+    },
+    "49": {
+     "title": "Old Testament (Next Seven Books)",
+     "mb": 0.29,
+     "type": "verse-list",
+     "refs": [
+      "OT-4"
+     ],
+     "out": "audio/read/common/ot-4.m4a"
+    },
+    "50": {
+     "title": "Old Testament (Next Seven Books)",
+     "mb": 0.28,
+     "type": "verse-list",
+     "refs": [
+      "OT-5"
+     ],
+     "out": "audio/read/common/ot-5.m4a"
+    },
+    "51": {
+     "title": "Old Testament (Last Five Books)",
+     "mb": 0.21,
+     "type": "verse-list",
+     "refs": [
+      "OT-6"
+     ],
+     "out": "audio/read/common/ot-6.m4a"
+    },
+    "52": {
+     "title": "Old Testament (All Books)",
+     "mb": 1.64,
+     "type": "verse-list",
+     "refs": [
+      "OT-ALL"
+     ],
+     "out": "audio/read/common/ot-all.m4a"
+    },
+    "53": {
+     "title": "Old Testament Books Of The Bible Song",
+     "mb": 1.94,
+     "type": "song",
+     "out": "audio/songs/common/ot-books-song.m4a"
+    },
+    "54": {
+     "title": "Bible Biography - The Priest Who Didn't Believe",
+     "mb": 6.01,
+     "type": "story",
+     "out": "audio/handbook/wr/54-bible-biography-the-priest-who-didn-t-believe.m4a",
+     "section": "rj4"
+    },
+    "55": {
+     "title": "Verse - John 1_1",
+     "mb": 0.21,
+     "type": "verse",
+     "refs": [
+      "John 1:1"
+     ],
+     "out": "audio/read/{t}/john-1-1.m4a",
+     "section": "rj4"
+    },
+    "56": {
+     "title": "Bible Biography - Mary, Handmaiden Who Believed",
+     "mb": 5.28,
+     "type": "story",
+     "out": "audio/handbook/wr/56-bible-biography-mary-handmaiden-who-believed.m4a",
+     "section": "rj4"
+    },
+    "57": {
+     "title": "Verse - John 1_2",
+     "mb": 0.18,
+     "type": "verse",
+     "refs": [
+      "John 1:2"
+     ],
+     "out": "audio/read/{t}/john-1-2.m4a",
+     "section": "rj4"
+    },
+    "58": {
+     "title": "Bible Biography - Shepherds Tell The Good News",
+     "mb": 4.99,
+     "type": "story",
+     "out": "audio/handbook/wr/58-bible-biography-shepherds-tell-the-good-news.m4a",
+     "section": "rj4"
+    },
+    "59": {
+     "title": "Verse - John 1_3",
+     "mb": 0.23,
+     "type": "verse",
+     "refs": [
+      "John 1:3"
+     ],
+     "out": "audio/read/{t}/john-1-3.m4a",
+     "section": "rj4"
+    },
+    "60": {
+     "title": "Verse - John 1_1-3",
+     "mb": 0.43,
+     "type": "verse",
+     "refs": [
+      "John 1:1-3"
+     ],
+     "out": "audio/read/{t}/john-1-1-3.m4a",
+     "section": "rj4"
+    },
+    "61": {
+     "title": "Verse - Ephesians 4_32",
+     "mb": 0.4,
+     "type": "verse",
+     "refs": [
+      "Ephesians 4:32"
+     ],
+     "out": "audio/read/{t}/ephesians-4-32.m4a",
+     "section": "gj4"
+    },
+    "62": {
+     "title": "Verse - Philippians 2_14",
+     "mb": 0.21,
+     "type": "verse",
+     "refs": [
+      "Philippians 2:14"
+     ],
+     "out": "audio/read/{t}/philippians-2-14.m4a",
+     "section": "gj4"
+    }
+   }
+  },
+  "ss": {
+   "tracks": {
+    "1": {
+     "title": "John 3_16",
+     "mb": 0.7,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "John 3:16"
+     ],
+     "note": "preferred copy: hg track 3"
+    },
+    "2": {
+     "title": "The Moving Blues",
+     "mb": 0.84,
+     "type": "story",
+     "out": "audio/handbook/ss/02-the-moving-blues.m4a",
+     "section": "rank"
+    },
+    "3": {
+     "title": "1 John 4_14 (S Is For Savior)",
+     "mb": 0.23,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "1 John 4:14"
+     ],
+     "note": "preferred copy: hg track 2"
+    },
+    "4": {
+     "title": "Psalm 147_5 (P Is For Power)",
+     "mb": 0.19,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "Psalm 147:5"
+     ],
+     "note": "preferred copy: hg track 5"
+    },
+    "5": {
+     "title": "A Hiding Place",
+     "mb": 1.7,
+     "type": "story",
+     "out": "audio/handbook/ss/05-a-hiding-place.m4a",
+     "section": "rank"
+    },
+    "6": {
+     "title": "1 Corinthians 15_3 (A Is For According To The Scriptures)",
+     "mb": 0.25,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "1 Corinthians 15:3"
+     ],
+     "note": "preferred copy: hg track 7"
+    },
+    "7": {
+     "title": "1 Corinthians 15_4 (R Is For Rose Again)",
+     "mb": 0.27,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "1 Corinthians 15:4"
+     ],
+     "note": "preferred copy: hg track 9"
+    },
+    "8": {
+     "title": "A Little Help From My Friends",
+     "mb": 1.5,
+     "type": "story",
+     "out": "audio/handbook/ss/08-a-little-help-from-my-friends.m4a",
+     "section": "rank"
+    },
+    "9": {
+     "title": "James 2_10 (K Is For Keep)",
+     "mb": 0.28,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "James 2:10"
+     ],
+     "note": "preferred copy: hg track 11"
+    },
+    "10": {
+     "title": "Have You Seen Chloe_",
+     "mb": 1.43,
+     "type": "story",
+     "out": "audio/handbook/ss/10-have-you-seen-chloe.m4a",
+     "section": "rank"
+    },
+    "11": {
+     "title": "Acts 16_31 (S Is For Saved)",
+     "mb": 0.22,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "Acts 16:31"
+     ],
+     "note": "preferred copy: hg track 13"
+    },
+    "12": {
+     "title": "You're Never Alone!",
+     "mb": 4.09,
+     "type": "story",
+     "out": "audio/handbook/ss/12-you-re-never-alone.m4a",
+     "section": "rank"
+    },
+    "13": {
+     "title": "Deuteronomy 31_8",
+     "mb": 0.33,
+     "type": "verse",
+     "refs": [
+      "Deuteronomy 31:8"
+     ],
+     "out": "audio/read/{t}/deuteronomy-31-8.m4a",
+     "section": "rank"
+    },
+    "14": {
+     "title": "Old Testament Books Of The Bible Song",
+     "mb": 1.92,
+     "type": "skip-duplicate-song"
+    },
+    "15": {
+     "title": "New Testament Books Of The Bible Song",
+     "mb": 1.3,
+     "type": "skip-duplicate-song"
+    },
+    "16": {
+     "title": "What Do You Know About Christmas_",
+     "mb": 2.3,
+     "type": "lesson",
+     "out": "audio/handbook/ss/16-what-do-you-know-about-christmas.m4a",
+     "section": "rj1"
+    },
+    "17": {
+     "title": "Luke 2_10-11",
+     "mb": 0.42,
+     "type": "verse",
+     "refs": [
+      "Luke 2:10-11"
+     ],
+     "out": "audio/read/{t}/luke-2-10-11.m4a",
+     "section": "rj1"
+    },
+    "18": {
+     "title": "John 1_1-3",
+     "mb": 0.39,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "John 1:1-3"
+     ],
+     "note": "preferred copy: wr track 60"
+    },
+    "19": {
+     "title": "Wise Men Worship Their King",
+     "mb": 5.84,
+     "type": "story",
+     "out": "audio/handbook/ss/19-wise-men-worship-their-king.m4a",
+     "section": "rj1"
+    },
+    "20": {
+     "title": "Isaiah 9_6",
+     "mb": 0.45,
+     "type": "verse",
+     "refs": [
+      "Isaiah 9:6"
+     ],
+     "out": "audio/read/{t}/isaiah-9-6.m4a",
+     "section": "rj1"
+    },
+    "21": {
+     "title": "The Thankful Leper",
+     "mb": 5.78,
+     "type": "story",
+     "out": "audio/handbook/ss/21-the-thankful-leper.m4a",
+     "section": "gj1"
+    },
+    "22": {
+     "title": "Psalm 100_4",
+     "mb": 0.29,
+     "type": "verse",
+     "refs": [
+      "Psalm 100:4"
+     ],
+     "out": "audio/read/{t}/psalm-100-4.m4a",
+     "section": "gj1"
+    },
+    "23": {
+     "title": "A Child Of The King",
+     "mb": 4.85,
+     "type": "story",
+     "out": "audio/handbook/ss/23-a-child-of-the-king.m4a",
+     "section": "gj1"
+    },
+    "24": {
+     "title": "Matthew 19_14",
+     "mb": 0.28,
+     "type": "verse",
+     "refs": [
+      "Matthew 19:14"
+     ],
+     "out": "audio/read/{t}/matthew-19-14.m4a",
+     "section": "gj1"
+    },
+    "25": {
+     "title": "Zacchaeus Seeks The Savior",
+     "mb": 6.51,
+     "type": "story",
+     "out": "audio/handbook/ss/25-zacchaeus-seeks-the-savior.m4a",
+     "section": "gj1"
+    },
+    "26": {
+     "title": "Luke 19_10",
+     "mb": 0.21,
+     "type": "verse",
+     "refs": [
+      "Luke 19:10"
+     ],
+     "out": "audio/read/{t}/luke-19-10.m4a",
+     "section": "gj1"
+    },
+    "27": {
+     "title": "A Centurion Believes",
+     "mb": 6.7,
+     "type": "story",
+     "out": "audio/handbook/ss/27-a-centurion-believes.m4a",
+     "section": "rj2"
+    },
+    "28": {
+     "title": "1 John 4_15",
+     "mb": 0.27,
+     "type": "verse",
+     "refs": [
+      "1 John 4:15"
+     ],
+     "out": "audio/read/{t}/1-john-4-15.m4a",
+     "section": "rj2"
+    },
+    "29": {
+     "title": "Why Did Jesus Have To Die_",
+     "mb": 1.58,
+     "type": "lesson",
+     "out": "audio/handbook/ss/29-why-did-jesus-have-to-die.m4a",
+     "section": "rj2"
+    },
+    "30": {
+     "title": "Romans 5_8",
+     "mb": 0.23,
+     "type": "verse",
+     "refs": [
+      "Romans 5:8"
+     ],
+     "out": "audio/read/{t}/romans-5-8.m4a",
+     "section": "rj2"
+    },
+    "31": {
+     "title": "Mary Magdalene Sees Her Lord",
+     "mb": 6.45,
+     "type": "story",
+     "out": "audio/handbook/ss/31-mary-magdalene-sees-her-lord.m4a",
+     "section": "rj2"
+    },
+    "32": {
+     "title": "Matthew 28_6",
+     "mb": 0.26,
+     "type": "verse",
+     "refs": [
+      "Matthew 28:6"
+     ],
+     "out": "audio/read/{t}/matthew-28-6.m4a",
+     "section": "rj2"
+    },
+    "33": {
+     "title": "1 John 5_12",
+     "mb": 0.26,
+     "type": "verse",
+     "refs": [
+      "1 John 5:12"
+     ],
+     "out": "audio/read/{t}/1-john-5-12.m4a",
+     "section": "rj2"
+    },
+    "34": {
+     "title": "Meet Your Awana Missionary",
+     "mb": 0.89,
+     "type": "lesson",
+     "out": "audio/handbook/ss/34-meet-your-awana-missionary.m4a",
+     "section": "gj2"
+    },
+    "35": {
+     "title": "Missionaries Near And Far",
+     "mb": 1.23,
+     "type": "lesson",
+     "out": "audio/handbook/ss/35-missionaries-near-and-far.m4a",
+     "section": "gj2"
+    },
+    "36": {
+     "title": "Romans 1_16",
+     "mb": 0.27,
+     "type": "verse",
+     "refs": [
+      "Romans 1:16"
+     ],
+     "out": "audio/read/{t}/romans-1-16.m4a",
+     "section": "gj2"
+    },
+    "37": {
+     "title": "Philip Shares The Good News",
+     "mb": 6.86,
+     "type": "story",
+     "out": "audio/handbook/ss/37-philip-shares-the-good-news.m4a",
+     "section": "gj2"
+    },
+    "38": {
+     "title": "Acts 1_8",
+     "mb": 0.4,
+     "type": "verse",
+     "refs": [
+      "Acts 1:8"
+     ],
+     "out": "audio/read/{t}/acts-1-8.m4a",
+     "section": "gj2"
+    },
+    "39": {
+     "title": "Tabitha Lives To Serve",
+     "mb": 6.41,
+     "type": "story",
+     "out": "audio/handbook/ss/39-tabitha-lives-to-serve.m4a",
+     "section": "rj3"
+    },
+    "40": {
+     "title": "1 John 3_17-18",
+     "mb": 0.51,
+     "type": "verse",
+     "refs": [
+      "1 John 3:17-18"
+     ],
+     "out": "audio/read/{t}/1-john-3-17-18.m4a",
+     "section": "rj3"
+    },
+    "41": {
+     "title": "The Church Prays For Peter",
+     "mb": 5.59,
+     "type": "story",
+     "out": "audio/handbook/ss/41-the-church-prays-for-peter.m4a",
+     "section": "rj3"
+    },
+    "42": {
+     "title": "Colossians 4_2",
+     "mb": 0.2,
+     "type": "verse",
+     "refs": [
+      "Colossians 4:2"
+     ],
+     "out": "audio/read/{t}/colossians-4-2.m4a",
+     "section": "rj3"
+    },
+    "43": {
+     "title": "A Jailer Find Joy",
+     "mb": 6.45,
+     "type": "story",
+     "out": "audio/handbook/ss/43-a-jailer-find-joy.m4a",
+     "section": "gj3"
+    },
+    "44": {
+     "title": "Philippians 4_4",
+     "mb": 0.2,
+     "type": "verse",
+     "refs": [
+      "Philippians 4:4"
+     ],
+     "out": "audio/read/{t}/philippians-4-4.m4a",
+     "section": "gj3"
+    },
+    "45": {
+     "title": "Paul Stays Strong At Sea",
+     "mb": 6.1,
+     "type": "story",
+     "out": "audio/handbook/ss/45-paul-stays-strong-at-sea.m4a",
+     "section": "gj3"
+    },
+    "46": {
+     "title": "2 Corinthians 12_9",
+     "mb": 0.44,
+     "type": "verse",
+     "refs": [
+      "2 Corinthians 12:9"
+     ],
+     "out": "audio/read/{t}/2-corinthians-12-9.m4a",
+     "section": "gj3"
+    },
+    "47": {
+     "title": "A Lesson From Timothy",
+     "mb": 2.37,
+     "type": "story",
+     "out": "audio/handbook/ss/47-a-lesson-from-timothy.m4a",
+     "section": "gj3"
+    },
+    "48": {
+     "title": "2 Timothy 3_15",
+     "mb": 0.31,
+     "type": "verse",
+     "refs": [
+      "2 Timothy 3:15"
+     ],
+     "out": "audio/read/{t}/2-timothy-3-15.m4a",
+     "section": "gj3"
+    },
+    "49": {
+     "title": "1 Thessalonians 4_16",
+     "mb": 0.42,
+     "type": "verse",
+     "refs": [
+      "1 Thessalonians 4:16"
+     ],
+     "out": "audio/read/{t}/1-thessalonians-4-16.m4a",
+     "section": "rj4"
+    },
+    "50": {
+     "title": "1 Thessalonians 4_17",
+     "mb": 0.38,
+     "type": "verse",
+     "refs": [
+      "1 Thessalonians 4:17"
+     ],
+     "out": "audio/read/{t}/1-thessalonians-4-17.m4a",
+     "section": "rj4"
+    },
+    "51": {
+     "title": "A Letter From John",
+     "mb": 6.67,
+     "type": "story",
+     "out": "audio/handbook/ss/51-a-letter-from-john.m4a",
+     "section": "rj4"
+    },
+    "52": {
+     "title": "Revelation 21_1",
+     "mb": 0.25,
+     "type": "verse",
+     "refs": [
+      "Revelation 21:1"
+     ],
+     "out": "audio/read/{t}/revelation-21-1.m4a",
+     "section": "rj4"
+    },
+    "53": {
+     "title": "Revelation 21_3-4",
+     "mb": 0.51,
+     "type": "verse",
+     "refs": [
+      "Revelation 21:3-4"
+     ],
+     "out": "audio/read/{t}/revelation-21-3-4.m4a",
+     "section": "rj4"
+    },
+    "54": {
+     "title": "John 14_1-2",
+     "mb": 0.43,
+     "type": "verse",
+     "refs": [
+      "John 14:1-2"
+     ],
+     "out": "audio/read/{t}/john-14-1-2.m4a",
+     "section": "rj4"
+    },
+    "55": {
+     "title": "Being A Good Friend",
+     "mb": 1.35,
+     "type": "lesson",
+     "out": "audio/handbook/ss/55-being-a-good-friend.m4a",
+     "section": "gj4"
+    },
+    "56": {
+     "title": "Proverbs 17_17",
+     "mb": 0.17,
+     "type": "verse",
+     "refs": [
+      "Proverbs 17:17"
+     ],
+     "out": "audio/read/{t}/proverbs-17-17.m4a",
+     "section": "gj4"
+    },
+    "57": {
+     "title": "Romans 3_23",
+     "mb": 0.2,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "Romans 3:23"
+     ],
+     "note": "preferred copy: hg track 25"
+    },
+    "58": {
+     "title": "Romans 6_23",
+     "mb": 0.28,
+     "type": "skip-duplicate-verse",
+     "refs": [
+      "Romans 6:23"
+     ],
+     "note": "preferred copy: wr track 15"
+    },
+    "59": {
+     "title": "1 Corinthians 15_3-4",
+     "mb": 0.32,
+     "type": "verse",
+     "refs": [
+      "1 Corinthians 15:3-4"
+     ],
+     "out": "audio/read/{t}/1-corinthians-15-3-4.m4a",
+     "section": "rank"
+    }
+   }
+  }
+ },
+ "gaps": [
+  "FACTS",
+  "1 Thessalonians 4:16-17"
+ ],
+ "notes": [
+  "Psalm 23:1 and Psalm 23:2 share one combined clip (WR track 26, psalm-23-1-2.m4a).",
+  "1 Thessalonians 4:16-17 has no combined recording; 4:16 and 4:17 exist individually. Falls back to device speech.",
+  "FACTS (Bible Facts prose) has no recording. Falls back to device speech.",
+  "Non-verse tracks (lesson/story/song) are extracted from the NIV zips only; recordings are translation-independent content (CRCs differ across zips due to separate encodes, verified same track lists and near-identical sizes).",
+  "verse-list clips (Bible book names) are translation-independent; stored once under audio/read/common/."
+ ]
+}

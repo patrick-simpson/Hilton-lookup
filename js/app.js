@@ -2,6 +2,7 @@
 // plus the sticker book and verse garden overview pages.
 
 import { BOOKS } from './data/curriculum.js';
+import { MUSIC_LINKS, BIO_PDFS } from './data/music-links.js';
 import { TRANSLATIONS, getTranslationId, setTranslationId, activeTranslation } from './data/translations.js';
 import { GAMES } from './games/index.js';
 import {
@@ -107,6 +108,43 @@ function bookView(book) {
     card.onclick = () => { sfx.click(); go(`#/b/${book.id}/${section.id}`); };
     app.append(card);
   }
+  app.append(grownUpsRow(book));
+}
+
+// Small footer for parents/leaders: the official verse-song album (streaming/
+// purchase only — Awana doesn't offer the music as files) and the Bible
+// Biography PDFs downloaded from clubs.awana.org.
+function grownUpsRow(book) {
+  const wrap = el('div', 'grownups');
+  const row = el('div', 'grownups-row');
+  row.append(el('span', 'grownups-label', 'For grown-ups:'));
+  const songUrl = MUSIC_LINKS[book.id]?.[getTranslationId()];
+  if (songUrl) {
+    const a = el('a', 'chip', '🎧 Verse songs');
+    a.href = songUrl;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    row.append(a);
+  }
+  const pdfs = BIO_PDFS[book.id] || [];
+  if (pdfs.length) {
+    const toggle = el('button', 'chip', '📖 Bible biographies');
+    const list = el('div', 'grownups-list');
+    list.hidden = true;
+    for (const { title, file } of pdfs) {
+      const a = el('a', 'chip', title);
+      a.href = file;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      list.append(a);
+    }
+    toggle.onclick = () => { sfx.click(); list.hidden = !list.hidden; };
+    row.append(toggle);
+    wrap.append(row, list);
+    return wrap;
+  }
+  wrap.append(row);
+  return wrap;
 }
 
 function sectionView(book, section) {
