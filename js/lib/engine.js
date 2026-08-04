@@ -1,7 +1,8 @@
 // Shared game engine: DOM helpers, sound effects, speech, confetti,
 // word utilities, and the ctx object handed to every game's mount().
 
-import { VERSE_TEXT, BOOK_LISTS, OT_BOOKS, NT_BOOKS } from '../data/verses.js';
+import { BOOK_LISTS, OT_BOOKS, NT_BOOKS } from '../data/verses.js';
+import { verseText, getTranslationId, activeTranslation } from '../data/translations.js';
 
 // ---------- DOM ----------
 
@@ -39,9 +40,17 @@ export const pick = (arr) => arr[randInt(arr.length)];
 export const tokenize = (text) => text.split(/\s+/).filter(Boolean);
 export const cleanWord = (w) => w.toLowerCase().replace(/[^a-z0-9’']/g, '');
 
-const ALL_WORDS = [...new Set(
-  Object.values(VERSE_TEXT).flatMap(tokenize).filter((w) => cleanWord(w).length > 2)
-)];
+// Distractor word pools, built lazily per translation.
+const wordPools = new Map();
+function allWords() {
+  const id = getTranslationId();
+  if (!wordPools.has(id)) {
+    wordPools.set(id, [...new Set(
+      Object.values(activeTranslation().texts).flatMap(tokenize).filter((w) => cleanWord(w).length > 2)
+    )]);
+  }
+  return wordPools.get(id);
+}
 
 // ---------- sound effects (WebAudio, no assets) ----------
 
@@ -145,7 +154,7 @@ export function makeInstance(ref, entry, book, section) {
       key: `${book.id}.${section.id}.${entry.n}.${ref}`,
     };
   }
-  const text = VERSE_TEXT[ref];
+  const text = verseText(ref);
   return {
     ref,
     label: ref,
@@ -174,7 +183,7 @@ export function distractors(verse, count) {
   if (verse.isList) {
     pool = [...OT_BOOKS, ...NT_BOOKS].filter((b) => !used.has(cleanWord(b)));
   } else {
-    pool = ALL_WORDS.filter((w) => !used.has(cleanWord(w)));
+    pool = allWords().filter((w) => !used.has(cleanWord(w)));
   }
   return shuffle(pool).slice(0, count);
 }

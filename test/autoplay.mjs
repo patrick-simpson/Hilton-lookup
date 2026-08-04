@@ -7,6 +7,7 @@
 //   node test/autoplay.mjs                  # every section, verse 0
 //   node test/autoplay.mjs balloon rocket   # only these games
 //   node test/autoplay.mjs train:1          # specific verse index
+//   TRANSLATION=kjv node test/autoplay.mjs  # play in another translation (niv84|esv|kjv|nkjv)
 //
 // Games are driven by strategy:
 //   order  — tap the next expected verse word (tap-in-order games)
@@ -53,6 +54,10 @@ const prebuilt = process.env.CLAUDE_CHROMIUM
   || (existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : null);
 const browser = await chromium.launch(prebuilt ? { executablePath: prebuilt } : {});
 const page = await browser.newPage({ viewport: VIEWPORT, hasTouch: true });
+
+const TRANSLATION = process.env.TRANSLATION || 'niv84';
+await page.addInitScript((t) => localStorage.setItem('sparksArcade.translation', t), TRANSLATION);
+console.log(`translation: ${TRANSLATION}`);
 
 const pageErrors = [];
 page.on('pageerror', (e) => pageErrors.push(String(e)));

@@ -2,6 +2,7 @@
 // plus the sticker book and verse garden overview pages.
 
 import { BOOKS } from './data/curriculum.js';
+import { TRANSLATIONS, getTranslationId, setTranslationId, activeTranslation } from './data/translations.js';
 import { GAMES } from './games/index.js';
 import {
   el, clear, sectionInstances, makeCtx, speak, stopSpeak, sfx, confetti,
@@ -58,10 +59,20 @@ function homeView() {
   row.append(stickersBtn, gardenBtn);
   app.append(row);
 
+  // Bible translation picker
+  const trCard = el('div', 'card translation-row');
+  trCard.append(el('span', null, '📖 Bible:'));
+  for (const t of TRANSLATIONS) {
+    const chip = el('button', 'chip' + (t.id === getTranslationId() ? ' active' : ''), t.label);
+    chip.onclick = () => { sfx.click(); setTranslationId(t.id); render(); };
+    trCard.append(chip);
+  }
+  app.append(trCard);
+
   const foot = el('div', 'footer-note');
   foot.append(
     el('div', null, 'An unofficial practice app for Awana® Sparks clubbers — not affiliated with or endorsed by Awana.'),
-    el('div', null, 'Scripture taken from the Holy Bible, NEW INTERNATIONAL VERSION®, NIV® © 1973, 1978, 1984 by Biblica, Inc.® Used by permission.'),
+    el('div', null, activeTranslation().notice),
   );
   const reset = el('button', null, 'Grown-ups: reset all progress');
   reset.style.cssText = 'text-decoration:underline;font-size:0.75rem;opacity:0.7;margin-top:6px;';
