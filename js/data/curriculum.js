@@ -10,7 +10,7 @@ export const BOOKS = [
     name: 'HangGlider',
     grade: 'Kindergarten',
     emoji: '🪂',
-    color: 'red',
+    color: 'green',
     blurb: 'Genesis to Joshua — creation, the flood, Moses and the Israelites.',
     sections: [
       {
@@ -105,7 +105,7 @@ export const BOOKS = [
     name: 'WingRunner',
     grade: '1st Grade',
     emoji: '🛩️',
-    color: 'green',
+    color: 'blue',
     blurb: 'Judges to the birth of Christ — David, Daniel, and Psalm 23.',
     sections: [
       {
@@ -200,7 +200,7 @@ export const BOOKS = [
     name: 'SkyStormer',
     grade: '2nd Grade',
     emoji: '🚀',
-    color: 'blue',
+    color: 'red',
     blurb: 'The birth of Christ to Revelation — Jesus, the church, and heaven.',
     sections: [
       {

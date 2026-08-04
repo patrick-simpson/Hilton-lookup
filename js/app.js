@@ -18,6 +18,22 @@ import { ladderFor, stageDone, nextRow } from './lib/ladder.js';
 
 const app = document.getElementById('app');
 const JEWEL_ICON = { rank: '🏅', red: '❤️', green: '💚' };
+
+// Official Awana art (see img/): book emblems/wordmarks + celebration pieces.
+const BOOK_ART = {
+  hg: { emblem: 'img/hangglider-emblem.webp', banner: 'img/hangglider-emblem.webp' },
+  wr: { emblem: 'img/wingrunner-emblem.webp', banner: 'img/wingrunner-title.webp' },
+  ss: { emblem: 'img/skystormer-emblem.webp', banner: 'img/skystormer-title.webp' },
+};
+const WIN_ART = ['img/celebrate.webp', 'img/congrats.webp', 'img/great-job.webp'];
+
+function artImg(src, cls, alt = '') {
+  const img = el('img', cls);
+  img.src = src;
+  img.alt = alt;
+  img.loading = 'lazy';
+  return img;
+}
 // Verbs for the win-overlay "next stage" suggestion, keyed by ladder row key.
 const LADDER_VERB = {
   listen: 'Listen & Sing it', build: 'Build it', recall: 'Recall it', recite: 'Recite it',
@@ -44,7 +60,8 @@ function findBook(id) { return BOOKS.find((b) => b.id === id); }
 
 function homeView() {
   const hero = el('div', 'hero');
-  const mascot = el('div', 'mascot', '✨');
+  const mascot = el('div', 'mascot');
+  mascot.append(artImg('img/sparky-reading.webp', 'hero-art', 'Sparky reading the Bible'));
   hero.append(mascot, el('h1', null, 'Sparks Verse Arcade'), el('p', null, 'Pick your handbook and play your way to hiding God’s Word in your heart!'));
   app.append(hero);
 
@@ -53,7 +70,7 @@ function homeView() {
     const card = el('button', `card book-card book-${book.color}`);
     const info = el('div');
     info.append(el('h2', null, `${book.name}`), el('p', null, `${book.grade} · ${book.blurb}`));
-    card.append(el('span', 'book-emoji', book.emoji), info, el('span', 'progress-pill', `${p.done}/${p.total}`));
+    card.append(artImg(BOOK_ART[book.id].emblem, 'book-art', `${book.name} emblem`), info, el('span', 'progress-pill', `${p.done}/${p.total}`));
     card.onclick = () => { sfx.click(); go(`#/b/${book.id}`); };
     app.append(card);
   }
@@ -101,6 +118,7 @@ function topBar(title, backHash) {
 
 function bookView(book) {
   topBar(`${book.emoji} ${book.name}`, '#/');
+  app.append(artImg(BOOK_ART[book.id].banner, `book-banner banner-${book.id}`, book.name));
   for (const section of book.sections) {
     const game = GAMES[section.game];
     const p = sectionProgress(book, section);
@@ -325,6 +343,7 @@ function showWinOverlay({ stars, message, book, section, instances, idx, section
   const overlay = el('div', 'overlay');
   const card = el('div', 'card');
   card.append(
+    artImg(WIN_ART[Math.floor(Math.random() * WIN_ART.length)], 'win-art', 'Sparky celebrating'),
     el('div', 'stars-big', '⭐'.repeat(Math.max(1, stars))),
     el('h2', null, message || 'Way to go, Sparky!'),
     el('p', null, instances[idx].label),

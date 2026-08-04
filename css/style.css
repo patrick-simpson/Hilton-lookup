@@ -215,6 +215,16 @@ button {
 }
 .chip-scroller .chip { flex: 0 0 auto; white-space: nowrap; }
 
+/* ---------- official Awana art (img/) ---------- */
+
+.hero .hero-art { height: 110px; width: auto; }
+.book-card .book-art { width: 76px; height: auto; flex: 0 0 auto; }
+/* Wordmark JPEGs have a white background — frame them as a card so the
+   white block reads as intentional against the sky gradient. */
+.book-banner { display: block; margin: 4px auto 0; max-width: 340px; width: 80%; height: auto; background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 16px; }
+.book-banner.banner-hg { max-width: 190px; padding: 10px; }
+.win-art { display: block; margin: 0 auto 6px; max-width: 230px; width: 70%; height: auto; }
+
 /* "For grown-ups" footer on the book screen: song album + biography PDF links. */
 .grownups { margin-top: 14px; opacity: 0.92; }
 .grownups-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
