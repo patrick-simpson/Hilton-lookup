@@ -65,18 +65,25 @@ page.on('console', (m) => { if (m.type() === 'error') pageErrors.push(m.text());
 
 // ---- in-page helpers ----------------------------------------------------
 
+// A faded tile's textContent is the fadeWord() glyph (e.g. "◻" or a first
+// letter) — the tile still carries the full original word in data-word, so
+// prefer that for matching whenever it's present. (Redeclared inside each
+// page.evaluate below since that callback runs in the browser realm.)
+
 async function stageButtons() {
   return page.evaluate(({ avoid }) => {
     const rx = new RegExp(avoid, 'iu');
+    const wordOf = (b) => b.dataset.word ?? b.textContent;
     return [...document.querySelectorAll('.stage button')]
       .filter((b) => !b.disabled && b.offsetParent !== null && !rx.test(b.textContent))
-      .map((b, i) => ({ i, text: b.textContent.trim() }));
+      .map((b, i) => ({ i, text: wordOf(b).trim() }));
   }, { avoid: AVOID.source });
 }
 
 async function clickStageButton(matchText, { advance = false } = {}) {
   return page.evaluate(({ matchText, advance, adv, avoid }) => {
     const clean = (s) => s.toLowerCase().replace(/[^a-z0-9’']/g, '');
+    const wordOf = (b) => b.dataset.word ?? b.textContent;
     const advRx = new RegExp(adv, 'iu');
     const avoidRx = new RegExp(avoid, 'iu');
     const btns = [...document.querySelectorAll('.stage button')]
@@ -85,7 +92,7 @@ async function clickStageButton(matchText, { advance = false } = {}) {
     if (advance) {
       target = btns.find((b) => advRx.test(b.textContent));
     } else if (matchText != null) {
-      target = btns.find((b) => clean(b.textContent) === clean(matchText));
+      target = btns.find((b) => clean(wordOf(b)) === clean(matchText));
     }
     if (!target) return false;
     target.click();

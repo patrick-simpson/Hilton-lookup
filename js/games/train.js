@@ -2,6 +2,16 @@
 // onto the train behind the 🚂 engine. Long verses / book lists become several
 // trains (~8 cars each); each finished train chugs off screen before the next
 // one loads. Hard mode: 12-car trains plus 2 decoy cars mixed into the pool.
+//
+// Fading support: the "hint" line is now a ctx.guide strip of the current
+// train's words. At supportLevel >= 1 (hard/encore, or a later pass) the
+// POOL cars themselves fade to first-letters too — coupling a car reveals
+// its full word as the reward. Pool cars never go blank (level 2 still shows
+// first letters) so they stay findable; the guide strip covers the blank
+// level. Every faded pool car carries data-word (the full word) so test
+// drivers can still match it.
+
+import { supportLevelFor, fadeWord } from '../lib/engine.js';
 
 export default {
   id: 'train',
@@ -16,8 +26,7 @@ export default {
 
     ctx.addStyle(`
       .g-train { text-align: center; }
-      .g-train .hint { font-size: 1rem; font-weight: bold; opacity: 0.8; margin: 0 0 8px; }
-      .g-train .hint .round-label { opacity: 1; }
+      .g-train .round-label { font-size: 1rem; font-weight: bold; opacity: 0.8; margin: 0 0 8px; }
       .g-train .track-wrap {
         background: linear-gradient(180deg, #e3f4ff 0%, #f4fbe9 100%);
         border: 3px solid #d5e8ff;
@@ -144,20 +153,21 @@ export default {
       later(() => p.remove(), 850);
     }
 
+    let guide = null;
+
     function playTrain() {
       clear(root);
       const words = trains[trainIdx];
       let nextIdx = 0;
       let locked = false;
+      const level = supportLevelFor(ctx.verse, 'train', ctx.hard);
 
-      const hint = el('div', 'hint');
       if (trains.length > 1) {
-        hint.appendChild(el('span', 'round-label', `🚂 Train ${trainIdx + 1} of ${trains.length} · `));
-        hint.appendChild(el('span', '', 'Tap the next car!'));
-      } else {
-        hint.appendChild(el('span', '', 'Tap the car that comes next!'));
+        root.appendChild(el('div', 'round-label', `🚂 Train ${trainIdx + 1} of ${trains.length}`));
       }
-      root.appendChild(hint);
+      if (!guide) guide = ctx.guide(words);
+      else guide.reset(words);
+      root.appendChild(guide.el);
 
       const wrap = el('div', 'track-wrap');
       const track = el('div', 'track');
@@ -181,17 +191,23 @@ export default {
       }
 
       for (const def of shuffle(carDefs)) {
-        const carBtn = el('button', 'car', def.w);
+        // Cars never go fully blank (level is capped at 1 for display) so
+        // they stay findable — the guide strip above is what carries the
+        // blank level. data-word always holds the full word so a faded car
+        // still matches by its answer, not its (faded) label.
+        const carBtn = el('button', 'car', level >= 1 ? fadeWord(def.w, 1) : def.w);
+        carBtn.dataset.word = def.w;
         carBtn.type = 'button';
         carBtn.onclick = () => {
           if (locked || nextIdx >= words.length) return;
           if (!def.decoy && cleanWord(def.w) === cleanWord(words[nextIdx])) {
             sfx.correct();
             carBtn.remove();
-            const coupled = el('div', 'car coupled', words[nextIdx]);
+            const coupled = el('div', 'car coupled', words[nextIdx]); // reveal the full word — the reward
             track.appendChild(coupled);
             puff(engine);
             wrap.scrollTo({ left: wrap.scrollWidth, behavior: 'smooth' });
+            guide.markDone(nextIdx);
             nextIdx++;
             if (nextIdx === words.length) {
               locked = true;
@@ -230,7 +246,7 @@ export default {
       } else {
         ctx.confetti();
         const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-        later(() => ctx.win({ stars, message: 'All aboard! Your train is ready!' }), 700);
+        later(() => ctx.win({ stars, mistakes, message: 'All aboard! Your train is ready!' }), 700);
       }
     }
 

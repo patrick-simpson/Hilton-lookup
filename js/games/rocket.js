@@ -1,6 +1,14 @@
 // Rocket Launch — load fuel cells (verse words) in order to fill the tank,
 // then count down 3..2..1 and BLAST OFF! Long verses fuel up stage-by-stage
 // (one gauge segment per stage). Hard mode mixes in decoy fuel cells.
+//
+// Fading support: the stage message doubles as a ctx.guide strip of the
+// current stage's words. At supportLevel >= 1 (hard/encore, or a later
+// pass) fuel-cell buttons fade to first-letters — the full word is revealed
+// on the cell as it flies into the rocket, the reward for the correct tap.
+// Cells always carry data-word so test drivers can still match them.
+
+import { supportLevelFor, fadeWord } from '../lib/engine.js';
 
 export default {
   id: 'rocket',
@@ -135,7 +143,9 @@ export default {
 
     side.append(gaugeCol, wrap);
     layout.append(pool, side);
-    root.append(hdr, layout);
+    const guideSlot = el('div', 'guide-slot');
+    root.append(hdr, guideSlot, layout);
+    let guide = null;
 
     ctx.speak();
 
@@ -148,15 +158,25 @@ export default {
       });
     }
 
+    let level = 0;
+
     function buildPool() {
       clear(pool);
       msg.textContent = rounds.length > 1 ? `Stage ${roundIdx + 1} fuel!` : 'Load the fuel!';
+      level = supportLevelFor(ctx.verse, 'rocket', ctx.hard);
+      if (!guide) guide = ctx.guide(rounds[roundIdx]);
+      else guide.reset(rounds[roundIdx]);
+      guideSlot.appendChild(guide.el);
       const items = rounds[roundIdx].map((w) => ({ w, real: true }));
       if (ctx.hard) {
         for (const d of ctx.distractors(3 + ctx.randInt(2))) items.push({ w: d, real: false });
       }
       for (const it of shuffle(items)) {
-        const tile = el('button', 'word-tile', it.w);
+        // Fuel cells never go blank (fadeWord level capped at 1) — they must
+        // stay findable; data-word always holds the full word so a faded
+        // cell still matches by its answer, and flyToShip reveals it in full.
+        const tile = el('button', 'word-tile', level >= 1 ? fadeWord(it.w, 1) : it.w);
+        tile.dataset.word = it.w;
         tile.onclick = () => onTap(tile, it);
         pool.appendChild(tile);
       }
@@ -167,8 +187,9 @@ export default {
       const expect = rounds[roundIdx][inRound];
       if (it.real && cleanWord(it.w) === cleanWord(expect)) {
         sfx.correct();
-        flyToShip(tile);
+        flyToShip(tile, it.w);
         loaded++;
+        guide.markDone(inRound);
         inRound++;
         updateGauge();
         gulp();
@@ -182,13 +203,14 @@ export default {
       }
     }
 
-    // The tapped cell flies from the pool into the rocket.
-    function flyToShip(tile) {
+    // The tapped cell flies from the pool into the rocket, revealing its
+    // full word in flight (even if it was fading) — the reveal is the reward.
+    function flyToShip(tile, word) {
       const sRect = stage.getBoundingClientRect();
       const tRect = tile.getBoundingClientRect();
       const rRect = rocketEmoji.getBoundingClientRect();
       tile.remove();
-      const ghost = el('span', 'word-tile fly-cell', tile.textContent);
+      const ghost = el('span', 'word-tile fly-cell', word);
       ghost.style.left = (tRect.left - sRect.left) + 'px';
       ghost.style.top = (tRect.top - sRect.top) + 'px';
       root.appendChild(ghost);
@@ -251,7 +273,7 @@ export default {
       ctx.confetti();
       const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
       later(() => {
-        ctx.win({ stars });
+        ctx.win({ stars, mistakes });
         ctx.speak(); // win() stops speech, so speak after it — the verse plays over the celebration
       }, 1700);
     }

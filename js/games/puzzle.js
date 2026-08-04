@@ -1,8 +1,12 @@
 // Puzzle Pieces — a cheerful emoji picture hides under a grid of word covers.
 // Tap the covers in verse order: each correct tap fades a piece away and
 // reveals more of the picture. Long verses play in several rounds with a new
-// picture each round. Hard mode uses bigger rounds (16 pieces) and hides the
-// assembled-verse hint line.
+// picture each round. Hard mode uses bigger rounds (16 pieces).
+//
+// This is the gentlest builder — the picture reveal is the reward, so ONLY
+// the built-so-far hint line becomes ctx.guide (fading per pass count). The
+// cover buttons themselves always keep their full words: finding the next
+// word among the covers is the actual game.
 
 export default {
   id: 'puzzle',
@@ -43,11 +47,7 @@ export default {
       .g-puzzle .cover.solved { pointer-events: none; }
       .g-puzzle .cover.solved .cface { opacity: 0; transform: scale(0.5) rotate(8deg); }
       .g-puzzle .cover.wrong .cface { animation: wiggle 0.35s ease; background: var(--red-soft); }
-      .g-puzzle .hint {
-        min-height: 46px; background: #f4f8ff; border-radius: 14px;
-        padding: 8px 12px; margin-top: 12px; text-align: center;
-        font-size: 1.1rem; font-weight: bold; color: var(--green);
-      }
+      .g-puzzle .guide-strip { margin-top: 12px; margin-bottom: 0; }
       .g-puzzle .btn-row { margin: 12px 0 0; }
     `);
 
@@ -64,11 +64,10 @@ export default {
 
     // Deterministic picture per verse; a new one each round.
     const picBase = ctx.verse.ref.length % PICS.length;
-    const sep = ctx.verse.isList ? ', ' : ' ';
 
     let roundIdx = 0;
     let mistakes = 0;
-    const revealed = []; // words uncovered so far, across all rounds
+    let guide = null;
 
     const timers = new Set();
     const later = (fn, ms) => {
@@ -132,9 +131,8 @@ export default {
               sfx.correct();
               cover.classList.add('solved');
               cover.disabled = true; // out of play — taps fall through to the picture
-              revealed.push(words[nextIdx]);
+              guide.markDone(nextIdx);
               nextIdx++;
-              updateHint();
               if (nextIdx === words.length) endRound(pic);
             } else {
               mistakes++;
@@ -149,15 +147,10 @@ export default {
         coversEl.appendChild(rowEl);
       }
 
-      // --- built-so-far hint line (hidden in hard mode) ---
-      let hintEl = null;
-      if (!ctx.hard) {
-        hintEl = el('div', 'hint', revealed.join(sep));
-        root.appendChild(hintEl);
-      }
-      function updateHint() {
-        if (hintEl) hintEl.textContent = revealed.join(sep);
-      }
+      // --- built-so-far hint line, now a fading guide strip ---
+      if (!guide) guide = ctx.guide(words);
+      else guide.reset(words);
+      root.appendChild(guide.el);
 
       // --- hear it again ---
       const btnRow = el('div', 'btn-row');
@@ -178,7 +171,7 @@ export default {
         ctx.speak(); // read the whole verse over the finished picture
         const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
         const wait = Math.min(2000 + allWords.length * 300, 8000);
-        later(() => ctx.win({ stars }), wait);
+        later(() => ctx.win({ stars, mistakes }), wait);
       }
     }
 

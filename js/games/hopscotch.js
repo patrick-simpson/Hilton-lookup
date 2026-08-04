@@ -2,6 +2,15 @@
 // per word. The kid taps the word that comes next; correct answers make the
 // kangaroo hop onto the next square and fill it in. Long verses play as
 // multiple courts. Hard mode: bigger courts and 3 choice tiles instead of 2.
+//
+// Fading support (bespoke — there's no guide strip, the choice buttons ARE
+// the support): at supportLevel >= 1 the 2-3 choice buttons fade to
+// first-letters (never blank, so they stay findable) and carry data-word.
+// Tapping the correct one writes the full word into the court square and
+// speaks it aloud, confirming the answer even though the button itself was
+// faded.
+
+import { supportLevelFor, fadeWord } from '../lib/engine.js';
 
 export default {
   id: 'hopscotch',
@@ -73,6 +82,7 @@ export default {
     const chunkSize = ctx.hard ? 10 : 8;
     const courts = ctx.chunk(ctx.verse.words, chunkSize);
     const choiceCount = ctx.hard ? 3 : 2;
+    const level = supportLevelFor(ctx.verse, 'hopscotch', ctx.hard);
     let courtIdx = 0;
     let wordIdx = 0;
     let mistakes = 0;
@@ -179,7 +189,10 @@ export default {
         }
       }
       for (const w of shuffle(opts)) {
-        const btn = el('button', 'hs-choice', w);
+        // Choices never go fully blank (fadeWord level capped at 1) — they
+        // must stay findable. data-word always holds the full word.
+        const btn = el('button', 'hs-choice', level >= 1 ? fadeWord(w, 1) : w);
+        btn.dataset.word = w;
         btn.onclick = () => choose(btn, w, correct);
         choices.appendChild(btn);
       }
@@ -195,6 +208,7 @@ export default {
         sq.classList.add('filled');
         placeRoo(sq);
         bounceBody('hop');
+        ctx.speak(correct); // confirm the (possibly faded) answer aloud
         wordIdx++;
         clear(choices);
         later(() => {
@@ -230,7 +244,7 @@ export default {
         ctx.confetti();
         ctx.speak();
         const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-        later(() => ctx.win({ stars }), 1600);
+        later(() => ctx.win({ stars, supportLevel: level, mistakes }), 1600);
       }
     }
 

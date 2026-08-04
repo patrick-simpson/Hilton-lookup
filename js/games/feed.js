@@ -1,8 +1,14 @@
 // Feed Sparky — tap only the words that belong in the verse to feed the
-// hungry firefly. Ghost tiles show the verse and light up as each word is
-// fed (any order in easy mode). Decoy words make Sparky shake his head.
-// Hard mode: 1:1 decoys and words must be fed in verse order (the next
-// ghost tile pulses as a hint). Long verses play phrase-by-phrase.
+// hungry firefly. Ghost tiles ARE the fading guide strip — they light up as
+// each word is fed. Decoy words make Sparky shake his head. Hard mode packs
+// in 1:1 decoys. Long verses play phrase-by-phrase.
+//
+// Fading support: at supportLevel 0 (first pass, not hard/encore) words may
+// be fed in any order, same as always. At supportLevel >= 1 (hard/encore, or
+// a later pass) words must be fed in verse order — the next guide word
+// pulses as a hint.
+
+import { supportLevelFor } from '../lib/engine.js';
 
 export default {
   id: 'feed',
@@ -36,11 +42,11 @@ export default {
       .g-feed .sparky.shake .face { animation: wiggle 0.4s ease; }
       .g-feed .sparky.happy .bug { animation: pop-in 0.4s ease; }
       .g-feed .round-label { font-weight: bold; opacity: 0.75; margin: 4px 0 2px; }
-      .g-feed .ghosts { background: #f4f8ff; border-radius: 16px; padding: 6px; margin: 6px 0 10px; min-height: 48px; }
-      /* ghost tiles are read-only verse display, not tap targets — keep them
-         compact so the food belt (the action area) stays high on the screen */
-      .g-feed .ghosts .word-tile { cursor: default; min-height: 34px; padding: 4px 10px; margin: 3px; font-size: 1.05rem; border-radius: 10px; box-shadow: 0 2px 0 rgba(38, 50, 75, 0.1); }
-      .g-feed .word-tile.ghost.next { opacity: 0.9; border-color: #ffb703; background: #fff7df; animation: g-feed-pulse 1.1s ease-in-out infinite; }
+      /* the guide strip IS the ghost row now — compact it a touch so the
+         food belt (the action area) stays high on the screen */
+      .g-feed .guide-slot .guide-strip { margin: 6px 0 10px; }
+      .g-feed .guide-slot .guide-word { min-height: 34px; padding: 4px 10px; font-size: 1.05rem; }
+      .g-feed .guide-slot .guide-word.next { opacity: 0.9; border-color: #ffb703; background: #fff7df; animation: g-feed-pulse 1.1s ease-in-out infinite; }
       .g-feed .belt { background: repeating-linear-gradient(45deg, #eef1f7 0 14px, #e3e8f2 14px 28px); border: 3px dashed #c6d0e2; border-radius: 16px; padding: 10px 6px; min-height: 80px; }
       .g-feed .food.gone { opacity: 0; transform: scale(0.3) rotate(25deg); transition: opacity 0.45s ease, transform 0.45s ease; pointer-events: none; }
       .g-feed .fly { position: absolute; z-index: 30; margin: 0; pointer-events: none; background: #d3f2d9; transition: transform 0.45s cubic-bezier(0.5, -0.1, 0.6, 1), opacity 0.45s ease; }
@@ -71,9 +77,9 @@ export default {
     root.appendChild(sparky);
 
     const roundLabel = el('div', 'round-label', '');
-    const ghostBox = el('div', 'ghosts');
+    const guideSlot = el('div', 'guide-slot');
     const belt = el('div', 'belt');
-    root.append(roundLabel, ghostBox, belt);
+    root.append(roundLabel, guideSlot, belt);
 
     // ----- rounds -----
     const chunkSize = ctx.verse.isList ? (ctx.hard ? 8 : 6) : (ctx.hard ? 9 : 7);
@@ -81,6 +87,7 @@ export default {
     let roundIdx = 0;
     let mistakes = 0;
     let finished = false;
+    let guide = null;
 
     ctx.speak();
 
@@ -123,20 +130,20 @@ export default {
     }
 
     function playRound() {
-      clear(ghostBox);
       clear(belt);
       roundLabel.style.display = rounds.length > 1 ? '' : 'none';
       roundLabel.textContent = rounds.length > 1 ? `Part ${roundIdx + 1} of ${rounds.length}` : '';
 
       const words = rounds[roundIdx];
       let litCount = 0;
-      let nextIdx = 0; // hard mode: next ghost that must be fed
+      let nextIdx = 0; // level >= 1: next ghost that must be fed
+      // Any order on the very first (non-hard) pass; verse order once the
+      // fading system has kicked in — matches the guide's own fade level.
+      const orderRequired = supportLevelFor(ctx.verse, 'feed', ctx.hard) >= 1;
 
-      const ghostEls = words.map((w) => {
-        const g = el('span', 'word-tile ghost', w);
-        ghostBox.appendChild(g);
-        return g;
-      });
+      if (!guide) guide = ctx.guide(words);
+      else guide.reset(words);
+      guideSlot.appendChild(guide.el);
 
       // Queue of unlit ghost indices per cleaned word — handles duplicates:
       // each occurrence in the verse needs its own feed.
@@ -147,7 +154,12 @@ export default {
         queues.get(k).push(i);
       });
 
-      if (ctx.hard) ghostEls[0].classList.add('next');
+      function pulseNext() {
+        const tiles = guide.el.querySelector('.guide-words').children;
+        for (const t of tiles) t.classList.remove('next');
+        if (orderRequired && nextIdx < words.length && tiles[nextIdx]) tiles[nextIdx].classList.add('next');
+      }
+      pulseNext();
 
       const decoyCount = ctx.hard ? words.length : Math.max(2, Math.ceil(words.length / 2));
       const foods = shuffle([
@@ -177,7 +189,7 @@ export default {
         }
 
         const k = cleanWord(f.w);
-        if (ctx.hard && k !== cleanWord(words[nextIdx])) {
+        if (orderRequired && k !== cleanWord(words[nextIdx])) {
           // Right word, wrong turn — it stays on the belt for later.
           mistakes++;
           sfx.wrong();
@@ -189,12 +201,11 @@ export default {
         // Correct feed: pick which ghost occurrence lights up.
         let gi;
         const q = queues.get(k);
-        if (ctx.hard) {
+        if (orderRequired) {
           gi = nextIdx;
           q.splice(q.indexOf(gi), 1);
           nextIdx++;
-          ghostEls[gi].classList.remove('next');
-          if (nextIdx < words.length) ghostEls[nextIdx].classList.add('next');
+          pulseNext();
         } else {
           gi = q.shift();
         }
@@ -204,9 +215,7 @@ export default {
         later(() => {
           munch();
           sfx.pop();
-          const g = ghostEls[gi];
-          g.classList.remove('ghost', 'next');
-          g.classList.add('correct');
+          guide.markDone(gi);
           litCount++;
           if (litCount === words.length) endRound();
         }, 470);
@@ -233,7 +242,7 @@ export default {
       ctx.speak();
       ctx.confetti();
       const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-      later(() => ctx.win({ stars }), 2600);
+      later(() => ctx.win({ stars, mistakes }), 2600);
     }
 
     playRound();

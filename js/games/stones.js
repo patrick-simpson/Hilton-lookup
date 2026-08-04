@@ -3,6 +3,15 @@
 // just try again). Long verses become several river crossings (~10 hops each);
 // book lists put Bible book names on the stones. Hard mode: 3 stones per hop
 // and longer crossings.
+//
+// Fading support (bespoke — no guide strip, the floating stones ARE the
+// support): at supportLevel >= 1 stones fade to first-letters (never blank,
+// so they stay findable) and carry data-word. Hopping onto the correct stone
+// reveals the full word (progress chip + the stone label) and speaks it
+// aloud to confirm. supportLevelFor already caps HG (kindergarten) at
+// level 1.
+
+import { supportLevelFor, fadeWord } from '../lib/engine.js';
 
 export default {
   id: 'stones',
@@ -102,6 +111,7 @@ export default {
     const nCross = Math.max(1, Math.ceil(allWords.length / target));
     const size = Math.ceil(allWords.length / nCross);
     const crossings = ctx.chunk(allWords, size);
+    const level = supportLevelFor(ctx.verse, 'stones', ctx.hard);
 
     let crossingIdx = 0;
     let stepIdx = 0;
@@ -240,7 +250,10 @@ export default {
         const bob = el('div', 'st-bob');
         bob.style.animationDelay = (Math.random() * 1.6).toFixed(2) + 's';
         bob.style.animationDuration = (2.4 + Math.random() * 0.9).toFixed(2) + 's';
-        const btn = el('button', 'st-stone spawn', opt.w);
+        // Stones never go fully blank (fadeWord level capped at 1) — they
+        // must stay findable. data-word always holds the full word.
+        const btn = el('button', 'st-stone spawn', level >= 1 ? fadeWord(opt.w, 1) : opt.w);
+        btn.dataset.word = opt.w;
         btn.type = 'button';
         btn.onclick = () => tapStone(opt, wrap, btn);
         later(() => btn.classList.remove('spawn'), 400);
@@ -267,12 +280,14 @@ export default {
       locked = true;
       sfx.correct();
       btn.disabled = true; // used up — the frog's stone must not answer again
+      btn.textContent = opt.w; // reveal the full word — the reward for a correct hop
       wrap.classList.add('held'); // stop bobbing while the frog stands on it
       const chip = chips[stepIdx];
       chip.textContent = opt.w;
       chip.classList.add('filled');
       moveFrog(parseFloat(wrap.style.left), AHEAD);
       hop();
+      ctx.speak(opt.w); // confirm the (possibly faded) answer aloud
       for (const c of choiceEls) if (c !== wrap) sinkStone(c);
       choiceEls = [wrap];
       later(advance, 560);
@@ -329,7 +344,7 @@ export default {
       ctx.confetti();
       ctx.speak();
       const stars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
-      later(() => ctx.win({ stars, message: 'You hopped all the way across!' }), 1800);
+      later(() => ctx.win({ stars, supportLevel: level, mistakes, message: 'You hopped all the way across!' }), 1800);
     }
 
     function startCrossing() {
