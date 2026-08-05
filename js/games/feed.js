@@ -35,22 +35,22 @@ export default {
       .g-feed .bug { font-size: 3.4rem; display: inline-block; vertical-align: middle; margin: 0 2px; }
       .g-feed .spark { display: inline-block; animation: floaty 2.6s ease-in-out infinite; }
       .g-feed .spark:last-child { animation-delay: 1.3s; }
-      .g-feed .mouth { width: 64px; height: 28px; margin: -2px auto 0; background: #5b2333; border: 4px solid #26324b; border-top-width: 3px; border-radius: 10px 10px 40px 40px; position: relative; overflow: hidden; transition: height 0.15s ease; }
+      .g-feed .mouth { width: 64px; height: 28px; margin: -2px auto 0; background: #5b2333; border: 4px solid var(--slate); border-top-width: 3px; border-radius: 10px 10px 40px 40px; position: relative; overflow: hidden; transition: height 0.15s ease; }
       .g-feed .mouth::after { content: ''; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); width: 34px; height: 18px; background: #ff8fa0; border-radius: 40px 40px 0 0; }
       .g-feed .sparky.munch { animation: g-feed-munch 0.35s ease; }
       .g-feed .sparky.munch .mouth { height: 10px; }
       .g-feed .sparky.shake .face { animation: wiggle 0.4s ease; }
       .g-feed .sparky.happy .bug { animation: pop-in 0.4s ease; }
-      .g-feed .round-label { font-weight: bold; opacity: 0.75; margin: 4px 0 2px; }
+      .g-feed .round-label { font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.9; margin: 4px 0 2px; }
       /* the guide strip IS the ghost row now — compact it a touch so the
          food belt (the action area) stays high on the screen */
       .g-feed .guide-slot .guide-strip { margin: 6px 0 10px; }
       .g-feed .guide-slot .guide-word { min-height: 34px; padding: 4px 10px; font-size: 1.05rem; }
-      .g-feed .guide-slot .guide-word.next { opacity: 0.9; border-color: #ffb703; background: #fff7df; animation: g-feed-pulse 1.1s ease-in-out infinite; }
-      .g-feed .belt { background: repeating-linear-gradient(45deg, #eef1f7 0 14px, #e3e8f2 14px 28px); border: 3px dashed #c6d0e2; border-radius: 16px; padding: 10px 6px; min-height: 80px; }
+      .g-feed .guide-slot .guide-word.next { opacity: 0.9; border-color: var(--yellow); background: #fff7df; animation: g-feed-pulse 1.1s ease-in-out infinite; }
+      .g-feed .belt { background: repeating-linear-gradient(45deg, #f4f9fd 0 14px, var(--sky-soft) 14px 28px); border: 2px dashed var(--sky); border-radius: 16px; padding: 10px 6px; min-height: 80px; }
       .g-feed .food.gone { opacity: 0; transform: scale(0.3) rotate(25deg); transition: opacity 0.45s ease, transform 0.45s ease; pointer-events: none; }
-      .g-feed .fly { position: absolute; z-index: 30; margin: 0; pointer-events: none; background: #d3f2d9; transition: transform 0.45s cubic-bezier(0.5, -0.1, 0.6, 1), opacity 0.45s ease; }
-      .g-feed .yum { font-size: 1.4rem; font-weight: bold; color: #2a9d3f; animation: pop-in 0.4s ease; margin: 4px 0; }
+      .g-feed .fly { position: absolute; z-index: 30; margin: 0; pointer-events: none; background: var(--green-soft); transition: transform 0.45s cubic-bezier(0.5, -0.1, 0.6, 1), opacity 0.45s ease; }
+      .g-feed .yum { font-family: var(--display); font-size: 1.4rem; font-weight: 700; color: var(--green); animation: pop-in 0.4s ease; margin: 4px 0; }
       @keyframes g-feed-munch { 0% { transform: scale(1); } 35% { transform: scale(1.22) rotate(-4deg); } 70% { transform: scale(0.92); } 100% { transform: scale(1); } }
       @keyframes g-feed-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
       /* short phones: slim Sparky + spacing so more of the belt is on screen */

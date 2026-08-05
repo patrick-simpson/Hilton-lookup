@@ -19,14 +19,14 @@ export default {
       .g-relay { display: flex; flex-direction: column; gap: 8px; }
       .g-relay .relay-top { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
       .g-relay .relay-top .btn { min-height: 44px; min-width: 44px; padding: 6px 14px; }
-      .g-relay .leg-label { font-weight: bold; opacity: 0.75; font-size: 1rem; }
+      .g-relay .leg-label { font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.85; font-size: 1rem; }
       /* Phone-first: lanes stack vertically (full-width tracks, big tiles).
          Side-by-side halves come back on wider screens below. */
       .g-relay .lanes { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: start; }
       .g-relay .lane { border-radius: 16px; padding: 8px 8px 10px; min-width: 0; }
-      .g-relay .lane-red { background: #fff1f2; box-shadow: inset 0 0 0 3px var(--red-soft); }
-      .g-relay .lane-blue { background: #f0f6ff; box-shadow: inset 0 0 0 3px var(--blue-soft); }
-      .g-relay .team-banner { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; font-weight: bold; font-size: 1.05rem; text-align: center; }
+      .g-relay .lane-red { background: #fff1f2; box-shadow: inset 0 0 0 2px var(--red-soft); }
+      .g-relay .lane-blue { background: #f0f6ff; box-shadow: inset 0 0 0 2px var(--blue-soft); }
+      .g-relay .team-banner { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; font-family: var(--display); font-weight: 700; font-size: 1.05rem; text-align: center; }
       .g-relay .crowns { min-height: 1.3em; }
       .g-relay .crowns .crown { display: inline-block; animation: pop-in 0.35s ease; }
       .g-relay .team-msg { font-weight: bold; font-size: 0.95rem; opacity: 0.9; }

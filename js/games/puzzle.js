@@ -22,9 +22,9 @@ export default {
     const PICS = ['🌈', '🦁', '🐑', '⛵', '🌟', '🕊️', '🏰', '🌻'];
 
     ctx.addStyle(`
-      .g-puzzle .round-label { text-align: center; font-weight: bold; opacity: 0.75; margin-bottom: 6px; }
-      .g-puzzle .frame { position: relative; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12); }
-      .g-puzzle .pic { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, #c9ecff, #fff3c9); user-select: none; overflow: hidden; }
+      .g-puzzle .round-label { text-align: center; font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.85; margin-bottom: 6px; }
+      .g-puzzle .frame { position: relative; border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); }
+      .g-puzzle .pic { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, var(--sky-soft), var(--cream-soft)); user-select: none; overflow: hidden; }
       .g-puzzle .pic-emoji { line-height: 1; }
       .g-puzzle .pic.done .pic-emoji { animation: pop-in 0.5s ease, floaty 2.6s ease-in-out 0.5s infinite; }
       .g-puzzle .covers { position: absolute; inset: 0; display: flex; flex-direction: column; }
@@ -36,12 +36,12 @@ export default {
         flex: 1; min-width: 0;
         display: flex; align-items: center; justify-content: center;
         text-align: center; padding: 4px 6px;
-        font-weight: bold; font-size: 1.05rem; color: var(--ink);
-        background: #cfe3ff; border: 2px solid #f5f9ff; border-radius: 10px;
+        font-family: var(--display); font-weight: 600; font-size: 1.05rem; color: var(--slate);
+        background: var(--sky-soft); border: 2px solid rgba(255, 255, 255, 0.85); border-radius: 10px;
         transition: opacity 0.45s ease, transform 0.45s ease;
         overflow-wrap: anywhere; user-select: none;
       }
-      .g-puzzle .cover.alt .cface { background: #e6dcff; }
+      .g-puzzle .cover.alt .cface { background: var(--sky); }
       .g-puzzle .cover.long .cface { font-size: 0.95rem; }
       .g-puzzle .cover.xlong .cface { font-size: 0.82rem; }
       .g-puzzle .cover.solved { pointer-events: none; }

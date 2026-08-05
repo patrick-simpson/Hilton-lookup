@@ -172,6 +172,18 @@ export function confetti(container = document.body, count = 60) {
   setTimeout(() => host.remove(), 2800);
 }
 
+// ---------- doodles ----------
+
+// Hand-drawn doodle cloud (BRAND.md texture spec): thin white 2px round
+// stroke, inline SVG — replaces raw ☁️ emoji scenery in game sky fields.
+// Callers keep their own positioning class (default 'cloud').
+export function doodleCloud(cls = 'cloud', size = 44) {
+  const span = el('span', cls);
+  span.setAttribute('aria-hidden', 'true');
+  span.innerHTML = `<svg width="${size}" height="${Math.round(size * 0.6)}" viewBox="0 0 24 15" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 13H9a5.7 5.7 0 1 1 5.46-7.3h3.04a3.65 3.65 0 1 1 0 7.3Z"/></svg>`;
+  return span;
+}
+
 // ---------- verse instances ----------
 
 // Turn a ref (verse reference or book-list code) into a playable instance.
@@ -249,7 +261,10 @@ export function fadeWord(word, level) {
   return m ? (m[1] || '') + m[2] : word;
 }
 
-const GUIDE_ICON = ['🌕', '🌗', '🌑'];
+// Hint-level labels for the guide chip (full text / first letters / blanks).
+// Plain Baloo text states instead of moon-phase emoji, so the control reads
+// as a tappable hint toggle in every emoji environment (see .guide-chip).
+const GUIDE_LABEL = ['Abc', 'A__', '___'];
 
 // Builds the fading guide strip a builder game mounts wherever its old
 // always-visible preview lived. One controller per play; call `.reset()`
@@ -266,9 +281,12 @@ function createGuide(verse, gameId, hard, words) {
 
   const wrap = el('div', 'guide-strip');
   const wordsEl = el('div', 'guide-words');
-  const chip = el('button', 'guide-chip', GUIDE_ICON[level]);
+  const chip = el('button', 'guide-chip', GUIDE_LABEL[level]);
   chip.type = 'button';
   chip.setAttribute('aria-label', 'Change hint level');
+  // Empty data-word: word-matching test drivers must never mistake the
+  // chip's "A__" label for an answer tile.
+  chip.dataset.word = '';
   wrap.append(wordsEl, chip);
 
   // Undone words are plain (non-button) tiles — they must never be
@@ -307,7 +325,7 @@ function createGuide(verse, gameId, hard, words) {
   chip.onclick = () => {
     level = (level + 1) % 3;
     minLevel = Math.min(minLevel, level);
-    chip.textContent = GUIDE_ICON[level];
+    chip.textContent = GUIDE_LABEL[level];
     render();
   };
 

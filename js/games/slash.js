@@ -11,7 +11,7 @@
 // instead of just reading it off an airborne tile. A 3s-first-letter hint
 // chip, then the existing 6.5s tile glow, rescue a stuck kid after reveal.
 
-import { fadeWord } from '../lib/engine.js';
+import { fadeWord, doodleCloud } from '../lib/engine.js';
 
 export default {
   id: 'slash',
@@ -29,12 +29,12 @@ export default {
       .g-slash .sky { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
       .g-slash .cloud { position: absolute; font-size: 2.4rem; opacity: 0.45; pointer-events: none; animation: floaty 4s ease-in-out infinite; }
       .g-slash .fly { position: absolute; left: 0; top: 0; will-change: transform; }
-      .g-slash .fly .word-tile { margin: 0; pointer-events: none; background: #fff1c9; border-color: var(--yellow); transition: opacity 0.25s ease; }
+      .g-slash .fly .word-tile { margin: 0; pointer-events: none; background: var(--cream); border-color: var(--yellow); transition: opacity 0.25s ease; }
       .g-slash .fly.wordless .word-tile { opacity: 0; }
       .g-slash .fly.hint .word-tile { animation: g-slash-pulse 0.9s ease-in-out infinite; border-color: var(--yellow); }
       @keyframes g-slash-pulse {
-        0%, 100% { box-shadow: 0 0 0 3px #ffe9a8, 0 4px 0 rgba(38,50,75,0.12); }
-        50% { box-shadow: 0 0 0 10px #ffd75e, 0 4px 0 rgba(38,50,75,0.12); }
+        0%, 100% { box-shadow: 0 0 0 3px rgba(249, 161, 28, 0.35), var(--shadow); }
+        50% { box-shadow: 0 0 0 10px rgba(249, 161, 28, 0.6), var(--shadow); }
       }
       .g-slash .fly.slashed .word-tile { background: var(--green-soft); border-color: var(--green); animation: g-slash-split 0.45s ease forwards; }
       @keyframes g-slash-split {
@@ -48,7 +48,7 @@ export default {
       }
       .g-slash .hud { position: absolute; top: 0; left: 0; right: 0; padding: 10px 12px 4px; z-index: 3; pointer-events: none; }
       .g-slash .hud-row { display: flex; align-items: center; gap: 8px; }
-      .g-slash .wave-chip { background: #fff7df; border: 3px solid var(--yellow); border-radius: 999px; padding: 8px 16px; font-weight: bold; white-space: nowrap; }
+      .g-slash .wave-chip { background: var(--cream); border: 2px solid var(--yellow); border-radius: 999px; padding: 8px 16px; font-family: var(--display); font-weight: 700; color: var(--slate); white-space: nowrap; box-shadow: var(--shadow); }
       .g-slash .hear-btn { pointer-events: auto; margin-left: auto; width: 54px; height: 54px; font-size: 1.5rem; background: var(--paper); border-radius: 999px; box-shadow: var(--shadow); }
       .g-slash .hear-btn:active { transform: translateY(3px); box-shadow: none; }
       .g-slash .guide-strip { margin-top: 8px; margin-bottom: 0; pointer-events: auto; background: rgba(244, 248, 255, 0.92); max-height: 40vh; overflow: auto; }
@@ -58,9 +58,9 @@ export default {
       .g-slash .msg, .g-slash .start-screen { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 18px; z-index: 4; }
       .g-slash .start-screen { background: rgba(255, 255, 255, 0.75); z-index: 5; }
       .g-slash .big-emoji { font-size: 4.2rem; animation: floaty 2.5s ease-in-out infinite; }
-      .g-slash .start-title { font-size: 2.1rem; font-weight: bold; }
+      .g-slash .start-title { font-family: var(--display); font-size: 2.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; color: var(--sparks-red); }
       .g-slash .start-sub { font-size: 1.05rem; opacity: 0.85; max-width: 420px; }
-      .g-slash .wave-clear { font-size: 1.9rem; font-weight: bold; background: var(--paper); padding: 16px 28px; border-radius: 20px; box-shadow: var(--shadow); animation: pop-in 0.3s ease; }
+      .g-slash .wave-clear { font-family: var(--display); font-size: 1.9rem; font-weight: 700; color: var(--slate); background: var(--paper); padding: 16px 28px; border-radius: 20px; box-shadow: var(--shadow); animation: pop-in 0.3s ease; }
       .g-slash .msg .verse-display { background: var(--paper); border-radius: 16px; box-shadow: var(--shadow); max-height: 65%; overflow: auto; animation: pop-in 0.3s ease; }
       /* Narrow phones: keep the HUD compact so it doesn't cover the play
          area, but the hint chip stays legible. */
@@ -75,9 +75,9 @@ export default {
 
     const root = el('div', 'g-slash');
     const sky = el('div', 'sky');
-    const c1 = el('span', 'cloud', '☁️');
+    const c1 = doodleCloud('cloud', 52);
     c1.style.left = '6%'; c1.style.top = '14%';
-    const c2 = el('span', 'cloud', '☁️');
+    const c2 = doodleCloud('cloud', 44);
     c2.style.right = '8%'; c2.style.top = '30%'; c2.style.animationDelay = '1.6s';
     sky.append(c1, c2);
 
@@ -425,13 +425,16 @@ export default {
     // ---------- start ----------
 
     function showStart() {
+      // The HUD stays hidden while the start screen is up — its wave chip
+      // would otherwise ghost through the translucent overlay.
+      hud.style.visibility = 'hidden';
       const s = el('div', 'start-screen');
       s.appendChild(el('div', 'big-emoji', '⚔️'));
       s.appendChild(el('div', 'start-title', 'Swords up!'));
       s.appendChild(el('div', 'start-sub',
         `Slash the word that comes next in ${ctx.verse.label}!`));
       const b = el('button', 'btn btn-primary btn-big', '⚔️ Start!');
-      b.onclick = () => { sfx.pop(); s.remove(); buildWave(); };
+      b.onclick = () => { sfx.pop(); s.remove(); hud.style.visibility = ''; buildWave(); };
       s.appendChild(b);
       root.appendChild(s);
     }

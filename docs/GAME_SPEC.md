@@ -80,7 +80,7 @@ recognition.
   guide.peeks;                           // peeks so far this play (live)
   ```
   It renders a small tile per word — done words always show full text (lit);
-  undone words show `fadeWord(word, level)`. A level chip (🌕/🌗/🌑) sits at
+  undone words show `fadeWord(word, level)`. A level chip (Abc/A__/___) sits at
   the strip's end; tapping it cycles the level for *this play only* — kid
   autonomy, never locked by pass count. At level ≥ 1, tapping an undone word
   flashes its full text for 1.5s (a "peek") and counts against the pass's

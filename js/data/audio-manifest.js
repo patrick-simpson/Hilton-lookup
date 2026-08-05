@@ -24522,7 +24522,7 @@ export const AUDIO = {
     "file": "audio/handbook/hg/18-bible-god-who-loves-us.m4a",
     "duration": 43.6,
     "type": "lesson",
-    "title": "Bible_ God Who Loves Us",
+    "title": "Bible: God Who Loves Us",
     "section": "rj1"
    },
    {
@@ -24571,21 +24571,21 @@ export const AUDIO = {
     "file": "audio/handbook/hg/32-what-is-a-missionary.m4a",
     "duration": 54.1,
     "type": "lesson",
-    "title": "What Is A Missionary_",
+    "title": "What Is A Missionary?",
     "section": "gj2"
    },
    {
     "file": "audio/handbook/hg/33-where-do-missionaries-work.m4a",
     "duration": 53.2,
     "type": "lesson",
-    "title": "Where Do Missionaries Work_",
+    "title": "Where Do Missionaries Work?",
     "section": "gj2"
    },
    {
     "file": "audio/handbook/hg/34-what-do-missionaries-do.m4a",
     "duration": 77.9,
     "type": "lesson",
-    "title": "What Do Missionaries Do_",
+    "title": "What Do Missionaries Do?",
     "section": "gj2"
    },
    {
@@ -24650,7 +24650,7 @@ export const AUDIO = {
     "file": "audio/handbook/wr/05-character-story-who-s-there.m4a",
     "duration": 62.4,
     "type": "story",
-    "title": "Character Story - Who's There_",
+    "title": "Character Story - Who's There?",
     "section": "rank"
    },
    {
@@ -24813,7 +24813,7 @@ export const AUDIO = {
     "file": "audio/handbook/ss/10-have-you-seen-chloe.m4a",
     "duration": 59.5,
     "type": "story",
-    "title": "Have You Seen Chloe_",
+    "title": "Have You Seen Chloe?",
     "section": "rank"
    },
    {
@@ -24827,7 +24827,7 @@ export const AUDIO = {
     "file": "audio/handbook/ss/16-what-do-you-know-about-christmas.m4a",
     "duration": 96.9,
     "type": "lesson",
-    "title": "What Do You Know About Christmas_",
+    "title": "What Do You Know About Christmas?",
     "section": "rj1"
    },
    {
@@ -24869,7 +24869,7 @@ export const AUDIO = {
     "file": "audio/handbook/ss/29-why-did-jesus-have-to-die.m4a",
     "duration": 67.2,
     "type": "lesson",
-    "title": "Why Did Jesus Have To Die_",
+    "title": "Why Did Jesus Have To Die?",
     "section": "rj2"
    },
    {

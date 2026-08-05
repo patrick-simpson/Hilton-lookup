@@ -161,7 +161,7 @@
      "section": "rj1"
     },
     "18": {
-     "title": "Bible_ God Who Loves Us",
+     "title": "Bible: God Who Loves Us",
      "mb": 1.04,
      "type": "lesson",
      "out": "audio/handbook/hg/18-bible-god-who-loves-us.m4a",
@@ -280,21 +280,21 @@
      "section": "rj2"
     },
     "32": {
-     "title": "What Is A Missionary_",
+     "title": "What Is A Missionary?",
      "mb": 1.3,
      "type": "lesson",
      "out": "audio/handbook/hg/32-what-is-a-missionary.m4a",
      "section": "gj2"
     },
     "33": {
-     "title": "Where Do Missionaries Work_",
+     "title": "Where Do Missionaries Work?",
      "mb": 1.28,
      "type": "lesson",
      "out": "audio/handbook/hg/33-where-do-missionaries-work.m4a",
      "section": "gj2"
     },
     "34": {
-     "title": "What Do Missionaries Do_",
+     "title": "What Do Missionaries Do?",
      "mb": 1.87,
      "type": "lesson",
      "out": "audio/handbook/hg/34-what-do-missionaries-do.m4a",
@@ -519,7 +519,7 @@
      "note": "preferred copy: hg track 5"
     },
     "5": {
-     "title": "Character Story - Who's There_",
+     "title": "Character Story - Who's There?",
      "mb": 1.53,
      "type": "story",
      "out": "audio/handbook/wr/05-character-story-who-s-there.m4a",
@@ -1094,7 +1094,7 @@
      "note": "preferred copy: hg track 11"
     },
     "10": {
-     "title": "Have You Seen Chloe_",
+     "title": "Have You Seen Chloe?",
      "mb": 1.43,
      "type": "story",
      "out": "audio/handbook/ss/10-have-you-seen-chloe.m4a",
@@ -1137,7 +1137,7 @@
      "type": "skip-duplicate-song"
     },
     "16": {
-     "title": "What Do You Know About Christmas_",
+     "title": "What Do You Know About Christmas?",
      "mb": 2.3,
      "type": "lesson",
      "out": "audio/handbook/ss/16-what-do-you-know-about-christmas.m4a",
@@ -1248,7 +1248,7 @@
      "section": "rj2"
     },
     "29": {
-     "title": "Why Did Jesus Have To Die_",
+     "title": "Why Did Jesus Have To Die?",
      "mb": 1.58,
      "type": "lesson",
      "out": "audio/handbook/ss/29-why-did-jesus-have-to-die.m4a",

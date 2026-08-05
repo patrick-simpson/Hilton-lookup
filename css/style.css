@@ -1,21 +1,50 @@
-/* Sparks Verse Arcade — kid-friendly UI for K–2. Big targets, bright colors. */
+/* Sparks Verse Arcade — styled to match official Awana Sparks material
+   (see docs/BRAND.md, derived from the 2026-27 Awana Clubs catalog):
+   white pages, coral-red blob headers with chunky uppercase display type,
+   cream corner blobs, sky-blue tints, soft shadows, sparse doodles. */
+
+@font-face {
+  font-family: 'Baloo 2';
+  src: url('../fonts/baloo2-var.woff2') format('woff2');
+  font-weight: 400 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('../fonts/nunitosans-var.woff2') format('woff2');
+  font-weight: 200 900;
+  font-display: swap;
+}
 
 :root {
-  --red: #e63946;
-  --red-soft: #ffd6d9;
+  /* Awana Sparks brand (docs/BRAND.md) */
+  --sparks-red: #ee4b4f;
+  --sparks-red-deep: #e23a44;
+  --sparks-pink: #f9848b;
+  --orange: #f58220;
+  --cream: #fcefd8;
+  --cream-soft: #fdf6e9;
+  --sky: #bbddf2;
+  --sky-soft: #ddeef9;
+  --sparks-blue: #2e9bd6;
+  --slate: #3e4b54;
+
+  /* legacy token names games rely on, remapped to the brand palette */
+  --red: #ee4b4f;
+  --red-soft: #fddcdc;
   --green: #2a9d3f;
-  --green-soft: #d3f2d9;
+  --green-soft: #d9f2de;
   --blue: #2274d0;
-  --blue-soft: #d5e8ff;
-  --yellow: #ffb703;
-  --purple: #9d4edd;
-  --ink: #26324b;
+  --blue-soft: #ddeef9;
+  --yellow: #f9a11c;
+  --ink: #333f48;
   --paper: #ffffff;
-  --sky-top: #aee3ff;
-  --sky-bottom: #fdf3d8;
-  --radius: 22px;
-  --shadow: 0 6px 0 rgba(38, 50, 75, 0.15);
-  --font: "Comic Sans MS", "Comic Neue", "Baloo 2", "Segoe UI Rounded", "Arial Rounded MT Bold", sans-serif;
+  --sky-top: #bbddf2;
+  --sky-bottom: #fdf6e9;
+  --radius: 18px;
+  --shadow: 0 2px 10px rgba(51, 63, 72, 0.1);
+  --font: 'Nunito Sans', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --display: 'Baloo 2', 'Nunito Sans', system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,11 +59,24 @@ html, body {
 body {
   font-family: var(--font);
   color: var(--ink);
-  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom) 70%);
-  background-attachment: fixed;
-  font-size: 18px;
-  line-height: 1.35;
+  background: var(--paper);
+  font-size: 17px;
+  line-height: 1.45;
 }
+
+/* Cream organic blobs anchoring the page corners, like the catalog pages. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(440px 340px at -70px 104%, var(--cream) 59%, transparent 60%),
+    radial-gradient(380px 300px at 104% -50px, var(--cream-soft) 59%, transparent 60%);
+}
+
+h1, h2, h3, h4 { font-family: var(--display); font-weight: 700; }
 
 button {
   font-family: inherit;
@@ -70,13 +112,15 @@ button {
 
 .back-btn {
   background: var(--paper);
+  border: 2px solid var(--sky);
   border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 1.05rem;
-  font-weight: bold;
+  padding: 9px 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--slate);
   box-shadow: var(--shadow);
 }
-.back-btn:active { transform: translateY(3px); box-shadow: none; }
+.back-btn:active { transform: translateY(2px); box-shadow: none; }
 
 /* ---------- cards & buttons ---------- */
 
@@ -84,6 +128,7 @@ button {
   background: var(--paper);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border: 1px solid rgba(62, 75, 84, 0.08);
   padding: 16px;
   margin: 12px 0;
 }
@@ -96,28 +141,95 @@ button {
   min-height: 52px;
   padding: 10px 22px;
   border-radius: 999px;
-  font-size: 1.1rem;
-  font-weight: bold;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 700;
   background: var(--paper);
+  border: 2px solid rgba(62, 75, 84, 0.14);
   box-shadow: var(--shadow);
   transition: transform 0.08s ease;
 }
-.btn:active { transform: translateY(3px); box-shadow: none; }
+.btn:active { transform: translateY(2px); box-shadow: none; }
 
-.btn-primary { background: var(--yellow); }
-.btn-red { background: var(--red); color: #fff; }
-.btn-green { background: var(--green); color: #fff; }
-.btn-blue { background: var(--blue); color: #fff; }
-.btn-big { font-size: 1.35rem; min-height: 64px; padding: 14px 30px; }
+.btn-primary { background: var(--sparks-red); border-color: var(--sparks-red-deep); color: #fff; }
+.btn-red { background: var(--sparks-red); border-color: var(--sparks-red-deep); color: #fff; }
+.btn-green { background: var(--green); border-color: #238733; color: #fff; }
+.btn-blue { background: var(--sparks-blue); border-color: #2588bf; color: #fff; }
+.btn-big { font-size: 1.3rem; min-height: 64px; padding: 14px 30px; }
 .btn-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0; }
+
+/* ---------- the signature red blob header (catalog-style) ---------- */
+
+.blob-head {
+  position: relative;
+  overflow: hidden;
+  margin: -12px -14px 16px;
+  padding: 30px 22px 34px;
+  background: linear-gradient(140deg, var(--sparks-pink), var(--sparks-red) 52%, var(--sparks-red-deep));
+  color: #fff;
+  border-radius: 0 0 52px 26px / 0 0 68px 34px;
+}
+.blob-head h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.blob-head p { margin: 8px 0 0; font-size: 0.98rem; max-width: 34em; opacity: 0.96; }
+/* sparse hand-drawn doodles: four-point stars, x, circle */
+.blob-head::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  /* The '+' doodle sits high in the right padding so it never grazes the
+     headline's line box at narrow viewports (doodles live in whitespace). */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='150' viewBox='0 0 96 150' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M80 6l0 12M74 12l12 0'/%3E%3Ccircle cx='30' cy='12' r='3'/%3E%3Cpath d='M82 74l7 7M89 74l-7 7'/%3E%3Ccircle cx='58' cy='126' r='2.4'/%3E%3Cpath d='M24 138l0 8M20 142l8 0'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: top right;
+}
+
+/* Compact blob variant for inner shell screens (Story Time, Trophy Shelf,
+   Recite): the same catalog move scaled down — the back pill rides inside
+   the blob, above a smaller uppercase headline. One blob per screen max. */
+.blob-head.compact {
+  padding: 14px 18px 24px;
+  border-radius: 0 0 44px 22px / 0 0 56px 30px;
+  margin-bottom: 14px;
+}
+.blob-head.compact h1 { margin-top: 10px; font-size: 1.5rem; }
+.blob-head.compact .back-btn {
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: none;
+}
+.blob-head.compact .grade-chip { display: block; width: fit-content; }
+
+/* slate grade tag, like the catalog's "GRADES K-2" chip */
+.grade-chip {
+  display: inline-block;
+  background: var(--slate);
+  color: #fff;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 3px 10px;
+  margin: 4px 0 2px;
+}
 
 /* ---------- home ---------- */
 
 .hero {
   text-align: center;
-  padding: 18px 8px 6px;
+  padding: 4px 8px 6px;
 }
-.hero .mascot { font-size: 4rem; animation: floaty 3s ease-in-out infinite; display: inline-block; }
+.hero .mascot { animation: floaty 3.4s ease-in-out infinite; display: inline-block; }
 .hero h1 { font-size: 2rem; margin: 6px 0; }
 .hero p { margin: 4px 0 0; }
 
@@ -127,21 +239,22 @@ button {
   gap: 14px;
   width: 100%;
   text-align: left;
-  border-left: 12px solid var(--yellow);
+  border-left: 10px solid var(--sky);
 }
 .book-card .book-emoji { font-size: 3rem; }
-.book-card h2 { margin: 0; font-size: 1.4rem; }
-.book-card p { margin: 4px 0 0; font-size: 0.95rem; }
-.book-card.book-red { border-color: var(--red); }
+.book-card h2 { margin: 0; font-size: 1.35rem; letter-spacing: 0.01em; }
+.book-card p { margin: 3px 0 0; font-size: 0.9rem; opacity: 0.85; }
+.book-card.book-red { border-color: var(--sparks-red); }
 .book-card.book-green { border-color: var(--green); }
 .book-card.book-blue { border-color: var(--blue); }
 
 .progress-pill {
   margin-left: auto;
-  background: var(--sky-top);
+  background: var(--sky-soft);
+  color: var(--slate);
   border-radius: 999px;
   padding: 6px 14px;
-  font-weight: bold;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -176,7 +289,7 @@ button {
   align-items: flex-start;
   gap: 10px;
   padding: 10px 0;
-  border-bottom: 2px dashed #e3e8f2;
+  border-bottom: 2px dashed var(--sky-soft);
 }
 .entry-row:last-child { border-bottom: none; }
 .entry-row .entry-num {
@@ -198,21 +311,63 @@ button {
 
 /* Sticker book rows: label + sticker strip must wrap on narrow phones. */
 .sticker-row { flex-wrap: wrap; }
-.sticker-row .entry-num { white-space: normal; }
+.sticker-note { text-align: center; font-weight: bold; margin: 0 0 4px; }
+.sticker-slot { font-size: 1.7rem; margin-right: 6px; }
+.sticker-slot.empty { opacity: 0.35; }
+
+/* Shared book-group heading (Sticker Book, Verse Garden): official emblem
+   art + name, same pattern as Story Time / Trophy Shelf. */
+.book-group-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.book-group-emblem { width: 46px; height: auto; flex: 0 0 auto; }
+.book-group-head h2 { margin: 0; font-size: 1.2rem; }
+
+/* Section labels tinted by their handbook jewel color; rank keeps the
+   slate grade-chip treatment. */
+.jewel-chip {
+  display: inline-block;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.jewel-chip.jewel-rank { background: var(--slate); color: #fff; }
+.jewel-chip.jewel-red { background: var(--red-soft); color: #b02730; box-shadow: inset 0 0 0 1.5px rgba(226, 58, 68, 0.4); }
+.jewel-chip.jewel-green { background: var(--green-soft); color: #1e7a2f; box-shadow: inset 0 0 0 1.5px rgba(42, 157, 63, 0.4); }
+
+/* Verse Garden beds: one bed per section, each plant a real tappable
+   button that links to its verse's ladder screen. */
+.garden-section { padding: 6px 0 2px; }
+.garden-bed { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 4px; }
+.garden-plant {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 2px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  transition: transform 0.08s ease;
+}
+.garden-plant:active { transform: translateY(2px); background: var(--sky-soft); }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   background: var(--paper);
-  border: 3px solid var(--blue-soft);
+  border: 2px solid var(--sky);
   border-radius: 999px;
   padding: 8px 16px;
   margin: 4px 6px 4px 0;
-  font-size: 1rem;
-  font-weight: bold;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
-.chip.active { border-color: var(--yellow); background: #fff7df; }
+.chip.active { border-color: var(--sparks-blue); background: var(--sky-soft); }
 .chip .chip-stars { font-size: 0.85rem; }
 
 /* One-row scrollable rail for the verse chips on the game screen, so long
@@ -247,7 +402,7 @@ button {
   align-items: center;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 2px dashed #e3e8f2;
+  border-bottom: 2px dashed var(--sky-soft);
 }
 .storytime-row:last-child { border-bottom: none; }
 
@@ -263,7 +418,7 @@ button {
   border-radius: 999px;
   background: var(--blue-soft);
   font-size: 1.25rem;
-  box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12);
+  box-shadow: var(--shadow);
 }
 .storytime-play:active { transform: translateY(2px); box-shadow: none; }
 .storytime-row.playing .storytime-play { background: var(--yellow); }
@@ -280,7 +435,7 @@ button {
   opacity: 0.85;
 }
 .storytime-duration { font-variant-numeric: tabular-nums; }
-.storytime-tag { background: var(--sky-top); border-radius: 999px; padding: 2px 8px; font-weight: bold; }
+.storytime-tag { background: var(--sky); border-radius: 999px; padding: 2px 8px; font-weight: bold; }
 .storytime-section { padding: 2px 10px; font-size: 0.78rem; margin: 0; }
 .storytime-resume { flex: 0 0 auto; font-size: 0.8rem; font-weight: bold; color: var(--red); white-space: nowrap; }
 
@@ -292,6 +447,45 @@ button {
    white block reads as intentional against the sky gradient. */
 .book-banner { display: block; margin: 4px auto 0; max-width: 340px; width: 80%; height: auto; background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); padding: 10px 16px; }
 .book-banner.banner-hg { max-width: 190px; padding: 10px; }
+
+/* Club-color blob band behind the book wordmark (catalog color-block
+   moment): HangGlider green / WingRunner blue / SkyStormer red tints. */
+.banner-band {
+  margin: 4px -4px 12px;
+  padding: 14px 10px 20px;
+  border-radius: 28px 64px 32px 72px / 56px 30px 66px 28px;
+}
+.banner-band .book-banner { margin: 0 auto; }
+.banner-band.band-hg { background: var(--green-soft); }
+.banner-band.band-wr { background: #dbe9fb; }
+.banner-band.band-ss { background: var(--red-soft); }
+
+/* The signature Rank section gets a club-color rail (like the home screen's
+   book cards) so it stands apart from the jewel rows. */
+.section-row.rank-row { border-left: 10px solid var(--sky); }
+.rank-row.rank-hg { border-left-color: var(--green); }
+.rank-row.rank-wr { border-left-color: var(--blue); }
+.rank-row.rank-ss { border-left-color: var(--sparks-red-deep); }
+
+/* Inline-SVG faceted gem badges (see jewelBadge in js/app.js). */
+.section-row .jewel-gem { display: inline-flex; align-items: center; }
+.section-row .jewel-gem svg { display: block; }
+
+/* Catalog "NEW!"-style badge for encore (super-hard) rows. */
+.hard-chip {
+  display: inline-block;
+  background: var(--orange);
+  color: #fff;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 2px 8px;
+  margin-left: 8px;
+  vertical-align: 1px;
+}
 .win-art { display: block; margin: 0 auto 6px; max-width: 230px; width: 70%; height: auto; }
 
 /* "For grown-ups" footer on the book screen: song album + biography PDF links. */
@@ -312,8 +506,8 @@ button {
   width: 100%;
   text-align: left;
   min-height: 64px;
-  border-left: 12px solid var(--purple);
-  background: #f7f0ff;
+  border-left: 12px solid var(--sparks-blue);
+  background: var(--sky-soft);
 }
 .review-card-icon { font-size: 2.2rem; flex: 0 0 auto; }
 .review-card-body h3 { margin: 0; font-size: 1.1rem; }
@@ -323,15 +517,15 @@ button {
   display: flex;
   width: fit-content;
   margin: 0 0 8px;
-  background: #f7f0ff;
-  border-color: var(--purple);
-  color: var(--purple);
+  background: var(--sky-soft);
+  border-color: var(--sparks-blue);
+  color: var(--sparks-blue);
 }
 
 .review-celebrate {
   text-align: center;
   font-weight: bold;
-  color: var(--purple);
+  color: var(--sparks-blue);
   margin: 4px 0 0;
 }
 
@@ -365,7 +559,7 @@ button {
 
 .recite-card { position: relative; text-align: center; overflow: visible; }
 .recite-kid { position: absolute; top: 6px; right: 6px; width: 58px; height: auto; animation: floaty 3s ease-in-out infinite; }
-.recite-again-note { font-weight: bold; color: var(--purple); margin: 4px 0 0; }
+.recite-again-note { font-weight: bold; color: var(--sparks-blue); margin: 4px 0 0; }
 
 .recite-content { display: flex; flex-direction: column; gap: 12px; }
 .recite-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 4px 0; }
@@ -378,6 +572,26 @@ button {
   width: 100%;
   min-height: 64px;
 }
+/* Grown-Up Check is the featured path — one accented card, the rest plain. */
+.recite-mode-card.primary {
+  position: relative;
+  border: 2px solid var(--sparks-red);
+  background: var(--cream-soft);
+}
+.recite-best-badge {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: var(--yellow);
+  color: #fff;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 2px 8px;
+}
 .recite-mode-icon { font-size: 2.1rem; flex: 0 0 auto; }
 .recite-mode-body h3 { margin: 0; font-size: 1.05rem; }
 .recite-mode-body p { margin: 2px 0 0; font-size: 0.85rem; opacity: 0.8; }
@@ -389,11 +603,11 @@ button {
 .recite-handoff-emoji { font-size: 2.6rem; margin-bottom: 4px; }
 .recite-instructions { text-align: center; font-weight: bold; margin: 0 0 4px; }
 .recite-word-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 10px 0; }
-.recite-word-tile.missed { background: #ffe1a8; border-color: var(--yellow); }
+.recite-word-tile.missed { background: var(--cream); border-color: var(--yellow); }
 .recite-ref-line { text-align: center; font-weight: bold; opacity: 0.75; margin: 4px 0 8px; }
 .recite-ref-chip { display: flex; margin: 6px auto; width: fit-content; }
 .recite-ref-chip.active { border-color: var(--green); background: var(--green-soft); }
-.recite-encourage { text-align: center; font-weight: bold; color: var(--purple); margin-top: 6px; }
+.recite-encourage { text-align: center; font-weight: bold; color: var(--sparks-blue); margin-top: 6px; }
 
 /* Mode 2 — Record & Hear Yourself */
 .recite-privacy-note { text-align: center; font-size: 0.85rem; opacity: 0.75; margin: 0 0 8px; }
@@ -417,7 +631,8 @@ button {
   min-width: 44px;
   padding: 6px 10px;
   border-radius: 12px;
-  background: #f0f0f0;
+  background: var(--sky-soft);
+  color: var(--slate);
   font-weight: bold;
   opacity: 0.55;
 }
@@ -460,16 +675,18 @@ button {
   min-height: 52px;
   padding: 10px 16px;
   margin: 5px;
-  border-radius: 16px;
-  background: var(--blue-soft);
-  border: 3px solid transparent;
-  font-size: 1.15rem;
-  font-weight: bold;
-  box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12);
+  border-radius: 12px;
+  background: var(--sky-soft);
+  border: 2px solid #c8e2f4;
+  font-family: var(--display);
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--slate);
+  box-shadow: 0 1px 4px rgba(51, 63, 72, 0.12);
   transition: transform 0.08s ease;
   user-select: none;
 }
-.word-tile:active { transform: translateY(3px); box-shadow: none; }
+.word-tile:active { transform: translateY(2px); box-shadow: none; }
 .word-tile.correct { background: var(--green-soft); border-color: var(--green); animation: pop-in 0.25s ease; }
 .word-tile.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); }
 .word-tile.ghost { opacity: 0.35; }
@@ -502,18 +719,30 @@ button {
 }
 .guide-word[role="button"] { cursor: pointer; }
 .guide-word.lit { opacity: 1; background: var(--green-soft); }
-.guide-word.peeking { opacity: 1; background: #fff7df; }
-/* Level chip: tap cycles 🌕 full → 🌗 first-letter → 🌑 blank → 🌕, always
-   the kid's call — never locked by pass count. */
+.guide-word.peeking { opacity: 1; background: var(--cream); }
+/* Hint-level chip: tap cycles Abc (full) → A__ (first letters) → ___
+   (blanks) → Abc, always the kid's call — never locked by pass count.
+   Real chip chrome so it reads as a tappable control, not a stray glyph. */
 .guide-chip {
-  border: none;
-  background: transparent;
-  font-size: 1.5rem;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 44px;
   min-height: 44px;
   padding: 4px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--sky);
+  box-shadow: var(--shadow);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: var(--slate);
   cursor: pointer;
 }
+.guide-chip:active { transform: translateY(2px); box-shadow: none; }
 
 /* ---------- "think first" beat (plans.html §7.2 / §5.2, ctx.thinkBeat) ---
    A ~2s invitation to recall silently before a cloze game (balloon/firefly/
@@ -527,7 +756,7 @@ button {
   margin: 8px auto;
   padding: 8px 16px;
   border-radius: 999px;
-  background: #fff7df;
+  background: var(--cream-soft);
   border: 2px dashed var(--yellow);
   font-weight: bold;
   font-size: 1.05rem;
@@ -580,8 +809,8 @@ button {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: #fff7df;
-  border: 3px solid var(--yellow);
+  background: var(--cream-soft);
+  border: 2px solid var(--yellow);
   border-radius: 16px;
   padding: 10px 6px;
 }
@@ -659,6 +888,7 @@ button {
   .hero h1 { font-size: 1.6rem; }
   .top-bar { padding: 6px 0; }
   .top-bar h1 { font-size: 1.15rem; }
+  .blob-head.compact h1 { font-size: 1.3rem; }
   .back-btn { padding: 8px 14px; font-size: 0.95rem; }
   .card { padding: 12px; margin: 10px 0; }
   .stage { min-height: 380px; padding: 12px; }

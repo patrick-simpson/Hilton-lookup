@@ -26,10 +26,10 @@ export default {
 
     ctx.addStyle(`
       .g-train { text-align: center; }
-      .g-train .round-label { font-size: 1rem; font-weight: bold; opacity: 0.8; margin: 0 0 8px; }
+      .g-train .round-label { font-size: 1rem; font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.9; margin: 0 0 8px; }
       .g-train .track-wrap {
-        background: linear-gradient(180deg, #e3f4ff 0%, #f4fbe9 100%);
-        border: 3px solid #d5e8ff;
+        background: linear-gradient(180deg, var(--sky-soft) 0%, #f4fbe9 100%);
+        border: 2px solid var(--sky);
         border-bottom: 6px solid #a5825a;
         border-radius: 16px;
         overflow-x: auto;
@@ -78,10 +78,12 @@ export default {
         min-width: 60px;
         padding: 10px 16px;
         border-radius: 14px 14px 8px 8px;
-        background: var(--blue-soft, #d5e8ff);
-        border: 3px solid #7fb3ea;
+        background: var(--sky-soft);
+        border: 2px solid #c8e2f4;
+        font-family: var(--display);
         font-size: 1.1rem;
-        font-weight: bold;
+        font-weight: 600;
+        color: var(--slate);
         white-space: nowrap;
         user-select: none;
       }
@@ -92,14 +94,14 @@ export default {
         width: 15px;
         height: 15px;
         border-radius: 50%;
-        background: #26324b;
-        box-shadow: inset 0 0 0 3px #6d7fa5;
+        background: var(--slate);
+        box-shadow: inset 0 0 0 3px #9fb0ba;
       }
       .g-train .car::before { left: 7px; }
       .g-train .car::after { right: 7px; }
       .g-train .track .car.coupled {
-        background: var(--green-soft, #d3f2d9);
-        border-color: var(--green, #2a9d3f);
+        background: var(--green-soft);
+        border-color: var(--green);
         animation: pop-in 0.25s ease;
       }
       .g-train .pool {
@@ -113,14 +115,14 @@ export default {
       }
       .g-train .pool .car {
         cursor: pointer;
-        box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12);
+        box-shadow: var(--shadow);
         transition: transform 0.08s ease;
       }
       .g-train .pool .car:active { transform: translateY(3px); box-shadow: none; }
       .g-train .car.wrong {
         animation: wiggle 0.35s ease;
-        background: var(--red-soft, #ffd6d9);
-        border-color: var(--red, #e63946);
+        background: var(--red-soft);
+        border-color: var(--red);
       }
       .g-train .btn-row { margin: 6px 0 0; }
       @media (max-width: 420px) {

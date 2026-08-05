@@ -8,7 +8,12 @@
 // it's airborne, balloons show just the first letter (a recall nudge) —
 // full words reveal once the beat resolves, same as every other difficulty.
 
-import { fadeWord } from '../lib/engine.js';
+import { fadeWord, doodleCloud } from '../lib/engine.js';
+
+// Curated brand-hue rotations from the red 🎈 base (BRAND.md: no rainbow
+// accents) — sparks red, HangGlider green, sparks blue, awana orange —
+// assigned round-robin per balloon instead of a random hue spin.
+const BALLOON_HUES = [0, 130, 205, 35];
 
 export default {
   id: 'balloon',
@@ -27,19 +32,19 @@ export default {
       .g-balloon .meter { display: flex; gap: 7px; justify-content: center; align-items: center; }
       .g-balloon .meter .dot { width: 16px; height: 16px; border-radius: 50%; background: #e3e8f2; border: 2px solid #cfd8e8; }
       .g-balloon .meter .dot.done { background: var(--green-soft); border-color: var(--green); }
-      .g-balloon .meter .dot.now { background: #fff2c4; border-color: var(--yellow); animation: floaty 1.6s ease-in-out infinite; }
+      .g-balloon .meter .dot.now { background: var(--cream); border-color: var(--yellow); animation: floaty 1.6s ease-in-out infinite; }
       .g-balloon .speak-btn { min-width: 52px; min-height: 52px; border-radius: 50%; font-size: 1.5rem; background: var(--paper); box-shadow: var(--shadow); }
       .g-balloon .speak-btn:active { transform: translateY(3px); box-shadow: none; }
       .g-balloon .verse-line { background: #f4f8ff; border-radius: 16px; padding: 12px 10px; margin-bottom: 12px; font-size: 1.3rem; font-weight: bold; line-height: 1.9; min-height: 64px; }
       .g-balloon .blank { display: inline-block; min-width: 96px; min-height: 34px; vertical-align: middle; border-bottom: 5px dashed var(--yellow); background: #fff7df; border-radius: 8px 8px 0 0; margin: 0 4px; }
       .g-balloon .blank.filled { min-width: 0; padding: 0 8px; background: var(--green-soft); border-bottom-color: var(--green); color: var(--green); animation: pop-in 0.35s ease; }
-      .g-balloon .sky { position: relative; background: linear-gradient(180deg, #dff3ff, #f7fcff); border-radius: 18px; padding: 18px 4px 22px; min-height: 260px; display: flex; flex-wrap: wrap; justify-content: space-evenly; align-items: flex-start; gap: 4px; overflow: hidden; }
+      .g-balloon .sky { position: relative; background: linear-gradient(180deg, var(--sky-soft), #ffffff); border-radius: 18px; padding: 18px 4px 22px; min-height: 260px; display: flex; flex-wrap: wrap; justify-content: space-evenly; align-items: flex-start; gap: 4px; overflow: hidden; }
       .g-balloon .cloud { position: absolute; font-size: 2rem; opacity: 0.7; pointer-events: none; animation: floaty 5s ease-in-out infinite; }
       .g-balloon .spot { animation: g-balloon-float 3.2s ease-in-out infinite; }
       .g-balloon .balloon { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 76px; min-height: 118px; padding: 6px 4px; }
       .g-balloon .balloon .bal { font-size: 3.6rem; line-height: 1.05; transition: transform 0.08s ease; }
       .g-balloon .balloon:active .bal { transform: scale(0.92); }
-      .g-balloon .balloon .lbl { background: var(--paper); border: 3px solid var(--blue-soft); border-radius: 14px; padding: 7px 12px; font-weight: bold; font-size: 1.1rem; max-width: 150px; box-shadow: 0 3px 0 rgba(38, 50, 75, 0.12); transition: opacity 0.25s ease; }
+      .g-balloon .balloon .lbl { background: var(--paper); border: 2px solid var(--sky); border-radius: 14px; padding: 7px 12px; font-family: var(--display); font-weight: 600; color: var(--slate); font-size: 1.1rem; max-width: 150px; box-shadow: var(--shadow); transition: opacity 0.25s ease; }
       /* think-first beat: balloons drift wordless (empty label) until the
          beat resolves, then the labels fade in. */
       .g-balloon .balloon.wordless .lbl { opacity: 0; }
@@ -188,10 +193,10 @@ export default {
       const sky = el('div', 'sky');
       root.appendChild(sky);
 
-      // decorative clouds
-      const cloudSpots = [['6%', '4%'], ['74%', '10%'], ['42%', '72%']];
+      // decorative doodle clouds, kept fully inside the field
+      const cloudSpots = [['7%', '5%'], ['70%', '9%']];
       cloudSpots.forEach(([left, top], i) => {
-        const c = el('span', 'cloud', '☁️');
+        const c = doodleCloud('cloud', 46);
         c.style.left = left;
         c.style.top = top;
         c.style.animationDelay = (i * 0.9) + 's';
@@ -201,7 +206,7 @@ export default {
       // ---- think-first beat: balloons drift wordless, then reveal ----
       const options = shuffle([answer, ...decoysFor(blankIdx, decoyCount)]);
       const balloons = [];
-      options.forEach((word) => {
+      options.forEach((word, optIdx) => {
         const spot = el('div', 'spot');
         spot.style.animationDuration = (2.6 + Math.random() * 1.6).toFixed(2) + 's';
         spot.style.animationDelay = (-Math.random() * 2.5).toFixed(2) + 's';
@@ -213,7 +218,8 @@ export default {
         const b = el('button', 'balloon' + (ctx.hard ? '' : ' wordless'));
         b.disabled = true; // inert while airborne — no mistake can register
         const bal = el('span', 'bal', '🎈');
-        bal.style.filter = `hue-rotate(${ctx.randInt(300)}deg)`;
+        const hue = BALLOON_HUES[optIdx % BALLOON_HUES.length];
+        if (hue) bal.style.filter = `hue-rotate(${hue}deg)`;
         const lbl = el('span', 'lbl', ctx.hard ? fadeWord(trim(word), 1) : '');
         b.dataset.word = trim(word); // full word, for test drivers matching a faded label
         b.append(bal, lbl);

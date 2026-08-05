@@ -53,13 +53,16 @@ function artImg(src, cls, alt = '') {
   return img;
 }
 
-function topBar(title, backHash) {
-  const bar = el('div', 'top-bar');
+// Catalog-style compact red blob header (see .blob-head.compact): back pill
+// + uppercase headline + slate tag. No emoji in the ALL-CAPS display line.
+function blobBar(title, backHash, tag) {
+  const head = el('div', 'blob-head compact');
   const back = el('button', 'back-btn', '⬅ Back');
   back.onclick = () => go(backHash);
-  bar.append(back, el('h1', null, title));
-  app().append(bar);
-  return bar;
+  head.append(back, el('h1', null, title));
+  if (tag) head.append(el('span', 'grade-chip', tag));
+  app().append(head);
+  return head;
 }
 
 // Deterministic (not random) so the same verse always cheers with the same
@@ -153,13 +156,15 @@ export function reciteView(book, section, verseIdx) {
   const cleanupFns = [];
   const addCleanup = (fn) => cleanupFns.push(fn);
 
-  topBar('🏅 Say it word-perfect!', verseHash);
+  blobBar('Say it word-perfect!', verseHash, 'Three-star check');
 
   const alreadyStage3 = getStars(verse.key) >= 3;
   const headerCard = el('div', 'card recite-card');
   headerCard.append(artImg(hashKid(verse.key), 'recite-kid', 'A cheering Sparks friend'));
   headerCard.append(el('h2', null, verse.label));
-  headerCard.append(el('div', 'stars-big', starsText(getStars(verse.key))));
+  // Only show the star row once there's a star to show — a lone "·" reads
+  // like a stray mark on the otherwise-clean card.
+  if (getStars(verse.key) > 0) headerCard.append(el('div', 'stars-big', starsText(getStars(verse.key))));
   if (alreadyStage3) {
     headerCard.append(el('p', 'recite-again-note', 'Already recited — say it again for practice!'));
   }
@@ -186,7 +191,7 @@ export function reciteView(book, section, verseIdx) {
       el('p', 'recite-mode-date', `${MODE_LABEL[mode] || mode} · ${new Date().toLocaleDateString()}`),
     );
     const row = el('div', 'btn-row');
-    const again = el('button', 'btn btn-primary', '🔁 Play again');
+    const again = el('button', 'btn btn-primary', '🔁 Say it again');
     again.onclick = () => { overlay.remove(); showModes(); };
     const done = el('button', 'btn btn-green', '✅ Done');
     done.onclick = () => { overlay.remove(); go(verseHash); };
@@ -202,8 +207,9 @@ export function reciteView(book, section, verseIdx) {
     return backBtn;
   }
 
-  function modeCard(icon, title, sub, onTap) {
-    const c = el('button', 'card recite-mode-card');
+  function modeCard(icon, title, sub, onTap, primary = false) {
+    const c = el('button', 'card recite-mode-card' + (primary ? ' primary' : ''));
+    if (primary) c.append(el('span', 'recite-best-badge', 'Best at club'));
     c.append(el('span', 'recite-mode-icon', icon));
     const body = el('div', 'recite-mode-body');
     body.append(el('h3', null, title), el('p', null, sub));
@@ -585,7 +591,7 @@ export function reciteView(book, section, verseIdx) {
     clear(content);
     const wrap = el('div', 'card recite-club');
     wrap.append(el('p', null, 'Did you say this verse to your leader at club?'));
-    const yes = el('button', 'btn btn-green btn-big', '👍 Yes! I said it!');
+    const yes = el('button', 'btn btn-green btn-big', '👍 Yes, I said it!');
     yes.onclick = () => { sfx.click(); onSuccess('club'); };
     wrap.append(yes, backBtnRow());
     content.append(wrap);
@@ -595,7 +601,7 @@ export function reciteView(book, section, verseIdx) {
 
   function showModes() {
     clear(content);
-    content.append(modeCard('🧑\u200d🤝\u200d🧑', 'Grown-Up Check', 'Always works — no mic, no internet.', showGrownUpIntro));
+    content.append(modeCard('🧑\u200d🤝\u200d🧑', 'Grown-Up Check', 'Always works — no mic, no internet.', showGrownUpIntro, true));
 
     const recordSupported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
     if (recordSupported) {

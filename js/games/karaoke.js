@@ -40,18 +40,18 @@ export default {
 
     ctx.addStyle(`
       .g-karaoke { text-align: center; }
-      .g-karaoke .k-phase { display: inline-block; font-weight: bold; font-size: 1.2rem; background: #fff7df; border: 3px solid var(--yellow); border-radius: 999px; padding: 8px 20px; margin-bottom: 2px; }
+      .g-karaoke .k-phase { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 1.2rem; background: var(--cream-soft); border: 2px solid var(--yellow); border-radius: 999px; padding: 8px 20px; margin-bottom: 2px; }
       .g-karaoke .k-phase.pop { animation: pop-in 0.3s ease; }
       .g-karaoke .k-tiles { position: relative; padding: 50px 2px 8px; }
-      .g-karaoke .k-tile { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 48px; padding: 8px 14px; margin: 5px; border-radius: 14px; background: var(--blue-soft); border: 3px solid transparent; font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12); user-select: none; }
+      .g-karaoke .k-tile { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 48px; padding: 8px 14px; margin: 5px; border-radius: 14px; background: var(--blue-soft); border: 2px solid transparent; font-family: var(--display); font-size: 1.1rem; font-weight: 600; color: var(--slate); box-shadow: 0 1px 4px rgba(51, 63, 72, 0.12); user-select: none; }
       .g-karaoke .k-tile.compact { font-size: 1rem; padding: 6px 9px; margin: 3px; }
       .g-karaoke.compact .k-phase { font-size: 1.1rem; padding: 6px 16px; }
       .g-karaoke.compact .k-tiles { padding: 42px 0 4px; }
       .g-karaoke.compact .k-hint { margin: 4px 0 2px; font-size: 1rem; }
       .g-karaoke.compact .k-ref { margin-top: 2px; }
-      .g-karaoke .k-tile.note { background: #efe2ff; border-color: #dcc6f7; }
+      .g-karaoke .k-tile.note { background: var(--paper); border-color: var(--sky); }
       .g-karaoke .k-tile.sung { background: var(--green-soft); border-color: var(--green); }
-      .g-karaoke .k-tile.now { background: var(--yellow); border-color: #d99b00; transform: scale(1.08); }
+      .g-karaoke .k-tile.now { background: var(--yellow); border-color: var(--orange); transform: scale(1.08); }
       .g-karaoke .k-tile.revealed { animation: pop-in 0.3s ease; }
       .g-karaoke .k-star { position: absolute; left: 0; top: 0; transform: translateX(-50%); font-size: 2rem; line-height: 1; pointer-events: none; z-index: 5; transition: left 0.3s cubic-bezier(0.5, 1.8, 0.4, 1), top 0.3s cubic-bezier(0.5, 1.8, 0.4, 1); filter: drop-shadow(0 3px 2px rgba(38, 50, 75, 0.25)); }
       .g-karaoke .k-star span { display: inline-block; animation: k-bob 0.55s ease-in-out infinite; }

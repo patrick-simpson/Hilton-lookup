@@ -31,22 +31,22 @@ export default {
 
     ctx.addStyle(`
       .g-rocket .hdr { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
-      .g-rocket .msg { text-align: center; font-weight: bold; font-size: 1.2rem; min-height: 1.4em; }
-      .g-rocket .hear-btn { min-width: 52px; min-height: 52px; border-radius: 999px; background: var(--blue-soft); font-size: 1.4rem; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12); }
+      .g-rocket .msg { text-align: center; font-family: var(--display); font-weight: 700; font-size: 1.2rem; color: var(--slate); min-height: 1.4em; }
+      .g-rocket .hear-btn { min-width: 52px; min-height: 52px; border-radius: 999px; background: var(--sky-soft); font-size: 1.4rem; box-shadow: var(--shadow); }
       .g-rocket .hear-btn:active { transform: translateY(3px); box-shadow: none; }
 
       .g-rocket .layout { display: flex; gap: 10px; align-items: stretch; }
       .g-rocket .layout.shaking { animation: g-rocket-shake 0.6s ease; }
       .g-rocket .pool { flex: 1; min-width: 0; text-align: center; }
-      .g-rocket .pool .word-tile { background: #fff1c2; border-color: #ffd66b; min-width: 52px; }
+      .g-rocket .pool .word-tile { background: var(--cream); border-color: var(--yellow); min-width: 52px; }
 
       .g-rocket .rocket-side { flex: none; display: flex; gap: 8px; align-items: flex-end; padding-bottom: 4px; }
       .g-rocket .gauge-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
       .g-rocket .gauge-emoji { font-size: 1.2rem; }
-      .g-rocket .gauge { width: 28px; height: 230px; background: #eef2fa; border: 3px solid #c9d6ee; border-radius: 12px; display: flex; flex-direction: column-reverse; overflow: hidden; }
-      .g-rocket .gauge .seg { position: relative; border-top: 2px dashed #c9d6ee; }
-      .g-rocket .gauge .seg .fill { position: absolute; left: 0; right: 0; bottom: 0; height: 0%; background: linear-gradient(180deg, #ffd166, #f4a300); transition: height 0.3s ease; }
-      .g-rocket .gauge .seg.full .fill { background: linear-gradient(180deg, #90dd90, #2a9d3f); }
+      .g-rocket .gauge { width: 28px; height: 230px; background: var(--sky-soft); border: 2px solid var(--sky); border-radius: 12px; display: flex; flex-direction: column-reverse; overflow: hidden; }
+      .g-rocket .gauge .seg { position: relative; border-top: 2px dashed var(--sky); }
+      .g-rocket .gauge .seg .fill { position: absolute; left: 0; right: 0; bottom: 0; height: 0%; background: linear-gradient(180deg, var(--yellow), var(--orange)); transition: height 0.3s ease; }
+      .g-rocket .gauge .seg.full .fill { background: linear-gradient(180deg, var(--green-soft), var(--green)); }
 
       .g-rocket .rocket-wrap { position: relative; width: 96px; text-align: center; }
       .g-rocket .ship { position: relative; display: inline-block; line-height: 1; }
@@ -55,15 +55,15 @@ export default {
       .g-rocket .rocket-emoji { display: inline-block; font-size: 3.6rem; transform: rotate(-45deg); }
       .g-rocket .flame { display: block; font-size: 2rem; margin-top: -8px; opacity: 0; }
       .g-rocket .ship.launch .flame { opacity: 1; animation: g-rocket-flicker 0.15s infinite alternate; }
-      .g-rocket .pad { width: 84px; height: 12px; margin: 2px auto 0; background: #7a8699; border-radius: 6px; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.15); }
+      .g-rocket .pad { width: 84px; height: 12px; margin: 2px auto 0; background: var(--slate); border-radius: 6px; box-shadow: var(--shadow); }
       .g-rocket .smoke { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 1.5rem; opacity: 0; white-space: nowrap; }
       .g-rocket .smoke.show { opacity: 1; animation: pop-in 0.35s ease; }
 
-      .g-rocket .fly-cell { position: absolute; margin: 0; z-index: 20; pointer-events: none; background: #ffd166; transition: transform 0.55s ease-in, opacity 0.55s ease-in; }
+      .g-rocket .fly-cell { position: absolute; margin: 0; z-index: 20; pointer-events: none; background: var(--cream); border-color: var(--yellow); transition: transform 0.55s ease-in, opacity 0.55s ease-in; }
 
       .g-rocket .count-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 30; background: rgba(255, 255, 255, 0.6); pointer-events: none; }
       .g-rocket .count-overlay.clear-bg { background: transparent; }
-      .g-rocket .count-num { font-size: 6rem; font-weight: bold; color: var(--red); text-shadow: 0 4px 0 rgba(38, 50, 75, 0.15); animation: pop-in 0.3s ease; }
+      .g-rocket .count-num { font-family: var(--display); font-size: 6rem; font-weight: 800; color: var(--red); text-shadow: 0 3px 10px rgba(51, 63, 72, 0.25); animation: pop-in 0.3s ease; }
       .g-rocket .count-num.liftoff { font-size: 2.4rem; color: var(--blue); }
 
       @keyframes g-rocket-liftoff {

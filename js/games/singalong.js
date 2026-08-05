@@ -67,14 +67,14 @@ export default {
       .g-singalong .sa-marquee .sa-deco { position: relative; z-index: 2; display: inline-block; font-size: 1.7rem; margin: 0 4px; animation: floaty 2.3s ease-in-out infinite; }
       .g-singalong .sa-marquee .sa-deco.b { animation-delay: 0.4s; }
       .g-singalong .sa-marquee .sa-deco.c { animation-delay: 0.8s; }
-      .g-singalong .sa-badge { display: inline-block; font-weight: bold; font-size: 1.15rem; background: #fff7df; border: 3px solid var(--yellow); border-radius: 999px; padding: 6px 18px; margin: 4px 0 2px; }
+      .g-singalong .sa-badge { display: inline-block; font-family: var(--display); font-weight: 700; font-size: 1.15rem; background: var(--cream-soft); border: 2px solid var(--yellow); border-radius: 999px; padding: 6px 18px; margin: 4px 0 2px; }
       .g-singalong .sa-badge.pop { animation: pop-in 0.3s ease; }
       .g-singalong .sa-tiles { position: relative; padding: 46px 2px 10px; background: radial-gradient(ellipse at 50% -12%, rgba(255, 255, 255, 0.4), transparent 62%); }
-      .g-singalong .sa-tile { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 48px; padding: 8px 14px; margin: 5px; border-radius: 14px; background: var(--blue-soft); border: 3px solid transparent; font-size: 1.1rem; font-weight: bold; box-shadow: 0 4px 0 rgba(38, 50, 75, 0.12); user-select: none; }
+      .g-singalong .sa-tile { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 48px; padding: 8px 14px; margin: 5px; border-radius: 14px; background: var(--blue-soft); border: 2px solid transparent; font-family: var(--display); font-size: 1.1rem; font-weight: 600; color: var(--slate); box-shadow: 0 1px 4px rgba(51, 63, 72, 0.12); user-select: none; }
       .g-singalong .sa-tile.compact { font-size: 1rem; padding: 6px 9px; margin: 3px; }
       .g-singalong.compact .sa-tiles { padding: 40px 0 6px; }
-      .g-singalong .sa-tile.note { background: #efe2ff; border-color: #dcc6f7; }
-      .g-singalong .sa-tile.now { background: var(--yellow); border-color: #d99b00; transform: scale(1.08); }
+      .g-singalong .sa-tile.note { background: var(--paper); border-color: var(--sky); }
+      .g-singalong .sa-tile.now { background: var(--yellow); border-color: var(--orange); transform: scale(1.08); }
       .g-singalong .sa-tile.sung { background: var(--green-soft); border-color: var(--green); }
       .g-singalong .sa-tile.revealed { animation: pop-in 0.3s ease; }
       .g-singalong .sa-note { position: absolute; left: 0; top: 0; transform: translateX(-50%); font-size: 1.7rem; line-height: 1; pointer-events: none; z-index: 5; transition: left 0.3s cubic-bezier(0.5, 1.8, 0.4, 1), top 0.3s cubic-bezier(0.5, 1.8, 0.4, 1); filter: drop-shadow(0 3px 2px rgba(38, 50, 75, 0.25)); }

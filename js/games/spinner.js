@@ -45,7 +45,7 @@ export default {
       .g-spinner { text-align: center; }
       .g-spinner .v-wrap { position: relative; background: #f4f8ff; border-radius: 16px; margin-bottom: 8px; }
       .g-spinner .verse-display.small { font-size: 1.1rem; }
-      .g-spinner .v-cover { position: absolute; inset: 0; background: #fff7df; border: 3px dashed var(--yellow); border-radius: 16px; display: none; align-items: center; justify-content: center; gap: 10px; font-weight: bold; font-size: 1.2rem; }
+      .g-spinner .v-cover { position: absolute; inset: 0; background: var(--cream-soft); border: 2px dashed var(--yellow); border-radius: 16px; display: none; align-items: center; justify-content: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 1.2rem; }
       .g-spinner .v-cover .big-eyes { font-size: 2rem; }
       .g-spinner .v-wrap.covered .v-cover { display: flex; }
       .g-spinner .dots { font-size: 1.6rem; letter-spacing: 8px; margin: 2px 0 8px; }
@@ -53,12 +53,12 @@ export default {
       .g-spinner .dot.done { opacity: 1; filter: none; animation: pop-in 0.35s ease; }
       .g-spinner .wheel-box { position: relative; width: min(78vw, 270px); margin: 0 auto 4px; }
       .g-spinner .pointer { position: absolute; top: -7px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 26px solid var(--ink); z-index: 5; filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25)); }
-      .g-spinner .wheel { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 8px solid #fff; position: relative; box-shadow: 0 6px 0 rgba(38, 50, 75, 0.15); transition: transform ${SPIN_MS}ms cubic-bezier(0.12, 0.78, 0.15, 1); will-change: transform; }
+      .g-spinner .wheel { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 8px solid #fff; position: relative; box-shadow: 0 4px 14px rgba(51, 63, 72, 0.22); transition: transform ${SPIN_MS}ms cubic-bezier(0.12, 0.78, 0.15, 1); will-change: transform; }
       .g-spinner .arm { position: absolute; inset: 0; pointer-events: none; }
       .g-spinner .lab { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: 1.7rem; filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.18)); }
-      .g-spinner .hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 62px; height: 62px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; box-shadow: 0 3px 0 rgba(38, 50, 75, 0.2); }
+      .g-spinner .hub { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 62px; height: 62px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; box-shadow: 0 2px 8px rgba(51, 63, 72, 0.25); }
       .g-spinner .announce { min-height: 92px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-      .g-spinner .a-style { font-size: 1.8rem; font-weight: bold; border-radius: 999px; padding: 6px 24px; animation: pop-in 0.35s ease; }
+      .g-spinner .a-style { font-family: var(--display); font-size: 1.8rem; font-weight: 700; border-radius: 999px; padding: 6px 24px; animation: pop-in 0.35s ease; }
       .g-spinner .a-tip { font-size: 1.15rem; font-weight: bold; opacity: 0.85; }
       .g-spinner .s-chip { min-height: 52px; min-width: 62px; font-size: 1.35rem; justify-content: center; }
       .g-spinner .btn-row { margin: 8px 0 4px; }

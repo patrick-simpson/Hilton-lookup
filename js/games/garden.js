@@ -17,7 +17,7 @@ export default {
     ctx.addStyle(`
       .g-garden { position: relative; text-align: center; }
       .g-garden .garden-top { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 4px; }
-      .g-garden .pot-zone { position: relative; width: 150px; min-height: 140px; background: linear-gradient(180deg, #dff2ff, #e6f6d8); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4px; }
+      .g-garden .pot-zone { position: relative; width: 150px; min-height: 140px; background: linear-gradient(180deg, var(--sky-soft), #e6f6d8); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4px; }
       .g-garden .plant { position: relative; z-index: 1; display: inline-block; font-size: 3.4rem; line-height: 1; margin-bottom: -14px; }
       .g-garden .plant.grow { animation: pop-in 0.5s ease; }
       .g-garden .pot { font-size: 2.8rem; line-height: 1; }
@@ -26,13 +26,13 @@ export default {
       .g-garden .drop { position: absolute; top: 42px; z-index: 2; font-size: 1rem; opacity: 0; pointer-events: none; animation: g-garden-drip 0.65s ease-in forwards; }
       .g-garden .side { display: flex; flex-direction: column; align-items: center; gap: 8px; }
       .g-garden .side-info { display: contents; }
-      .g-garden .round-label { font-weight: bold; opacity: 0.75; }
+      .g-garden .round-label { font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.9; }
       .g-garden .drops-meter { font-size: 1.5rem; letter-spacing: 5px; }
       .g-garden .drops-meter .pending { opacity: 0.25; }
       .g-garden .drops-meter .earned { display: inline-block; animation: pop-in 0.3s ease; }
       .g-garden .verse-area { background: #f4f8ff; border-radius: 16px; padding: 12px 10px; margin: 10px 0; font-size: 1.18rem; line-height: 2.1; }
       .g-garden .vw { display: inline-block; margin: 0 3px; }
-      .g-garden .blank { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; min-width: 64px; min-height: 40px; margin: 2px 3px; padding: 2px 10px; background: #fff; border: 3px dashed #b9cdf0; border-radius: 12px; font-weight: bold; }
+      .g-garden .blank { display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; min-width: 64px; min-height: 40px; margin: 2px 3px; padding: 2px 10px; background: #fff; border: 2px dashed var(--sky); border-radius: 12px; font-weight: bold; }
       .g-garden .blank.next { border-color: var(--yellow); background: #fff7df; animation: g-garden-pulse 1.1s ease-in-out infinite; }
       .g-garden .blank.done { border-style: solid; border-color: var(--green); background: var(--green-soft); animation: pop-in 0.3s ease; }
       .g-garden .choices .word-tile.used { opacity: 0.3; pointer-events: none; box-shadow: none; }
@@ -43,7 +43,7 @@ export default {
       .g-garden .choices .word-tile.wordless { opacity: 0; }
       .g-garden .choices .word-tile.revealed { animation: pop-in 0.3s ease; }
       .g-garden .bfly { position: absolute; z-index: 5; font-size: 2.1rem; pointer-events: none; animation-name: g-garden-flutter; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-duration: 3s; }
-      .g-garden .bloom-note { font-size: 1.3rem; margin-top: 6px; font-weight: bold; }
+      .g-garden .bloom-note { font-family: var(--display); font-size: 1.3rem; margin-top: 6px; font-weight: 700; color: var(--green); }
       @keyframes g-garden-pour {
         0% { opacity: 0; transform: rotate(0deg) translateY(-8px); }
         20% { opacity: 1; transform: rotate(-32deg) translateY(0); }

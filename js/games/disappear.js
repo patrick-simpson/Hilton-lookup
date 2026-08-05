@@ -12,7 +12,7 @@
 export default {
   id: 'disappear',
   title: 'Disappearing Verse',
-  icon: '🫥',
+  icon: '😶', // widely-supported glyph — 🫥 (Unicode 14) falls back badly on red buttons
   tagline: 'Words vanish — can you still say it?',
   howTo: 'Say the verse out loud, then tap "I said it!" Each round more words disappear. Tap a blank tile to peek at a word — but super memorizers barely peek!',
   group: false,
@@ -28,18 +28,18 @@ export default {
       .g-disappear .rounds .r-dot.now { opacity: 1; transform: scale(1.3); animation: floaty 2.2s ease-in-out infinite; }
       .g-disappear .prompt { text-align: center; font-weight: bold; font-size: 1.15rem; margin: 4px 0 10px; }
       .g-disappear .board { background: #f4f8ff; border-radius: 16px; padding: 10px; text-align: center; }
-      .g-disappear .board .word-tile.plain { background: var(--paper, #fff); border: 3px solid #d5e8ff; }
-      .g-disappear .blank { background: #f1e8ff; border: 3px dashed var(--purple, #9d4edd); color: var(--purple, #9d4edd); min-width: 66px; letter-spacing: 2px; }
-      .g-disappear .blank.peek { background: #fff3c4; border-style: solid; border-color: var(--yellow, #ffb703); color: var(--ink, #26324b); letter-spacing: normal; animation: pop-in 0.25s ease; }
-      .g-disappear .blank.locked { background: #ececec; border-color: #b9b9b9; color: #8a8a8a; letter-spacing: normal; }
+      .g-disappear .board .word-tile.plain { background: var(--paper, #fff); border: 2px solid var(--sky); }
+      .g-disappear .blank { background: var(--sky-soft); border: 2px dashed var(--sparks-blue); color: var(--sparks-blue); min-width: 66px; letter-spacing: 2px; }
+      .g-disappear .blank.peek { background: var(--cream); border-style: solid; border-color: var(--yellow); color: var(--ink); letter-spacing: normal; animation: pop-in 0.25s ease; }
+      .g-disappear .blank.locked { background: rgba(62, 75, 84, 0.08); border-color: rgba(62, 75, 84, 0.25); color: rgba(62, 75, 84, 0.55); letter-spacing: normal; }
       .g-disappear .ref-tile::before { content: '🔖 '; }
-      .g-disappear .word-tile.plain.ref-tile { background: #fff3e0; border-color: #ffb703; color: #7a4b00; font-style: italic; }
+      .g-disappear .word-tile.plain.ref-tile { background: var(--cream); border-color: var(--yellow); color: var(--slate); font-style: italic; }
       .g-disappear .board.many .word-tile { font-size: 1rem; padding: 5px 9px; margin: 3px; min-height: 40px; }
       .g-disappear .board.many .blank { min-height: 48px; min-width: 54px; letter-spacing: 1px; }
       .g-disappear .ref-line { text-align: center; font-weight: bold; opacity: 0.7; margin: 8px 0 0; }
       .g-disappear .footer { margin-top: auto; text-align: center; padding-top: 12px; }
       .g-disappear .footer .btn-row { align-items: center; margin: 8px 0 0; }
-      .g-disappear .peek-chip { display: inline-block; background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: bold; box-shadow: 0 3px 0 rgba(38,50,75,0.12); font-size: 0.95rem; }
+      .g-disappear .peek-chip { display: inline-block; background: var(--paper); border-radius: 999px; padding: 6px 14px; font-family: var(--display); font-weight: 700; box-shadow: var(--shadow); font-size: 0.95rem; }
       .g-disappear.many .rounds { font-size: 1.35rem; }
       .g-disappear.many .prompt { font-size: 1.05rem; margin: 2px 0 6px; }
       .g-disappear.many .board { padding: 8px 6px; }
@@ -151,7 +151,7 @@ export default {
 
       const ind = el('div', 'rounds');
       for (let i = 0; i < totalRounds; i++) {
-        ind.appendChild(el('span', 'r-dot' + (i < roundIdx ? ' done' : i === roundIdx ? ' now' : ''), '🫥'));
+        ind.appendChild(el('span', 'r-dot' + (i < roundIdx ? ' done' : i === roundIdx ? ' now' : ''), '😶'));
       }
       root.appendChild(ind);
       root.appendChild(el('div', 'prompt', promptFor(roundIdx, extraRound)));

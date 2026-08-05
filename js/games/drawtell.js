@@ -136,20 +136,20 @@ export default {
 
     ctx.addStyle(`
       .g-drawtell { display: flex; flex-direction: column; min-height: 420px; }
-      .g-drawtell .step-title { text-align: center; font-weight: bold; font-size: 1.2rem; margin: 2px 0 8px; }
+      .g-drawtell .step-title { text-align: center; font-family: var(--display); font-weight: 700; font-size: 1.2rem; margin: 2px 0 8px; }
       .g-drawtell .progress-dots { text-align: center; font-size: 1.1rem; margin-bottom: 6px; letter-spacing: 4px; }
-      .g-drawtell .phrase-box { background: #fff7df; border-radius: 16px; padding: 14px; text-align: center; font-size: 1.25rem; font-weight: bold; margin-bottom: 10px; }
+      .g-drawtell .phrase-box { background: var(--cream-soft); border-radius: 16px; padding: 14px; text-align: center; font-size: 1.25rem; font-weight: bold; margin-bottom: 10px; }
       .g-drawtell .mode-toggle { text-align: center; margin-bottom: 10px; }
       .g-drawtell .emoji-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 10px; }
-      .g-drawtell .emoji-opt { min-width: 70px; min-height: 70px; font-size: 2.2rem; background: var(--paper); border-radius: 18px; box-shadow: var(--shadow); border: 3px solid transparent; }
+      .g-drawtell .emoji-opt { min-width: 70px; min-height: 70px; font-size: 2.2rem; background: var(--paper); border-radius: 18px; box-shadow: var(--shadow); border: 2px solid transparent; }
       .g-drawtell .emoji-opt:active { transform: translateY(3px); box-shadow: none; }
       .g-drawtell .emoji-opt.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); }
-      .g-drawtell .reuse-banner { display: flex; align-items: center; gap: 10px; justify-content: center; flex-wrap: wrap; background: #eaf7ff; border-radius: 16px; padding: 8px; margin-bottom: 10px; }
-      .g-drawtell .reuse-banner img { width: 56px; height: 56px; object-fit: cover; border-radius: 12px; border: 3px solid var(--blue-soft); background: #fff; }
+      .g-drawtell .reuse-banner { display: flex; align-items: center; gap: 10px; justify-content: center; flex-wrap: wrap; background: var(--sky-soft); border-radius: 16px; padding: 8px; margin-bottom: 10px; }
+      .g-drawtell .reuse-banner img { width: 56px; height: 56px; object-fit: cover; border-radius: 12px; border: 2px solid var(--sky); background: #fff; }
       .g-drawtell .canvas-wrap { text-align: center; margin-bottom: 8px; }
-      .g-drawtell canvas { width: 100%; max-width: 320px; height: 220px; touch-action: none; border-radius: 16px; background: #fff; border: 3px dashed var(--purple); }
+      .g-drawtell canvas { width: 100%; max-width: 320px; height: 220px; touch-action: none; border-radius: 16px; background: #fff; border: 2px dashed var(--sparks-blue); }
       .g-drawtell .palette { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; }
-      .g-drawtell .swatch { width: 52px; height: 52px; border-radius: 50%; border: 3px solid transparent; padding: 0; }
+      .g-drawtell .swatch { width: 52px; height: 52px; border-radius: 50%; border: 2px solid transparent; padding: 0; box-shadow: var(--shadow); }
       .g-drawtell .swatch.active { border-color: var(--ink); transform: scale(1.1); }
       .g-drawtell .confirm-btn { width: 100%; }
       .g-drawtell .cue-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 10px; }
@@ -161,7 +161,7 @@ export default {
       .g-drawtell .peek-btn { font-size: 1.1rem; min-height: 44px; min-width: 44px; padding: 4px 8px; margin-bottom: 4px; }
       .g-drawtell .confirm-btn.done { background: var(--green-soft); color: var(--ink); }
       .g-drawtell .slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 10px; }
-      .g-drawtell .slot { width: 70px; height: 70px; border-radius: 16px; border: 3px dashed var(--blue-soft); display: flex; align-items: center; justify-content: center; font-size: 2rem; background: #fff; }
+      .g-drawtell .slot { width: 70px; height: 70px; border-radius: 16px; border: 2px dashed var(--sky); display: flex; align-items: center; justify-content: center; font-size: 2rem; background: #fff; }
       .g-drawtell .slot img { width: 56px; height: 56px; object-fit: cover; border-radius: 12px; }
       .g-drawtell .slot.filled { border-style: solid; border-color: var(--green); background: var(--green-soft); animation: pop-in 0.25s ease; }
       .g-drawtell .pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 10px; }

@@ -61,15 +61,20 @@ export default {
       .g-firstletter .dots span.done { opacity: 0.65; }
       .g-firstletter .dots span.now { opacity: 1; transform: scale(1.3); animation: floaty 2.2s ease-in-out infinite; }
       .g-firstletter .prompt { text-align: center; font-weight: bold; font-size: 1.12rem; margin: 4px 0 10px; min-height: 2.6em; }
-      .g-firstletter .trailhead { text-align: center; font-weight: bold; background: #fff3e0; color: #7a4b00; border-radius: 12px; padding: 6px 10px; margin: 0 0 10px; }
+      .g-firstletter .trailhead { text-align: center; font-family: var(--display); font-weight: 700; background: var(--cream); color: var(--slate); border-radius: 12px; padding: 6px 10px; margin: 0 0 10px; }
       .g-firstletter .trail-wrap {
         background: linear-gradient(180deg, #cdeaff 0%, #eafbe0 60%, #f4ecd8 100%);
-        border: 3px solid #bfe3ff;
+        border: 2px solid var(--sky);
         border-radius: 18px;
         overflow-x: auto;
         overflow-y: hidden;
         padding: 28px 14px 30px;
         margin-bottom: 10px;
+        /* absorb the card's spare height so the scene fills the stage
+           instead of leaving a dead gap above the footer */
+        flex: 1;
+        display: flex;
+        align-items: center;
       }
       .g-firstletter .trail { display: flex; align-items: center; gap: 6px; width: max-content; min-width: 100%; }
       .g-firstletter .stone-wrap { position: relative; flex: 0 0 auto; }
@@ -78,37 +83,37 @@ export default {
         min-height: 52px; min-width: 56px; padding: 8px 14px;
         border-radius: 50% 50% 46% 46% / 60% 60% 40% 40%;
         background: linear-gradient(180deg, #f3e6cf 0%, #d9c49f 100%);
-        border: 3px solid #b89a6a;
-        font-size: 1.1rem; font-weight: bold; color: var(--ink, #26324b);
-        box-shadow: 0 4px 0 rgba(38, 50, 75, 0.15);
+        border: 2px solid #b89a6a;
+        font-family: var(--display); font-size: 1.1rem; font-weight: 600; color: var(--slate);
+        box-shadow: 0 2px 6px rgba(51, 63, 72, 0.18);
         white-space: nowrap; transition: transform 0.08s ease;
       }
       .g-firstletter .stone:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
       .g-firstletter .stone.done { background: var(--green-soft, #d3f2d9); border-color: var(--green, #2a9d3f); animation: pop-in 0.25s ease; cursor: default; }
       .g-firstletter .stone.wrong { animation: wiggle 0.35s ease; background: var(--red-soft, #ffd6d9); border-color: var(--red, #e63946); }
-      .g-firstletter .stone.peek { background: #fff3c4; border-color: var(--yellow, #ffb703); animation: pop-in 0.2s ease; }
+      .g-firstletter .stone.peek { background: var(--cream); border-color: var(--yellow); animation: pop-in 0.2s ease; }
       .g-firstletter .stone.bare { font-size: 1.4rem; }
       .g-firstletter .peek-btn {
         position: absolute; top: -10px; right: -8px;
         min-height: 30px; min-width: 30px; border-radius: 50%;
-        background: #fff; box-shadow: 0 3px 0 rgba(38,50,75,0.15);
+        background: #fff; box-shadow: var(--shadow);
         font-size: 0.95rem; display: flex; align-items: center; justify-content: center;
       }
       .g-firstletter .camp { flex: 0 0 auto; text-align: center; font-size: 1.5rem; opacity: 0.8; padding: 0 4px; }
       .g-firstletter .hiker { flex: 0 0 auto; font-size: 1.8rem; padding: 0 2px; animation: floaty 1.6s ease-in-out infinite; }
       .g-firstletter .flag {
         flex: 0 0 auto; min-height: 60px; min-width: 60px; margin-left: 6px;
-        border-radius: 16px; font-size: 1.6rem; background: #eee; opacity: 0.5;
-        border: 3px dashed #bbb; white-space: nowrap; padding: 8px 10px;
+        border-radius: 16px; font-size: 1.6rem; background: rgba(62, 75, 84, 0.08); opacity: 0.5;
+        border: 2px dashed rgba(62, 75, 84, 0.3); white-space: nowrap; padding: 8px 10px;
       }
       .g-firstletter .flag.active {
-        opacity: 1; background: #fff3c4; border: 3px solid var(--yellow, #ffb703);
-        font-size: 1rem; font-weight: bold; animation: fl-flag-pulse 1.1s ease-in-out infinite;
+        opacity: 1; background: var(--cream); border: 2px solid var(--yellow);
+        font-family: var(--display); font-size: 1rem; font-weight: 700; animation: fl-flag-pulse 1.1s ease-in-out infinite;
         cursor: pointer;
       }
       @keyframes fl-flag-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
       .g-firstletter .footer { margin-top: auto; text-align: center; padding-top: 6px; }
-      .g-firstletter .peek-chip { display: inline-block; background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: bold; box-shadow: 0 3px 0 rgba(38,50,75,0.12); font-size: 0.95rem; }
+      .g-firstletter .peek-chip { display: inline-block; background: var(--paper); border-radius: 999px; padding: 6px 14px; font-family: var(--display); font-weight: 700; box-shadow: var(--shadow); font-size: 0.95rem; }
       @media (max-width: 420px) {
         .g-firstletter .stone { min-width: 48px; padding: 7px 11px; font-size: 1rem; }
         .g-firstletter .hiker { font-size: 1.5rem; }

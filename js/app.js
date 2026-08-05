@@ -21,7 +21,23 @@ import { ladderFor, stageDone, nextRow } from './lib/ladder.js';
 import { reciteView } from './lib/recite.js';
 
 const app = document.getElementById('app');
-const JEWEL_ICON = { rank: '🏅', red: '❤️', green: '💚' };
+// Faceted jewel badges matching the real Sparks crown awards (red/green
+// gems) — inline-SVG doodles, not generic heart emoji. Rank keeps a medal.
+const JEWEL_GEM = {
+  red: { fill: '#ee4b4f', edge: '#c9333c' },
+  green: { fill: '#2a9d3f', edge: '#20802f' },
+};
+function jewelBadge(kind) {
+  if (!JEWEL_GEM[kind]) return el('span', 'jewel', '🏅');
+  const { fill, edge } = JEWEL_GEM[kind];
+  const span = el('span', 'jewel jewel-gem');
+  span.setAttribute('aria-hidden', 'true');
+  span.innerHTML = `<svg viewBox="0 0 24 22" width="34" height="31" fill="none">`
+    + `<path d="M6.5 2.5h11l4 5.5L12 19.5 2.5 8z" fill="${fill}" stroke="${edge}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`
+    + `<path d="M2.5 8h19M6.5 2.5 12 8l5.5-5.5M12 8v11.5" stroke="rgba(255,255,255,0.7)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>`
+    + `</svg>`;
+  return span;
+}
 // Recitation mode icons (plans.html §8), reused on the Trophy Shelf (P4.5b).
 const MODE_ICON = { checkoff: '🧑‍🤝‍🧑', recording: '🎙️', sr: '🪄', club: '🏠' };
 
@@ -74,7 +90,9 @@ onAudioEnded(() => {
 
 function go(hash) { location.hash = hash; }
 
-function starsText(n) { return n > 0 ? '⭐'.repeat(n) : '·'; }
+// '' at zero — a lone '·' on every unstarted chip reads as a stray mark
+// (js/lib/recite.js hides its zero-star row for the same reason).
+function starsText(n) { return n > 0 ? '⭐'.repeat(n) : ''; }
 
 function findBook(id) { return BOOKS.find((b) => b.id === id); }
 
@@ -225,13 +243,16 @@ function formatDuration(seconds) {
   return `${m}:${String(r).padStart(2, '0')}`;
 }
 
-function listenRowBody(track, book) {
+// showSection: false when the row already renders inside that section's own
+// card (the chip would be pure redundancy); true on the global Story Time
+// page where it disambiguates.
+function listenRowBody(track, book, showSection = true) {
   const body = el('div', 'storytime-body');
   body.append(el('div', 'storytime-title', track.title));
   const meta = el('div', 'storytime-meta');
   meta.append(el('span', 'storytime-duration', formatDuration(track.duration)));
   meta.append(el('span', 'storytime-tag', track.type === 'story' ? '📖 story' : '⭐ lesson'));
-  const section = track.section && book.sections.find((s) => s.id === track.section);
+  const section = showSection && track.section && book.sections.find((s) => s.id === track.section);
   if (section) meta.append(el('span', 'chip storytime-section', section.name));
   body.append(meta);
   return body;
@@ -292,10 +313,19 @@ function storytimeGroup(book) {
 // ---------- views ----------
 
 function homeView() {
+  // Catalog-style red blob header holding the wordmark and grade chip.
+  const head = el('div', 'blob-head');
+  head.append(
+    el('h1', null, 'Sparks Verse Arcade'),
+    el('span', 'grade-chip', 'Grades K–2'),
+    el('p', null, 'Play your way to hiding God’s Word in your heart — one handbook verse at a time.'),
+  );
+  app.append(head);
+
   const hero = el('div', 'hero');
   const mascot = el('div', 'mascot');
   mascot.append(artImg('img/sparky-reading.webp', 'hero-art', 'Sparky reading the Bible'));
-  hero.append(mascot, el('h1', null, 'Sparks Verse Arcade'), el('p', null, 'Pick your handbook and play your way to hiding God’s Word in your heart!'));
+  hero.append(mascot);
   app.append(hero);
 
   // Gentle streaks (P4.5c): celebration-only — nothing shows at 0 days, and
@@ -309,7 +339,11 @@ function homeView() {
     const p = bookProgress(book);
     const card = el('button', `card book-card book-${book.color}`);
     const info = el('div');
-    info.append(el('h2', null, `${book.name}`), el('p', null, `${book.grade} · ${book.blurb}`));
+    info.append(
+      el('h2', null, `${book.name}`),
+      el('span', 'grade-chip', book.grade),
+      el('p', null, book.blurb),
+    );
     card.append(artImg(BOOK_ART[book.id].emblem, 'book-art', `${book.name} emblem`), info, el('span', 'progress-pill', `${p.done}/${p.total}`));
     card.onclick = () => { sfx.click(); go(`#/b/${book.id}`); };
     app.append(card);
@@ -362,22 +396,40 @@ function topBar(title, backHash) {
   return bar;
 }
 
+// Catalog-style compact red blob header for the shell's destination screens
+// (Story Time, Trophy Shelf): back pill + uppercase headline + slate tag.
+// No emoji in the headline — it renders ALL CAPS in the display face.
+function blobBar(title, backHash, tag) {
+  const head = el('div', 'blob-head compact');
+  const back = el('button', 'back-btn', '⬅ Back');
+  back.onclick = () => { clearReviewQueue(); go(backHash); };
+  head.append(back, el('h1', null, title));
+  if (tag) head.append(el('span', 'grade-chip', tag));
+  app.append(head);
+  return head;
+}
+
 function bookView(book) {
-  topBar(`${book.emoji} ${book.name}`, '#/');
-  app.append(artImg(BOOK_ART[book.id].banner, `book-banner banner-${book.id}`, book.name));
+  topBar(book.name, '#/');
+  // Club-color band behind the wordmark — the catalog's color-block moment.
+  const band = el('div', `banner-band band-${book.id}`);
+  band.append(artImg(BOOK_ART[book.id].banner, `book-banner banner-${book.id}`, book.name));
+  app.append(band);
   // Per-book review chip (plans.html §9 P4.4): only worth offering once
   // there's a real pool of stage≥1 verses to draw from.
   if (reviewEligibleCount(book) >= 2) app.append(reviewCard(book));
   for (const section of book.sections) {
     const game = GAMES[section.game];
     const p = sectionProgress(book, section);
-    const card = el('button', 'card section-row');
+    const rank = section.jewel === 'rank';
+    const card = el('button', 'card section-row' + (rank ? ` rank-row rank-${book.id}` : ''));
     const info = el('div');
-    info.append(
-      el('h3', null, section.name),
-      el('div', 'game-name', `${game ? game.icon + ' ' + game.title : section.game}${section.hard ? ' (super-hard!)' : ''}`),
-    );
-    card.append(el('span', 'jewel', JEWEL_ICON[section.jewel]), info, el('span', 'progress-pill', `${p.done}/${p.total}`));
+    const gameName = el('div', 'game-name', game ? `${game.icon} ${game.title}` : section.game);
+    // Encore sections get one catalog-style badge, not a "(super-hard!)"
+    // exclamation on every row.
+    if (section.hard) gameName.append(el('span', 'hard-chip', 'Super-hard'));
+    info.append(el('h3', null, section.name), gameName);
+    card.append(jewelBadge(section.jewel), info, el('span', 'progress-pill', `${p.done}/${p.total}`));
     card.onclick = () => { sfx.click(); go(`#/b/${book.id}/${section.id}`); };
     app.append(card);
   }
@@ -421,14 +473,14 @@ function grownUpsRow(book) {
 }
 
 function sectionView(book, section) {
-  topBar(`${JEWEL_ICON[section.jewel]} ${section.name}`, `#/b/${book.id}`);
+  topBar(section.name, `#/b/${book.id}`);
   const game = GAMES[section.game];
   const instances = sectionInstances(book, section);
 
   const banner = el('div', 'card game-banner');
   const info = el('div');
   info.append(
-    el('h2', null, `${game.icon} ${game.title}`),
+    el('h2', null, game.title),
     el('p', null, game.tagline + (section.hard ? ' Extra tricky this time!' : '')),
   );
   banner.append(el('span', 'game-icon', game.icon), info);
@@ -445,7 +497,7 @@ function sectionView(book, section) {
     listenCard.append(el('h3', null, '🎧 Listen'));
     for (const track of handbookTracks) {
       const shell = listenRowShell(track.file);
-      shell.row.append(listenRowBody(track, book));
+      shell.row.append(listenRowBody(track, book, false)); // already inside this section's card
       listenCard.append(shell.row);
     }
     app.append(listenCard);
@@ -467,7 +519,9 @@ function sectionView(book, section) {
         const idx = instances.findIndex((v) => v.entryN === entry.n && v.ref === ref);
         const inst = instances[idx];
         const chip = el('button', 'chip');
-        chip.append(el('span', null, inst.label), el('span', 'chip-stars', starsText(getStars(inst.key))));
+        chip.append(el('span', null, inst.label));
+        const stars = starsText(getStars(inst.key));
+        if (stars) chip.append(el('span', 'chip-stars', stars));
         chip.onclick = () => { sfx.click(); go(`#/b/${book.id}/${section.id}/play/${idx}`); };
         body.append(chip);
       }
@@ -487,7 +541,9 @@ function verseChipRail(book, section, instances, idx, sectionHash) {
   let activeChip = null;
   instances.forEach((inst, i) => {
     const chip = el('button', 'chip' + (i === idx ? ' active' : ''));
-    chip.append(el('span', null, inst.label), el('span', 'chip-stars', starsText(getStars(inst.key))));
+    chip.append(el('span', null, inst.label));
+    const stars = starsText(getStars(inst.key));
+    if (stars) chip.append(el('span', 'chip-stars', stars));
     chip.onclick = () => { sfx.click(); go(`${sectionHash}/play/${i}`); };
     if (i === idx) activeChip = chip;
     chips.append(chip);
@@ -541,7 +597,7 @@ function verseView(book, section, verseIdx) {
   const card = el('div', 'card verse-card');
   card.append(el('h2', null, verse.label));
   card.append(el('div', 'verse-display', verse.text));
-  card.append(el('div', 'stars-big', starsText(stage)));
+  if (stage > 0) card.append(el('div', 'stars-big', starsText(stage)));
   card.append(hearSingControls(verse));
   app.append(card);
 
@@ -549,7 +605,9 @@ function verseView(book, section, verseIdx) {
   for (const row of ladderRowsFor(book, section, verse)) {
     const rowCard = el('div', 'card ladder-row');
     const head = el('div', 'ladder-row-head');
-    head.append(el('span', 'ladder-row-title', `${row.n} ${row.icon} ${row.title}`));
+    // No emoji prefix on the step headings (BRAND.md: emoji live on
+    // controls, not on every heading) — the game buttons below carry them.
+    head.append(el('span', 'ladder-row-title', `${row.n} ${row.title}`));
     if (stageDone(row.n, stage)) {
       head.append(el('span', 'ladder-done', 'done ✓'));
     } else if (row.n === suggested && row.games.length) {
@@ -568,7 +626,7 @@ function verseView(book, section, verseIdx) {
       for (const gameId of row.games) {
         const game = GAMES[gameId];
         const featured = gameId === section.game;
-        const btn = el('button', 'btn' + (featured ? ' btn-primary' : ''), `${game.icon} ${game.title}${featured ? ' ★' : ''}`);
+        const btn = el('button', 'btn' + (featured ? ' btn-primary' : ''), `${game.icon} ${game.title}`);
         btn.onclick = () => { sfx.click(); go(`${sectionHash}/play/${idx}/${gameId}`); };
         btnRow.append(btn);
       }
@@ -685,19 +743,21 @@ function showWinOverlay({ stars, message, book, section, instances, idx, section
 }
 
 function stickersView() {
-  topBar('📒 Sticker Book', '#/');
+  blobBar('Sticker Book', '#/', 'Win games, earn stickers');
+  app.append(el('p', 'sticker-note', 'Finish a page’s games to earn its sticker!'));
   for (const book of BOOKS) {
     const card = el('div', 'card');
-    card.append(el('h2', null, `${book.emoji} ${book.name}`));
+    const head = el('div', 'book-group-head');
+    head.append(artImg(BOOK_ART[book.id].emblem, 'book-group-emblem', `${book.name} emblem`), el('h2', null, book.name));
+    card.append(head);
     for (const section of book.sections) {
       const row = el('div', 'entry-row sticker-row');
-      row.append(el('span', 'entry-num', section.name));
+      row.append(el('span', `jewel-chip jewel-${section.jewel}`, section.name));
       const body = el('div');
       for (const entry of section.entries) {
         const earned = entryComplete(book, section, entry);
-        const sticker = el('span');
+        const sticker = el('span', 'sticker-slot' + (earned ? '' : ' empty'));
         sticker.textContent = earned ? (SECTION_STICKERS[section.id] || '⭐') : '⚪';
-        sticker.style.cssText = 'font-size:1.7rem;margin-right:6px;' + (earned ? '' : 'opacity:0.4;');
         sticker.title = `${entry.n} ${entry.title}`;
         body.append(sticker);
       }
@@ -709,7 +769,7 @@ function stickersView() {
 }
 
 function storyTimeView() {
-  topBar('📻 Story Time', '#/');
+  blobBar('Story Time', '#/', 'Handbook audio');
 
   const hero = el('div', 'storytime-hero');
   hero.append(artImg('img/sparky-bookstack.webp', 'storytime-hero-art', 'Sparky with a stack of books'));
@@ -732,7 +792,7 @@ function storyTimeView() {
 }
 
 function gardenView() {
-  topBar('🌻 Verse Garden', '#/');
+  blobBar('Verse Garden', '#/', 'Grow every verse');
   app.append(el('p', null, 'Every verse you practice grows a plant. Three stars makes it bloom!'));
   // Mastery map legend (P4.5a) — growthStage() already derives straight from
   // the storage stage (see js/lib/progress.js), so the garden's tiles are
@@ -740,18 +800,28 @@ function gardenView() {
   app.append(el('p', 'garden-legend', '🌰 not started · 🌱 built it · 🌿 recalled it · 🌻 recited word-perfect'));
   for (const book of BOOKS) {
     const card = el('div', 'card');
-    card.append(el('h2', null, `${book.emoji} ${book.name}`));
-    const bed = el('div');
-    bed.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
+    const head = el('div', 'book-group-head');
+    head.append(artImg(BOOK_ART[book.id].emblem, 'book-group-emblem', `${book.name} emblem`), el('h2', null, book.name));
+    card.append(head);
     for (const section of book.sections) {
-      for (const inst of sectionInstances(book, section)) {
-        const plant = el('span', null, GROWTH_EMOJI[growthStage(inst.key)]);
-        plant.style.fontSize = '1.8rem';
-        plant.title = `${inst.label} — ${getStars(inst.key)} star(s)`;
+      const insts = sectionInstances(book, section);
+      if (!insts.length) continue;
+      const group = el('div', 'garden-section');
+      group.append(el('span', `jewel-chip jewel-${section.jewel}`, section.name));
+      const bed = el('div', 'garden-bed');
+      insts.forEach((inst, idx) => {
+        // Each plant is a real button: tappable on touch devices, labelled,
+        // and it takes the kid straight to that verse's ladder screen.
+        const stars = getStars(inst.key);
+        const plant = el('button', 'garden-plant', GROWTH_EMOJI[growthStage(inst.key)]);
+        plant.title = `${inst.label} — ${stars} star${stars === 1 ? '' : 's'}`;
+        plant.setAttribute('aria-label', `${inst.label} — ${stars} star${stars === 1 ? '' : 's'}`);
+        plant.onclick = () => { sfx.click(); go(`#/b/${book.id}/${section.id}/play/${idx}`); };
         bed.append(plant);
-      }
+      });
+      group.append(bed);
+      card.append(group);
     }
-    card.append(bed);
     app.append(card);
   }
 }
@@ -761,7 +831,7 @@ function gardenView() {
 // never for a game win alone. Walks every verse instance in the curriculum
 // (BOOKS × sectionInstances), not just what's been touched this session.
 function trophiesView() {
-  topBar('🏆 Trophy Shelf', '#/');
+  blobBar('Trophy Shelf', '#/', 'Word-perfect verses');
   let any = false;
   for (const book of BOOKS) {
     const trophies = [];
@@ -834,7 +904,7 @@ function render() {
     console.error(err);
     clear(app);
     const card = el('div', 'card');
-    card.append(el('h2', null, '😅 Oops!'), el('p', null, 'Something went wrong. Tap below to go home.'));
+    card.append(el('h2', null, 'Oops!'), el('p', null, 'Something went wrong. Tap below to go home.'));
     const home = el('button', 'btn btn-primary', '🏠 Home');
     home.onclick = () => { go('#/'); render(); };
     card.append(home);

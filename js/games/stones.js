@@ -28,7 +28,7 @@ export default {
       .g-stones { text-align: center; }
       .g-stones .st-head { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
       .g-stones .st-listen { min-height: 52px; min-width: 52px; padding: 8px 16px; }
-      .g-stones .st-label { font-weight: bold; opacity: 0.75; }
+      .g-stones .st-label { font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.9; }
       .g-stones .st-scene { position: relative; height: 300px; max-width: 520px; margin: 0 auto; border-radius: 18px; overflow: hidden; box-shadow: inset 0 0 0 3px rgba(38,50,75,0.08); }
       .g-stones .st-bank { position: absolute; left: 0; right: 0; height: 18%; z-index: 1; }
       .g-stones .st-bank-top { top: 0; background: linear-gradient(180deg, #9fdb7a, #6cbf5a); border-bottom: 4px solid #57a84e; }
@@ -49,12 +49,12 @@ export default {
         0%, 100% { transform: translateY(0) rotate(-1deg); }
         50%      { transform: translateY(-7px) rotate(1deg); }
       }
-      .g-stones .st-stone { display: flex; align-items: center; justify-content: center; width: 100%; min-width: 76px; min-height: 56px; padding: 8px 14px; border-radius: 24px; background: linear-gradient(180deg, #eef1f5, #bcc6d0); border: 3px solid #93a1b1; color: var(--ink, #26324b); font-size: 1.1rem; font-weight: bold; line-height: 1.15; text-align: center; overflow-wrap: normal; word-break: normal; user-select: none; box-shadow: 0 5px 0 rgba(20, 60, 110, 0.25), 0 12px 10px -6px rgba(10, 40, 80, 0.35); transition: transform 0.08s ease; }
+      .g-stones .st-stone { display: flex; align-items: center; justify-content: center; width: 100%; min-width: 76px; min-height: 56px; padding: 8px 14px; border-radius: 24px; background: linear-gradient(180deg, #eef1f5, #bcc6d0); border: 2px solid #93a1b1; color: var(--ink); font-family: var(--display); font-size: 1.1rem; font-weight: 600; line-height: 1.15; text-align: center; overflow-wrap: normal; word-break: normal; user-select: none; box-shadow: 0 4px 12px rgba(10, 40, 80, 0.35); transition: transform 0.08s ease; }
       .g-stones .st-scene.three .st-stone { font-size: 0.98rem; padding: 8px 10px; min-width: 60px; }
-      .g-stones .st-stone:disabled { color: var(--ink, #26324b); opacity: 1; cursor: default; }
+      .g-stones .st-stone:disabled { color: var(--ink); opacity: 1; cursor: default; }
       .g-stones .st-stone:active { transform: translateY(3px); }
       .g-stones .st-stone.spawn { animation: pop-in 0.3s ease; }
-      .g-stones .st-stone.wrong { animation: wiggle 0.35s ease; background: linear-gradient(180deg, #ffd6d9, #f3aab0); border-color: var(--red, #e63946); }
+      .g-stones .st-stone.wrong { animation: wiggle 0.35s ease; background: linear-gradient(180deg, var(--red-soft), #f3aab0); border-color: var(--red); }
       .g-stones .st-frog { position: absolute; z-index: 5; pointer-events: none; transform: translate(-50%, -80%); transition: left 0.5s cubic-bezier(0.4, 0.9, 0.4, 1), top 0.5s cubic-bezier(0.4, 0.9, 0.4, 1); }
       .g-stones .st-frog-body { display: inline-block; font-size: 2.5rem; line-height: 1; filter: drop-shadow(0 4px 3px rgba(20, 40, 80, 0.35)); }
       .g-stones .st-frog-body.hop { animation: g-stones-hop 0.5s ease; }
@@ -74,11 +74,11 @@ export default {
         0%   { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
         100% { opacity: 0; transform: translate(-50%, -130%) scale(1.5); }
       }
-      .g-stones .st-banner { position: absolute; inset: 0; z-index: 7; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; background: rgba(255, 255, 255, 0.75); animation: pop-in 0.3s ease; }
-      .g-stones .st-ask { font-weight: bold; font-size: 1.15rem; margin: 8px 0 2px; }
+      .g-stones .st-banner { position: absolute; inset: 0; z-index: 7; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 1.5rem; font-weight: 700; color: var(--slate); background: rgba(255, 255, 255, 0.75); animation: pop-in 0.3s ease; }
+      .g-stones .st-ask { font-family: var(--display); font-weight: 700; font-size: 1.15rem; color: var(--slate); margin: 8px 0 2px; }
       .g-stones .st-strip { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-height: 40px; padding: 4px; }
-      .g-stones .st-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; min-height: 34px; padding: 4px 10px; border-radius: 12px; background: #e6ebf3; color: #9aa7bd; font-weight: bold; font-size: 0.95rem; border: 2px solid transparent; }
-      .g-stones .st-chip.filled { background: var(--green-soft, #d3f2d9); color: var(--ink, #26324b); border-color: var(--green, #2a9d3f); animation: pop-in 0.25s ease; }
+      .g-stones .st-chip { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; min-height: 34px; padding: 4px 10px; border-radius: 12px; background: var(--sky-soft); color: rgba(62, 75, 84, 0.5); font-weight: bold; font-size: 0.95rem; border: 2px solid transparent; }
+      .g-stones .st-chip.filled { background: var(--green-soft); color: var(--ink); border-color: var(--green); animation: pop-in 0.25s ease; }
       /* Short phones: trim the river so the prompt + progress stay on screen. */
       @media (max-height: 700px) {
         .g-stones .st-scene { height: 256px; }
@@ -145,10 +145,19 @@ export default {
       scene.appendChild(d);
       return d;
     }
-    deco('🌳', 8, 9, '1.7rem'); deco('🚩', 50, 8, '1.6rem'); deco('🌳', 91, 9, '1.7rem');
-    deco('🌼', 27, 12); deco('🌷', 71, 12);
-    deco('🌱', 13, 91); deco('🌼', 36, 92); deco('🌷', 64, 91); deco('🌳', 90, 90, '1.6rem');
-    deco('🪷', 6, 58); deco('🪷', 94, 44);
+    // Sparse scene set: the goal flag + one tree per bank (functional
+    // landmarks), then thin brand doodles instead of emoji flora wallpaper.
+    deco('🌳', 8, 9, '1.7rem'); deco('🚩', 50, 8, '1.6rem');
+    deco('🌳', 90, 90, '1.6rem');
+    // BRAND.md doodles: 2px round-stroke plus / x / circle marks, white and
+    // gold, sprinkled on the green banks.
+    const doodle = (svg, left, top) => { deco('', left, top).innerHTML = svg; };
+    const mark = (path, color, size = 13) =>
+      `<svg width="${size}" height="${size}" viewBox="0 0 16 16" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round">${path}</svg>`;
+    doodle(mark("<path d='M8 2v12M2 8h12'/>", '#f9a11c'), 28, 12);
+    doodle(mark("<circle cx='8' cy='8' r='3.5'/>", '#ffffff', 11), 71, 12);
+    doodle(mark("<path d='M3 3l10 10M13 3L3 13'/>", '#f9a11c', 11), 36, 91);
+    doodle(mark("<circle cx='8' cy='8' r='3.5'/>", '#ffffff', 11), 66, 90);
     for (const [x, y, delay] of [[14, 26, '0s'], [84, 52, '1.1s'], [24, 76, '0.6s'], [68, 27, '1.7s']]) {
       deco('〰️', x, y, null, 'st-wave').style.animationDelay = delay;
     }

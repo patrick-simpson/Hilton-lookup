@@ -34,26 +34,26 @@ export default {
     ctx.addStyle(`
       .g-echo { display: flex; flex-direction: column; min-height: 400px; }
       .g-echo .cave { position: relative; text-align: center; height: 64px; margin-bottom: 4px; overflow: hidden; border-radius: 999px 999px 0 0; }
-      .g-echo .cave::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 130%, #2b2140 0%, #4a3a73 55%, transparent 78%); border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+      .g-echo .cave::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 130%, var(--ink) 0%, var(--slate) 55%, transparent 78%); border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
       .g-echo .cave .parrot { position: relative; display: inline-block; font-size: 2.6rem; animation: floaty 2.4s ease-in-out infinite; }
       .g-echo .cave .spark { position: absolute; font-size: 1.1rem; animation: floaty 2s ease-in-out infinite; }
       .g-echo .cave .spark.a { left: 18%; top: 10px; animation-delay: 0.3s; }
       .g-echo .cave .spark.b { right: 16%; top: 18px; animation-delay: 0.7s; }
       .g-echo .prompt { text-align: center; font-weight: bold; font-size: 1.12rem; margin: 6px 0 10px; min-height: 1.4em; }
-      .g-echo .rows { background: #f4f0ff; border-radius: 16px; padding: 10px; text-align: center; flex: 1; }
+      .g-echo .rows { background: #f4f8ff; border-radius: 16px; padding: 10px; text-align: center; flex: 1; }
       .g-echo .echo-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 4px 0; }
-      .g-echo .word-tile.plain { background: var(--paper, #fff); border: 3px solid #d9cdfa; }
-      .g-echo .word-tile.plain.cue { background: #fff3c4; border-color: var(--yellow, #ffb703); font-style: italic; }
-      .g-echo .echo-tile { background: var(--blue-soft, #cfe8ff); border: 3px solid var(--blue, #3a86ff); min-width: 60px; font-size: 1.3rem; transition: transform 0.15s ease; }
-      .g-echo .echo-tile.locked { background: #ececec; border-color: #b9b9b9; color: #8a8a8a; cursor: not-allowed; }
-      .g-echo .echo-tile.glow { background: #fff3c4; border-color: var(--yellow, #ffb703); font-size: 1.02rem; transform: scale(1.1); box-shadow: 0 0 0 4px rgba(255, 183, 3, 0.35); }
-      .g-echo .echo-tile.peek { background: #fff3c4; border-color: var(--yellow, #ffb703); font-size: 1.02rem; animation: pop-in 0.25s ease; }
-      .g-echo .echo-tile.revealed { background: var(--green-soft, #d7f5dd); border-color: var(--green, #2fbf5f); font-size: 1.02rem; animation: pop-in 0.25s ease; }
-      .g-echo .ref-row { background: #fff3e0; border-radius: 12px; padding: 4px 8px; }
+      .g-echo .word-tile.plain { background: var(--paper); border: 2px solid var(--sky); }
+      .g-echo .word-tile.plain.cue { background: var(--cream); border-color: var(--yellow); font-style: italic; }
+      .g-echo .echo-tile { background: var(--blue-soft); border: 2px solid var(--sparks-blue); min-width: 60px; font-size: 1.3rem; transition: transform 0.15s ease; }
+      .g-echo .echo-tile.locked { background: rgba(62, 75, 84, 0.08); border-color: rgba(62, 75, 84, 0.25); color: rgba(62, 75, 84, 0.55); cursor: not-allowed; }
+      .g-echo .echo-tile.glow { background: var(--cream); border-color: var(--yellow); font-size: 1.02rem; transform: scale(1.1); box-shadow: 0 0 0 4px rgba(249, 161, 28, 0.3); }
+      .g-echo .echo-tile.peek { background: var(--cream); border-color: var(--yellow); font-size: 1.02rem; animation: pop-in 0.25s ease; }
+      .g-echo .echo-tile.revealed { background: var(--green-soft); border-color: var(--green); font-size: 1.02rem; animation: pop-in 0.25s ease; }
+      .g-echo .ref-row { background: var(--cream); border-radius: 12px; padding: 4px 8px; }
       .g-echo .ref-row .ref-icon { font-size: 1.3rem; align-self: center; }
       .g-echo .footer { margin-top: 10px; text-align: center; }
       .g-echo .footer .btn-row { align-items: center; margin: 6px 0 0; }
-      .g-echo .peek-chip { display: inline-block; background: #fff; border-radius: 999px; padding: 6px 14px; font-weight: bold; box-shadow: 0 3px 0 rgba(38,50,75,0.12); font-size: 0.95rem; }
+      .g-echo .peek-chip { display: inline-block; background: var(--paper); border-radius: 999px; padding: 6px 14px; font-family: var(--display); font-weight: 700; box-shadow: var(--shadow); font-size: 0.95rem; }
       .g-echo.many .rows { padding: 8px 6px; }
       .g-echo.many .word-tile, .g-echo.many .echo-tile { font-size: 0.95rem; min-height: 44px; padding: 7px 12px; }
     `);

@@ -16,7 +16,7 @@ export default {
     const { el, clear, shuffle, sfx } = ctx;
     ctx.addStyle(`
       .g-scramble .pool { text-align: center; }
-      .g-scramble .round-label { text-align: center; font-weight: bold; opacity: 0.75; margin-bottom: 6px; }
+      .g-scramble .round-label { text-align: center; font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.85; margin-bottom: 6px; }
     `);
 
     const root = el('div', 'g-scramble');

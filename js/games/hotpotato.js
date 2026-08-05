@@ -22,8 +22,8 @@ export default {
     ctx.addStyle(`
       .g-hotpotato { text-align: center; }
       .g-hotpotato .hp-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; }
-      .g-hotpotato .round-label { font-weight: bold; opacity: 0.75; font-size: 1.05rem; text-align: left; }
-      .g-hotpotato .setup-title { font-size: 1.45rem; font-weight: bold; margin: 16px 0 4px; }
+      .g-hotpotato .round-label { font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.85; font-size: 1.05rem; text-align: left; }
+      .g-hotpotato .setup-title { font-family: var(--display); font-size: 1.45rem; font-weight: 700; margin: 16px 0 4px; }
       .g-hotpotato .stepper { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 14px 0 8px; }
       .g-hotpotato .step-btn { width: 68px; height: 68px; border-radius: 50%; font-size: 2.2rem; font-weight: bold; background: var(--blue-soft); box-shadow: var(--shadow); }
       .g-hotpotato .step-btn:active { transform: translateY(3px); box-shadow: none; }
@@ -34,13 +34,13 @@ export default {
       .g-hotpotato .kid.landed { animation: hp-bounce 0.85s ease-in-out infinite; z-index: 4; }
       .g-hotpotato .potato { position: absolute; font-size: 2.1rem; transform: translate(-50%, -120%); transition: left 0.2s ease, top 0.2s ease, transform 0.3s ease; z-index: 5; pointer-events: none; filter: drop-shadow(0 3px 2px rgba(38, 50, 75, 0.3)); user-select: none; }
       .g-hotpotato .potato.landed { transform: translate(-50%, -128%) scale(1.45); }
-      .g-hotpotato .stop-btn { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 108px; height: 108px; border-radius: 50%; background: var(--red); color: #fff; font-size: 1.45rem; font-weight: bold; line-height: 1.15; box-shadow: 0 6px 0 rgba(38, 50, 75, 0.3); z-index: 3; }
+      .g-hotpotato .stop-btn { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 108px; height: 108px; border-radius: 50%; background: var(--sparks-red); color: #fff; font-family: var(--display); font-size: 1.45rem; font-weight: 700; line-height: 1.15; box-shadow: 0 4px 12px rgba(51, 63, 72, 0.3); z-index: 3; }
       .g-hotpotato .stop-btn:active { transform: translate(-50%, -50%) translateY(3px); box-shadow: none; }
       .g-hotpotato .stop-btn:disabled { opacity: 0.55; }
-      .g-hotpotato .say-card { background: #fff7df; border: 3px solid var(--yellow); border-radius: 18px; padding: 12px 10px; margin: 8px auto; max-width: 480px; animation: pop-in 0.3s ease; }
+      .g-hotpotato .say-card { background: var(--cream-soft); border: 2px solid var(--yellow); border-radius: 18px; padding: 12px 10px; margin: 8px auto; max-width: 480px; box-shadow: var(--shadow); animation: pop-in 0.3s ease; }
       .g-hotpotato .say-kid { font-size: 2.9rem; line-height: 1.1; }
       .g-hotpotato .say-label { font-weight: bold; opacity: 0.7; font-size: 0.95rem; }
-      .g-hotpotato .say-phrase { font-size: 1.75rem; font-weight: bold; margin: 8px 4px 10px; line-height: 1.3; }
+      .g-hotpotato .say-phrase { font-family: var(--display); font-size: 1.75rem; font-weight: 600; margin: 8px 4px 10px; line-height: 1.3; }
       .g-hotpotato .say-phrase.long { font-size: 1.3rem; }
       .g-hotpotato .strip { margin-top: 10px; min-height: 36px; }
       .g-hotpotato .strip-word { display: inline-block; background: var(--green-soft); border-radius: 10px; padding: 4px 9px; margin: 3px; font-weight: bold; font-size: 0.95rem; animation: pop-in 0.25s ease; }

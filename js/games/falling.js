@@ -11,6 +11,8 @@
 // kid has to recall the word from memory before the reflex/elimination game
 // even starts, instead of just reading it off an airborne tile.
 
+import { doodleCloud } from '../lib/engine.js';
+
 export default {
   id: 'falling',
   title: 'Falling Words',
@@ -25,11 +27,11 @@ export default {
     ctx.addStyle(`
       .g-falling { display: flex; flex-direction: column; gap: 10px; }
       .g-falling .hud { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
-      .g-falling .hud .round-label { font-weight: bold; opacity: 0.75; }
+      .g-falling .hud .round-label { font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.9; }
       .g-falling .speak-btn { min-width: 56px; padding: 6px 14px; font-size: 1.35rem; }
       .g-falling .sky { position: relative; overflow: hidden; height: clamp(240px, 42vh, 400px);
-        border-radius: 16px; border: 3px solid #d5e8ff;
-        background: linear-gradient(180deg, #dff1ff, #f7fbff); }
+        border-radius: 16px; border: 2px solid var(--sky);
+        background: linear-gradient(180deg, var(--sky-soft), #ffffff); }
       .g-falling .cloud { position: absolute; font-size: 2.1rem; opacity: 0.8; pointer-events: none;
         animation: floaty 4s ease-in-out infinite; }
       .g-falling .faller { position: absolute; left: 0; top: 0; margin: 0; will-change: transform; }
@@ -54,8 +56,8 @@ export default {
     hud.append(speakBtn, partLabel);
 
     const sky = el('div', 'sky');
-    [['8%', '4px', '0s'], ['45%', '10px', '1.3s'], ['78%', '2px', '2.2s']].forEach(([left, top, delay]) => {
-      const c = el('span', 'cloud', '☁️');
+    [['8%', '6px', '0s'], ['45%', '12px', '1.3s'], ['76%', '4px', '2.2s']].forEach(([left, top, delay]) => {
+      const c = doodleCloud('cloud', 48);
       c.style.left = left;
       c.style.top = top;
       c.style.animationDelay = delay;
@@ -332,7 +334,7 @@ export default {
 
     // ----- tap to start -----
     const overlay = el('div', 'start-overlay');
-    const startNote = el('p', null, '☁️ Tap the word that comes next! ☁️');
+    const startNote = el('p', null, 'Tap the word that comes next!');
     const startBtn = el('button', 'btn btn-primary btn-big', '🌧️ Tap to start!');
     overlay.append(startNote, startBtn);
     sky.appendChild(overlay);

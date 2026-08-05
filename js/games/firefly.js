@@ -20,9 +20,10 @@ export default {
         display: flex; flex-direction: column; gap: 10px; color: #fff;
         background: linear-gradient(180deg, #0a1240 0%, #16246b 55%, #253a8f 100%); }
       .g-firefly .hud { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
-      .g-firefly .hud .hud-label { font-weight: bold; opacity: 0.9; }
+      .g-firefly .hud .hud-label { font-family: var(--display); font-weight: 700; opacity: 0.95; }
       .g-firefly .speak-btn { min-width: 56px; min-height: 52px; padding: 6px 14px; font-size: 1.3rem;
-        background: #2c418f; color: #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35); }
+        background: var(--sparks-blue); border-color: rgba(255, 255, 255, 0.3); color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
       .g-firefly .verse-line { background: rgba(6, 10, 36, 0.55); border: 2px solid rgba(140, 170, 255, 0.35);
         border-radius: 16px; padding: 10px 12px; text-align: center; font-size: 1.15rem; line-height: 1.7; }
       .g-firefly .verse-line .vw { margin: 0 3px; display: inline-block; }
@@ -40,12 +41,12 @@ export default {
       .g-firefly .fly.caught { transition: transform 0.55s cubic-bezier(0.45, -0.15, 0.8, 1), opacity 0.55s ease; }
       .g-firefly .fly-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 52px;
         padding: 10px 16px; border-radius: 999px; white-space: nowrap;
-        background: #fff6bd; color: #4a3b00; border: 2px solid #ffe066;
-        font-weight: bold; font-size: 1.05rem;
+        background: #fff6bd; color: #4a3b00; border: 2px solid var(--yellow);
+        font-family: var(--display); font-weight: 600; font-size: 1.05rem;
         animation: g-ff-glow 1.5s ease-in-out infinite alternate;
         filter: drop-shadow(0 0 6px rgba(255, 240, 160, 0.8)); }
       .g-firefly .fly-btn:active { filter: brightness(1.12); }
-      .g-firefly .fly-btn.wrong { animation: wiggle 0.35s ease; background: #ffd6d9;
+      .g-firefly .fly-btn.wrong { animation: wiggle 0.35s ease; background: var(--red-soft);
         box-shadow: 0 0 10px 3px rgba(255, 120, 120, 0.55); }
       /* think-first beat: fireflies wander wordless (no word span text)
          until the beat resolves, then the word fades/pops in. */
@@ -58,7 +59,8 @@ export default {
         filter: drop-shadow(0 0 10px rgba(255, 236, 130, 0.4)); }
       .g-firefly .jar .jar-fill { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
         width: 54px; font-size: 0.72rem; line-height: 1.1; }
-      .g-firefly .jar .jar-count { display: inline-block; background: #ffe066; color: #4a3b00; font-weight: bold;
+      .g-firefly .jar .jar-count { display: inline-block; background: var(--yellow); color: #3d2b00;
+        font-family: var(--display); font-weight: 700;
         border-radius: 999px; padding: 2px 10px; font-size: 0.9rem; margin-top: 2px; }
       .g-firefly .jar.pulse .jar-emoji { animation: pop-in 0.35s ease; }
       .g-firefly .jar.full .jar-emoji { animation: floaty 1.4s ease-in-out infinite;

@@ -26,11 +26,11 @@ export default {
     ctx.addStyle(`
       .g-hopscotch { text-align: center; }
       .g-hopscotch .hs-head { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
-      .g-hopscotch .hs-label { font-weight: bold; opacity: 0.75; }
+      .g-hopscotch .hs-label { font-family: var(--display); font-weight: 700; color: var(--slate); opacity: 0.9; }
       .g-hopscotch .hs-listen { min-height: 48px; min-width: 48px; padding: 6px 14px; }
-      .g-hopscotch .hs-wrap { position: relative; max-width: 420px; margin: 0 auto 8px; padding: 10px 10px 2px; border-radius: 18px; background: linear-gradient(180deg, #e6f3ff, #f4fbe6); }
+      .g-hopscotch .hs-wrap { position: relative; max-width: 420px; margin: 0 auto 8px; padding: 10px 10px 2px; border-radius: 18px; background: linear-gradient(180deg, var(--sky-soft), #f4fbe6); }
       .g-hopscotch .hs-row { display: flex; justify-content: center; gap: 8px; margin: 6px auto; }
-      .g-hopscotch .hs-sq { display: flex; align-items: center; justify-content: center; min-height: 46px; width: 58%; padding: 4px 8px; border-radius: 14px; border: 3px dashed #9db8dd; background: rgba(255,255,255,0.9); font-weight: bold; font-size: 1rem; color: #93a9cc; overflow-wrap: anywhere; }
+      .g-hopscotch .hs-sq { display: flex; align-items: center; justify-content: center; min-height: 46px; width: 58%; padding: 4px 8px; border-radius: 14px; border: 2px dashed rgba(46, 155, 214, 0.5); background: rgba(255,255,255,0.9); font-family: var(--display); font-weight: 600; font-size: 1rem; color: rgba(62, 75, 84, 0.45); overflow-wrap: anywhere; }
       .g-hopscotch .hs-row.double .hs-sq { width: 47%; }
       .g-hopscotch .hs-sq.filled { border-style: solid; border-color: var(--green); background: var(--green-soft); color: var(--ink); animation: pop-in 0.3s ease; }
       .g-hopscotch .hs-start { height: 42px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; letter-spacing: 6px; opacity: 0.85; }
@@ -52,12 +52,12 @@ export default {
         85%  { transform: translateY(2px) rotate(-360deg) scaleY(0.85); }
         100% { transform: translateY(0) rotate(-360deg); }
       }
-      .g-hopscotch .hs-banner { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; font-size: 1.7rem; font-weight: bold; background: rgba(255,255,255,0.8); border-radius: 18px; animation: pop-in 0.3s ease; }
-      .g-hopscotch .hs-ask { font-weight: bold; font-size: 1.1rem; margin: 4px 0; }
+      .g-hopscotch .hs-banner { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 1.7rem; font-weight: 700; color: var(--slate); background: rgba(255,255,255,0.8); border-radius: 18px; animation: pop-in 0.3s ease; }
+      .g-hopscotch .hs-ask { font-family: var(--display); font-weight: 700; font-size: 1.1rem; color: var(--slate); margin: 4px 0; }
       .g-hopscotch .hs-choices { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding-bottom: 4px; }
-      .g-hopscotch .hs-choice { min-height: 56px; min-width: 96px; max-width: 100%; padding: 8px 18px; border-radius: 18px; background: var(--blue-soft); border: 3px solid transparent; font-size: 1.2rem; font-weight: bold; box-shadow: 0 5px 0 rgba(38,50,75,0.15); transition: transform 0.08s ease; overflow-wrap: anywhere; }
+      .g-hopscotch .hs-choice { min-height: 56px; min-width: 96px; max-width: 100%; padding: 8px 18px; border-radius: 18px; background: var(--sky-soft); border: 2px solid #c8e2f4; font-family: var(--display); font-size: 1.2rem; font-weight: 600; color: var(--slate); box-shadow: var(--shadow); transition: transform 0.08s ease; overflow-wrap: anywhere; }
       .g-hopscotch .hs-choice:active { transform: translateY(3px); box-shadow: none; }
-      .g-hopscotch .hs-choice.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); }
+      .g-hopscotch .hs-choice.wrong { animation: wiggle 0.35s ease; background: var(--red-soft); border-color: var(--red); }
       /* Short phones: tighten the court so the choice buttons stay on screen. */
       @media (max-height: 700px) {
         .g-hopscotch .hs-wrap { padding-top: 8px; }
