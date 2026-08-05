@@ -33,6 +33,18 @@ function app() { return document.getElementById('app'); }
 function go(hash) { location.hash = hash; }
 function starsText(n) { return n > 0 ? '⭐'.repeat(n) : '·'; }
 
+// Grown-ups setting: Magic Ears may award the star with no confirm tap.
+const MAGIC_EARS_AUTO_KEY = 'sparksArcade.magicEarsAuto';
+function magicEarsAuto() {
+  try { return localStorage.getItem(MAGIC_EARS_AUTO_KEY) === '1'; } catch { return false; }
+}
+function setMagicEarsAuto(on) {
+  try { localStorage.setItem(MAGIC_EARS_AUTO_KEY, on ? '1' : '0'); } catch { /* private mode */ }
+}
+function autoChipLabel() {
+  return magicEarsAuto() ? '🪄 Auto-award: ON' : '🪄 Auto-award: OFF';
+}
+
 function artImg(src, cls, alt = '') {
   const img = el('img', cls);
   img.src = src;
@@ -397,6 +409,21 @@ export function reciteView(book, section, verseIdx) {
     const wrap = el('div', 'card recite-sr');
     wrap.append(el('p', 'recite-sr-note', '🌐 Needs internet on most devices — the magic ears are listening for you, never judging you!'));
 
+    // Grown-ups option: let the magic ears award the star with no confirm tap.
+    // The auto path demands MORE than the manual one (every word + reference,
+    // not 90%) because there's no human double-check behind it.
+    const autoChip = el('button', 'chip' + (magicEarsAuto() ? ' active' : ''), autoChipLabel());
+    autoChip.onclick = () => {
+      sfx.click();
+      setMagicEarsAuto(!magicEarsAuto());
+      autoChip.textContent = autoChipLabel();
+      autoChip.classList.toggle('active', magicEarsAuto());
+    };
+    const autoRow = el('div', 'recite-sr-autorow');
+    autoRow.append(autoChip, el('span', 'recite-sr-autonote',
+      'Grown-ups: when ON, hearing every single word and the reference awards the star all by itself.'));
+    wrap.append(autoRow);
+
     const tilesWrap = el('div', 'recite-sr-tiles');
     verse.words.forEach(() => tilesWrap.append(el('span', 'recite-sr-tile', '●')));
     wrap.append(tilesWrap);
@@ -460,6 +487,17 @@ export function reciteView(book, section, verseIdx) {
       if (celebrated) return;
       if (!referenceHeard && referenceHeardIn(combinedText, bookWords, numbers)) referenceHeard = true;
       const litRatio = litSet.size / verse.words.length;
+      // Auto-award (grown-ups opt-in): stricter than the manual path — every
+      // word must light, not 90%, since no human confirm stands behind it.
+      if (magicEarsAuto() && litSet.size === verse.words.length && referenceHeard) {
+        celebrated = true;
+        try { recognition.stop(); } catch { /* already stopped */ }
+        statusEl.textContent = '✨ Every single word — the magic ears award the star!';
+        micBtn.disabled = true;
+        clear(resultArea);
+        setTimeout(() => onSuccess('sr'), 900);
+        return;
+      }
       if (litRatio >= 0.9 && referenceHeard) {
         celebrated = true;
         try { recognition.stop(); } catch { /* already stopped */ }

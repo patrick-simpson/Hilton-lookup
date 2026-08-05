@@ -405,6 +405,9 @@ button {
 
 /* Mode 3 — Magic Ears (speech recognition) */
 .recite-sr-note { text-align: center; font-size: 0.85rem; opacity: 0.8; margin: 0 0 8px; }
+.recite-sr-autorow { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.recite-sr-autorow .chip { flex: 0 0 auto; min-height: 44px; }
+.recite-sr-autonote { font-size: 0.8rem; opacity: 0.75; line-height: 1.25; }
 .recite-sr-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 10px; }
 .recite-sr-tile {
   display: inline-flex;
