@@ -107,6 +107,10 @@ Dev tools (never loaded by the app):
   converts anything missing (needs `ffmpeg`; idempotent)
 - `node tools/build-audio-manifest.mjs` — regenerates `js/data/audio-manifest.js`
   from the map + files on disk (needs `ffprobe`)
+- `python3 tools/generate-timings.py` — word-level timing sidecars
+  (`*.timings.json`) by force-aligning each recording to its known text
+  (needs `pip install faster-whisper`); powers word-accurate highlighting.
+  Run it after adding song files, then rebuild the manifest.
 
 ## Development
 

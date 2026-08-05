@@ -22,6 +22,22 @@ function duration(relPath) {
   return Math.round(parseFloat(out) * 10) / 10;
 }
 
+// Word-level timing sidecars ([[word, startSec], …]) written next to the
+// audio by tools/generate-timings.py. Optional — entries without one just
+// get even-split highlighting in the app.
+function timingsFor(relPath) {
+  const side = join(ROOT, relPath.replace(/\.(m4a|mp3)$/, '.timings.json'));
+  if (!existsSync(side)) return null;
+  try { return JSON.parse(readFileSync(side, 'utf8')); } catch { return null; }
+}
+
+function entryFor(relPath) {
+  const e = { file: relPath, duration: duration(relPath) };
+  const timings = timingsFor(relPath);
+  if (timings) e.timings = timings;
+  return e;
+}
+
 const manifest = { read: { common: {} }, handbook: {}, songs: { common: {} } };
 for (const t of Object.keys(MAP.translations)) { manifest.read[t] = {}; manifest.songs[t] = {}; }
 let missing = 0;
@@ -35,12 +51,12 @@ for (const [bookId, book] of Object.entries(MAP.books)) {
       for (const t of Object.keys(MAP.translations)) {
         const file = e.out.replace('{t}', t);
         if (!existsSync(join(ROOT, file))) { console.warn(`missing: ${file}`); missing++; continue; }
-        const entry = { file, duration: duration(file) };
+        const entry = entryFor(file);
         for (const ref of e.refs) manifest.read[t][ref] = entry;
       }
     } else if (e.type === 'verse-list') {
       if (!existsSync(join(ROOT, e.out))) { console.warn(`missing: ${e.out}`); missing++; continue; }
-      const entry = { file: e.out, duration: duration(e.out) };
+      const entry = entryFor(e.out);
       for (const ref of e.refs) manifest.read.common[ref] = entry;
     } else if (e.type === 'lesson' || e.type === 'story') {
       if (!existsSync(join(ROOT, e.out))) { console.warn(`missing: ${e.out}`); missing++; continue; }
@@ -49,7 +65,7 @@ for (const [bookId, book] of Object.entries(MAP.books)) {
     } else if (e.type === 'song') {
       if (!existsSync(join(ROOT, e.out))) { console.warn(`missing: ${e.out}`); missing++; continue; }
       const name = e.out.split('/').pop().replace('.m4a', '');
-      manifest.songs.common[name] = { file: e.out, duration: duration(e.out), title: e.title };
+      manifest.songs.common[name] = { ...entryFor(e.out), title: e.title };
     }
   }
 }
@@ -67,7 +83,7 @@ for (const t of Object.keys(MAP.translations)) {
   for (const f of readdirSync(dir).filter((f) => f.endsWith('.m4a') || f.endsWith('.mp3'))) {
     const ref = refBySlug[f.replace(/\.(m4a|mp3)$/, '')];
     const file = `audio/songs/${t}/${f}`;
-    if (ref) manifest.songs[t][ref] = { file, duration: duration(file) };
+    if (ref) manifest.songs[t][ref] = entryFor(file);
     else console.warn(`song file has no matching ref slug: ${file}`);
   }
 }

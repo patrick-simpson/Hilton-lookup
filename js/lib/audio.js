@@ -20,6 +20,13 @@ const BOOK_LIST_SONG = {
   'OT-1': 'ot-books-song', 'OT-2': 'ot-books-song', 'OT-3': 'ot-books-song',
   'OT-4': 'ot-books-song', 'OT-5': 'ot-books-song', 'OT-6': 'ot-books-song', 'OT-ALL': 'ot-books-song',
 };
+// Which slice of the full books-song timing list a partial list ref covers
+// (mirrors the BOOK_LISTS slices in js/data/verses.js).
+const BOOK_LIST_SLICE = {
+  'NT-1': [0, 8], 'NT-2': [8, 17], 'NT-3': [17, 27], 'NT-ALL': [0, 27],
+  'OT-1': [0, 5], 'OT-2': [5, 12], 'OT-3': [12, 20], 'OT-4': [20, 27],
+  'OT-5': [27, 34], 'OT-6': [34, 39], 'OT-ALL': [0, 39],
+};
 
 export function refSlug(ref) {
   return ref.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -89,9 +96,18 @@ function el() {
   return audioEl;
 }
 
-// Even-split tick timestamps across [2%, 95%] of the entry's known duration.
-function scheduleTicks(words, duration) {
+// Word-tick timestamps: real aligned timings from the manifest when the
+// entry has them AND they cover exactly this word list (a combined clip like
+// psalm-23-1-2 serves two refs whose word lists differ from the sidecar's —
+// the length guard drops those back to even-split). Fallback: even-split
+// across [2%, 95%] of the entry's known duration.
+function scheduleTicks(words, duration, timings) {
   if (!words || !words.length || !duration) return;
+  if (timings && timings.length === words.length) {
+    tickTimes = timings.map(([, t]) => t);
+    tickIndex = -1;
+    return;
+  }
   const start = duration * 0.02;
   const end = duration * 0.95;
   const n = words.length;
@@ -117,15 +133,25 @@ export function playVerse(verse, { kind = 'read' } = {}) {
   if (kind === 'sing') {
     const song = songEntryFor(verse.ref);
     if (song) {
-      scheduleTicks(verse.words, song.duration);
+      // Partial book lists borrow their slice of the full song's timings and
+      // start playback just before their first book, so NT-2 doesn't sit
+      // through Matthew–Acts in silence.
+      let timings = song.timings;
+      const slice = BOOK_LIST_SLICE[verse.ref];
+      if (timings && slice && timings.length >= slice[1]) timings = timings.slice(slice[0], slice[1]);
+      scheduleTicks(verse.words, song.duration, timings);
       playPath(song.file);
+      if (timings && slice && slice[0] > 0) {
+        const a = el();
+        if (a) { try { a.currentTime = Math.max(0, timings[0][1] - 1.2); } catch { /* not seekable yet */ } }
+      }
       return { source: 'file' };
     }
     return playVerse(verse, { kind: 'read' });
   }
   const entry = readEntryFor(verse.ref);
   if (entry) {
-    scheduleTicks(verse.words, entry.duration);
+    scheduleTicks(verse.words, entry.duration, entry.timings);
     playPath(entry.file);
     return { source: 'file' };
   }
