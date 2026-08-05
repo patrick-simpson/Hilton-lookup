@@ -119,6 +119,7 @@ function playPath(file) {
   const a = el();
   if (!a) return;
   a.src = file;
+  a.playbackRate = 1; // callers opt back in per play (setPlaybackRate)
   try { a.currentTime = 0; } catch { /* not seekable yet — fine */ }
   a.play().catch(() => { /* no user gesture yet, or the browser blocked it */ });
 }
@@ -192,6 +193,13 @@ export function pauseAudio() {
 
 export function resumeAudio() {
   if (audioEl) audioEl.play().catch(() => { /* no user gesture yet, or blocked */ });
+}
+
+// Slow down / speed up the current file playback (word ticks stay accurate —
+// they compare against currentTime, which playbackRate scales naturally).
+// Karaoke's turtle/rabbit chips use this. Resets to 1 on every new play.
+export function setPlaybackRate(rate) {
+  if (audioEl) audioEl.playbackRate = rate;
 }
 
 // iOS/Safari only allow the first play() call inside a user gesture to

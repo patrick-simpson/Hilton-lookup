@@ -1,13 +1,15 @@
 // Verse Karaoke — a bouncing star hops word-to-word while the kid sings along.
-// Phase 1 LISTEN: when this verse has a real song recording, the star's hops
-// are driven straight off the audio's word timeline (see js/lib/audio.js);
-// otherwise it falls back to a timer (turtle/rabbit speed) while the verse
-// is spoken. Phase 2 YOUR TURN: every 3rd word becomes 🎵 and the star only
-// hops when the kid taps. Phase 3 STAR PERFORMANCE: (almost) all words
+// Phase 1 LISTEN: when this verse has a real recording (song OR the handbook
+// read-aloud), the star's hops ride the audio's word timeline (see
+// js/lib/audio.js — real aligned timings, so the star waits out the spoken
+// reference and lands as each word is actually said); turtle/rabbit adjust
+// playbackRate. Only the rare no-recording verse falls back to a timer over
+// device speech. Phase 2 YOUR TURN: every 3rd word becomes 🎵 and the star
+// only hops when the kid taps. Phase 3 STAR PERFORMANCE: (almost) all words
 // hidden — recite it all, then take a bow! Performance game: always 3 stars
 // for finishing.
 
-import { songEntryFor, playVerse, onWordTick } from '../lib/audio.js';
+import { songEntryFor, readEntryFor, playVerse, onWordTick, setPlaybackRate } from '../lib/audio.js';
 
 export default {
   id: 'karaoke',
@@ -77,7 +79,8 @@ export default {
     let tiles = [];
     let hopTimer = null;
     let finished = false;
-    let songDriven = false; // phase 1 only: hops come from onWordTick, not a timer
+    let fileDriven = false; // phase 1 only: hops come from onWordTick, not a timer
+    let fileRate = 1;       // turtle/rabbit playbackRate while file-driven
     let songUnsub = null;
 
     function stopSongTicks() {
@@ -142,11 +145,20 @@ export default {
     function buildControls() {
       clear(controls);
       if (phase === 1) {
-        if (!songDriven) {
-          // A real recording plays at its own fixed pace, so turtle/rabbit
-          // speed has nothing to act on — only offer it in the timer fallback.
-          const slow = chip('🐢');
-          const fast = chip('🐇');
+        const slow = chip('🐢');
+        const fast = chip('🐇');
+        if (fileDriven) {
+          // Real recording: turtle/rabbit slow down / speed up the file itself.
+          const setRate = (r) => {
+            sfx.click();
+            fileRate = (fileRate === r) ? 1 : r; // tap again to go back to normal
+            setPlaybackRate(fileRate);
+            slow.classList.toggle('active', fileRate < 1);
+            fast.classList.toggle('active', fileRate > 1);
+          };
+          slow.onclick = () => setRate(0.75);
+          fast.onclick = () => setRate(1.3);
+        } else {
           const setSpeed = (ms) => {
             sfx.click();
             speed = (speed === ms) ? NORMAL : ms; // tap again to go back to normal
@@ -155,8 +167,8 @@ export default {
           };
           slow.onclick = () => setSpeed(TURTLE);
           fast.onclick = () => setSpeed(RABBIT);
-          controls.append(slow, fast);
         }
+        controls.append(slow, fast);
         const hear = chip('🔊');
         hear.onclick = () => { sfx.click(); ctx.speak(); };
         const skip = el('button', 'btn', 'Skip ⏭️');
@@ -179,7 +191,8 @@ export default {
       stopSongTicks();
       phase = p;
       idx = -1;
-      songDriven = p === 1 && !!songEntryFor(ctx.verse.ref);
+      const hasSong = !!songEntryFor(ctx.verse.ref);
+      fileDriven = p === 1 && (hasSong || !!readEntryFor(ctx.verse.ref));
       badge.textContent = BADGES[p];
       hint.textContent = HINTS[p];
       badge.classList.remove('pop');
@@ -189,9 +202,10 @@ export default {
       buildControls();
       moveStar(tiles[0], true, true); // hover above the first word, ready to drop
       if (p === 1) {
-        if (songDriven) {
+        if (fileDriven) {
           songUnsub = onWordTick(onSongTick);
-          playVerse(ctx.verse, { kind: 'sing' });
+          playVerse(ctx.verse, { kind: hasSong ? 'sing' : 'read' });
+          if (fileRate !== 1) setPlaybackRate(fileRate);
         } else {
           ctx.speak();
           hopTimer = later(hop, 900);
