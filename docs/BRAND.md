@@ -1,8 +1,13 @@
 # Sparks Verse Arcade — brand guide
 
-Derived from the Awana Clubs 2026–27 catalog (Sparks section, pp. 41–48) so the
-app reads like official Sparks material, not a generic web template. Reference
-this file for any new screen or game chrome.
+A warm, energetic palette in the spirit of the Sparks program (loosely
+informed by the Awana Clubs 2026–27 catalog, Sparks section, pp. 41–48),
+chosen to avoid a generic web-template look — not to imitate or be mistaken
+for official Awana material. This is an unofficial fan app; keep the
+affiliation disclaimer (`#affiliation-banner` in index.html) intact on every
+screen, and don't reuse Awana's actual logos/wordmarks (see
+img/*-emblem.webp, img/*-title.webp) without separately confirming
+permission — reference this file for palette/type/shape only.
 
 ## Palette
 

@@ -1,7 +1,7 @@
 {
   "name": "Sparks Verse Arcade",
   "short_name": "Verse Arcade",
-  "description": "20 Bible-memory games covering the Awana Sparks handbooks",
+  "description": "Unofficial fan-made Bible-memory games covering the Awana Sparks handbooks. Not affiliated with or endorsed by Awana.",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
